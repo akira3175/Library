@@ -5,6 +5,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.RoundRectangle2D;
+import org.example.GUI.MainFrame;
 
 public class LoginForm extends JFrame {
     private FloatingTextField usernameField;
@@ -179,6 +180,7 @@ public class LoginForm extends JFrame {
 
             if ("admin".equals(username) && "1234".equals(password)) {
                 JOptionPane.showMessageDialog(this, "Đăng nhập thành công!");
+                new MainFrame().setVisible(true);
                 dispose();
             } else {
                 JOptionPane.showMessageDialog(this, "Sai tài khoản hoặc mật khẩu!", "Lỗi", JOptionPane.ERROR_MESSAGE);

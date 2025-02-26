@@ -1,4 +1,4 @@
-package org.example.GUI.Panels;
+package org.example.GUI.Panels.TrangChu;
 
 import org.example.GUI.Components.StatisticCard;
 import org.example.GUI.Constants.AppConstants;

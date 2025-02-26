@@ -1,8 +1,11 @@
 package org.example.GUI;
 
 import org.example.GUI.Auth.LoginForm;
-import org.example.GUI.Panels.*;
 import org.example.GUI.Constants.AppConstants;
+import org.example.GUI.Panels.QuanLyMuonTraSach.QuanLyMuonTraSachPanel;
+import org.example.GUI.Panels.QuanLyNguoiDung.QuanLyNguoiDungPanel;
+import org.example.GUI.Panels.QuanLySach.QuanLySachPanel;
+import org.example.GUI.Panels.TrangChu.TrangChuPanel;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;

@@ -6,6 +6,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.RoundRectangle2D;
 import org.example.GUI.MainFrame;
+import org.example.GUI.Constants.AppConstants;
 
 public class LoginForm extends JFrame {
     private FloatingTextField usernameField;
@@ -34,7 +35,7 @@ public class LoginForm extends JFrame {
         topPanel.setOpaque(false);
 
         // Logo
-        ImageIcon logoIcon = new ImageIcon(getClass().getResource("/images/main-logo-1.png"));
+        ImageIcon logoIcon = new ImageIcon(getClass().getResource("/icons/logo.png"));
         Image scaledImage = logoIcon.getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH);
         JLabel logoLabel = new JLabel(new ImageIcon(scaledImage));
         logoLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -62,20 +63,20 @@ public class LoginForm extends JFrame {
 
         JLabel titleLabel = new JLabel("Đăng Nhập");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        titleLabel.setForeground(new Color(41, 128, 185));
+        titleLabel.setForeground(AppConstants.TEXT_COLOR);
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         usernameField = createStyledTextField("Tên đăng nhập");
         JPanel passwordPanel = createStyledPasswordField("Mật khẩu");
 
-        loginButton = createStyledButton("Đăng Nhập", new Color(41, 128, 185));
+        loginButton = createStyledButton("Đăng Nhập", AppConstants.TEXT_COLOR);
         loginButton.setPreferredSize(new Dimension(300, 50));
 
         JPanel registerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         registerPanel.setOpaque(false);
         JLabel noAccountLabel = new JLabel("Chưa có tài khoản? ");
         registerLabel = new JLabel("Đăng ký");
-        registerLabel.setForeground(new Color(41, 128, 185));
+        registerLabel.setForeground(AppConstants.PRIMARY_COLOR);
         registerLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
         registerPanel.add(noAccountLabel);
         registerPanel.add(registerLabel);
@@ -105,7 +106,7 @@ public class LoginForm extends JFrame {
         field.setAlignmentX(Component.CENTER_ALIGNMENT);
         field.setFont(new Font("Arial", Font.PLAIN, 14));
         field.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(0, 0, 2, 0, new Color(41, 128, 185)),
+                BorderFactory.createMatteBorder(0, 0, 2, 0, AppConstants.TEXT_COLOR),
                 BorderFactory.createEmptyBorder(25, 5, 5, 5)));
         return field;
     }
@@ -116,7 +117,7 @@ public class LoginForm extends JFrame {
         passwordField.setAlignmentX(Component.CENTER_ALIGNMENT);
         passwordField.setFont(new Font("Arial", Font.PLAIN, 14));
         passwordField.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(0, 0, 2, 0, new Color(41, 128, 185)),
+                BorderFactory.createMatteBorder(0, 0, 2, 0, AppConstants.TEXT_COLOR),
                 BorderFactory.createEmptyBorder(25, 5, 5, 5)));
 
         // Thêm nút hiển thị mật khẩu

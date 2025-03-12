@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import org.example.GUI.Constants.AppConstants;
 
 class FloatingPasswordField extends JPasswordField {
     String placeholder;
@@ -32,7 +33,7 @@ class FloatingPasswordField extends JPasswordField {
         Graphics2D g2 = (Graphics2D) g.create();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         if (isFloating || getPassword().length > 0) {
-            g2.setColor(new Color(41, 128, 185));
+            g2.setColor(AppConstants.TEXT_COLOR);
             g2.setFont(getFont().deriveFont(12f));
             g2.drawString(placeholder, getInsets().left, 15);
         } else if (getPassword().length == 0) {

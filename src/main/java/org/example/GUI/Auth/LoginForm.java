@@ -5,6 +5,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.RoundRectangle2D;
+
+import org.example.BUS.NguoiDungBUS;
+import org.example.DTO.NguoiDung;
 import org.example.GUI.MainFrame;
 import org.example.GUI.Constants.AppConstants;
 
@@ -14,6 +17,7 @@ public class LoginForm extends JFrame {
     private JButton loginButton;
     private JLabel exitLabel, registerLabel;
     private JToggleButton showPasswordButton;
+    private NguoiDungBUS nguoiDungBUS;
 
     public LoginForm() {
         setUndecorated(true);
@@ -21,6 +25,7 @@ public class LoginForm extends JFrame {
         setShape(new RoundRectangle2D.Double(0, 0, 350, 550, 15, 15));
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        nguoiDungBUS = new NguoiDungBUS();
 
         initUI();
     }
@@ -179,7 +184,8 @@ public class LoginForm extends JFrame {
             String username = usernameField.getText();
             String password = new String(passwordField.getPassword());
 
-            if ("admin".equals(username) && "1234".equals(password)) {
+            NguoiDung nguoiDung = nguoiDungBUS.xuLyDangNhap(username, password);
+            if (nguoiDung != null) {
                 JOptionPane.showMessageDialog(this, "Đăng nhập thành công!");
                 new MainFrame().setVisible(true);
                 dispose();

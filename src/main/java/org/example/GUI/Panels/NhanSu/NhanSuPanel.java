@@ -1,15 +1,15 @@
-package org.example.GUI.Panels.QuanLyNguoiDung;
+package org.example.GUI.Panels.NhanSu;
 
 import org.example.GUI.Constants.AppConstants;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
-public class QuanLyNguoiDungPanel extends JPanel {
+public class NhanSuPanel extends JPanel {
     private JTable table;
     private JTextField searchField;
 
-    public QuanLyNguoiDungPanel() {
+    public NhanSuPanel() {
         setLayout(new BorderLayout(20, 20));
         setBackground(AppConstants.BACKGROUND_COLOR);
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));

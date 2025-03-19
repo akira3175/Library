@@ -2,16 +2,18 @@ package org.example.GUI;
 
 import org.example.GUI.Auth.LoginForm;
 import org.example.GUI.Constants.AppConstants;
-import org.example.GUI.Panels.QuanLyMuonTraSach.QuanLyMuonTraSachPanel;
-import org.example.GUI.Panels.QuanLyNguoiDung.QuanLyNguoiDungPanel;
-import org.example.GUI.Panels.QuanLySach.QuanLySachPanel;
-import org.example.GUI.Panels.TrangChu.TrangChuPanel;
+import org.example.GUI.Panels.BanHang.BanHangPanel;
+import org.example.GUI.Panels.NhapKho.NhapKhoPanel;
+import org.example.GUI.Panels.NhanSu.NhanSuPanel;
+import org.example.GUI.Panels.SanPham.SanPhamPanel;
+import org.example.GUI.Panels.ThongKe.ThongKePanel;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class MainFrame extends JFrame {
     private JPanel sidebar, contentPanel, headerPanel;
@@ -48,7 +50,7 @@ public class MainFrame extends JFrame {
 
         // Load and set logo
         try {
-            ImageIcon logoIcon = new ImageIcon(getClass().getResource("/icons/logo.png"));
+            ImageIcon logoIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource("/icons/logo-water.png")));
             Image img = logoIcon.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);
             JLabel logoLabel = new JLabel(new ImageIcon(img));
             logoPanel.add(logoLabel);
@@ -62,7 +64,7 @@ public class MainFrame extends JFrame {
         } catch (Exception e) {
             System.out.println("Could not load logo: " + e.getMessage());
             // Fallback to text if logo can't be loaded
-            JLabel fallbackLabel = new JLabel("Quản lý Thư viện");
+            JLabel fallbackLabel = new JLabel("Đại lý nước");
             fallbackLabel.setFont(AppConstants.TITLE_FONT);
             fallbackLabel.setForeground(AppConstants.PRIMARY_COLOR);
             logoPanel.add(fallbackLabel);
@@ -89,7 +91,7 @@ public class MainFrame extends JFrame {
         // Logo panel
         JPanel logoPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         logoPanel.setOpaque(false);
-        JLabel logoLabel = new JLabel("THƯ VIỆN");
+        JLabel logoLabel = new JLabel("ĐẠI LÝ");
         logoLabel.setFont(AppConstants.TITLE_FONT);
         logoLabel.setForeground(Color.WHITE);
         logoPanel.add(logoLabel);
@@ -99,10 +101,11 @@ public class MainFrame extends JFrame {
         navigationButtons = new HashMap<>();
 
         // Add navigation buttons with icons
-        addNavigationButton("home", "Trang chủ", "home.png");
-        addNavigationButton("books", "Quản lý sách", "book.png");
-        addNavigationButton("users", "Quản lý người dùng", "user.png");
-        addNavigationButton("loans", "Mượn/Trả sách", "loan.png");
+        addNavigationButton("sell", "Bán hàng", "book.png");
+        addNavigationButton("products", "Sản phẩm", "book.png");
+        addNavigationButton("users", "Nhân sự", "user.png");
+        addNavigationButton("import", "Nhập kho", "loan.png");
+        addNavigationButton("statistics", "Thống kê", "home.png");
 
         sidebar.add(Box.createVerticalGlue());
 
@@ -154,10 +157,11 @@ public class MainFrame extends JFrame {
         contentPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
 
         // Add panels
-        contentPanel.add(new TrangChuPanel(), "home");
-        contentPanel.add(new QuanLySachPanel(), "books");
-        contentPanel.add(new QuanLyNguoiDungPanel(), "users");
-        contentPanel.add(new QuanLyMuonTraSachPanel(), "loans");
+        contentPanel.add(new BanHangPanel(), "sell");
+        contentPanel.add(new SanPhamPanel(), "products");
+        contentPanel.add(new NhanSuPanel(), "users");
+        contentPanel.add(new NhapKhoPanel(), "import");
+        contentPanel.add(new ThongKePanel(), "statistics");
 
         setupActionListeners();
     }

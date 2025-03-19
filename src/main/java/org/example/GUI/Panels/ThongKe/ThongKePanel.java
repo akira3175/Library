@@ -1,4 +1,4 @@
-package org.example.GUI.Panels.TrangChu;
+package org.example.GUI.Panels.ThongKe;
 
 import org.example.GUI.Components.StatisticCard;
 import org.example.GUI.Constants.AppConstants;
@@ -11,8 +11,8 @@ import org.jfree.data.category.DefaultCategoryDataset;
 import javax.swing.*;
 import java.awt.*;
 
-public class TrangChuPanel extends JPanel {
-    public TrangChuPanel() {
+public class ThongKePanel extends JPanel {
+    public ThongKePanel() {
         setLayout(new BorderLayout(20, 20));
         setBackground(AppConstants.BACKGROUND_COLOR);
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));

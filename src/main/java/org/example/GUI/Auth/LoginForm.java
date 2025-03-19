@@ -40,7 +40,7 @@ public class LoginForm extends JFrame {
         topPanel.setOpaque(false);
 
         // Logo
-        ImageIcon logoIcon = new ImageIcon(getClass().getResource("/icons/logo.png"));
+        ImageIcon logoIcon = new ImageIcon(getClass().getResource("/icons/logo-water.png"));
         Image scaledImage = logoIcon.getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH);
         JLabel logoLabel = new JLabel(new ImageIcon(scaledImage));
         logoLabel.setHorizontalAlignment(JLabel.CENTER);

@@ -52,10 +52,10 @@ public class ThongKePanel extends JPanel {
         JPanel statsPanel = new JPanel(new GridLayout(1, 4, 20, 0));
         statsPanel.setOpaque(false);
 
-        statsPanel.add(new StatisticCard("Tổng số sách", "1,234", "+12.5%", true));
-        statsPanel.add(new StatisticCard("Độc giả", "856", "+5.2%", true));
-        statsPanel.add(new StatisticCard("Sách đang mượn", "145", "-2.3%", false));
-        statsPanel.add(new StatisticCard("Sách quá hạn", "23", "+1.5%", false));
+        statsPanel.add(new StatisticCard("Tổng sản phẩm", "1,234", "+12.5%", true));
+        statsPanel.add(new StatisticCard("Khách hàng", "856", "+5.2%", true));
+        statsPanel.add(new StatisticCard("Nhân viên", "145", "-2.3%", false));
+        statsPanel.add(new StatisticCard("Doanh thu tháng", "23 000 000", "+1.5%", true));
 
         return statsPanel;
     }
@@ -75,8 +75,8 @@ public class ThongKePanel extends JPanel {
         categoryChartPanel.setPreferredSize(new Dimension(500, AppConstants.CHART_HEIGHT));
 
         // Wrap charts in white panels
-        JPanel borrowPanel = wrapChartInPanel(borrowChartPanel, "Thống kê mượn sách");
-        JPanel categoryPanel = wrapChartInPanel(categoryChartPanel, "Thống kê theo thể loại");
+        JPanel borrowPanel = wrapChartInPanel(borrowChartPanel, "Thống kê sản phẩm bán");
+        JPanel categoryPanel = wrapChartInPanel(categoryChartPanel, "Thống kê theo loại");
 
         chartsPanel.add(borrowPanel);
         chartsPanel.add(categoryPanel);
@@ -104,12 +104,12 @@ public class ThongKePanel extends JPanel {
 
     private JFreeChart createBorrowChart() {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        dataset.addValue(200, "Mượn", "T1");
-        dataset.addValue(150, "Mượn", "T2");
-        dataset.addValue(180, "Mượn", "T3");
-        dataset.addValue(270, "Mượn", "T4");
-        dataset.addValue(230, "Mượn", "T5");
-        dataset.addValue(180, "Mượn", "T6");
+        dataset.addValue(200, "Bán", "T1");
+        dataset.addValue(150, "Bán", "T2");
+        dataset.addValue(180, "Bán", "T3");
+        dataset.addValue(270, "Bán", "T4");
+        dataset.addValue(230, "Bán", "T5");
+        dataset.addValue(180, "Bán", "T6");
 
         JFreeChart chart = ChartFactory.createLineChart(
                 null,
@@ -128,15 +128,15 @@ public class ThongKePanel extends JPanel {
 
     private JFreeChart createCategoryChart() {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        dataset.addValue(120, "Số lượng", "Văn học");
-        dataset.addValue(80, "Số lượng", "Khoa học");
-        dataset.addValue(60, "Số lượng", "Kỹ thuật");
-        dataset.addValue(40, "Số lượng", "Kinh tế");
-        dataset.addValue(30, "Số lượng", "Ngoại ngữ");
+        dataset.addValue(120, "Số lượng", "Nước có ga");
+        dataset.addValue(80, "Số lượng", "Nước trà");
+        dataset.addValue(60, "Số lượng", "Cà phê");
+        dataset.addValue(40, "Số lượng", "Nước có cồn");
+        dataset.addValue(30, "Số lượng", "Sữa");
 
         JFreeChart chart = ChartFactory.createBarChart(
                 null,
-                "Thể loại",
+                "Loại sản phẩm",
                 "Số lượng",
                 dataset,
                 PlotOrientation.VERTICAL,

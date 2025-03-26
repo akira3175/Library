@@ -9,6 +9,7 @@ import org.example.GUI.Panels.ThongKe.ThongKePanel;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.MatteBorder;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,9 +21,10 @@ public class MainFrame extends JFrame {
     private JPanel sidebar, contentPanel, headerPanel;
     private CardLayout cardLayout;
     private Map<String, JButton> navigationButtons;
+    private String activeButtonKey = "sell"; // Default active button
 
     public MainFrame() {
-        setTitle("Quản lý thư viện");
+        setTitle("Quản lý bán hàng");
         setSize(1200, 800);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -88,7 +90,7 @@ public class MainFrame extends JFrame {
         sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
         sidebar.setBackground(AppConstants.SIDEBAR_COLOR);
         sidebar.setBorder(new EmptyBorder(10, 10, 10, 10));
-        sidebar.setPreferredSize(new Dimension(250, getHeight()));
+        sidebar.setPreferredSize(new Dimension(200, getHeight())); // Increased width
 
         // Logo panel
         JPanel logoPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -113,43 +115,83 @@ public class MainFrame extends JFrame {
 
         // Logout button at bottom
         addNavigationButton("logout", "Đăng xuất", "logout.png");
+
+        // Set initial active button
+        updateActiveButton(activeButtonKey);
     }
 
     private void addNavigationButton(String key, String label, String iconName) {
         JButton button = new JButton(label);
-        button.setFont(AppConstants.NORMAL_FONT);
+
+        // Use a larger, bolder font
+        Font buttonFont = new Font(AppConstants.NORMAL_FONT.getFamily(), Font.BOLD, 14);
+        button.setFont(buttonFont);
+
         button.setForeground(Color.WHITE);
         button.setBackground(AppConstants.SIDEBAR_COLOR);
         button.setBorderPainted(false);
         button.setFocusPainted(false);
         button.setAlignmentX(Component.LEFT_ALIGNMENT);
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        button.setMaximumSize(new Dimension(230, 40));
 
-        // Load and set icon
+        // Make buttons larger
+        button.setMaximumSize(new Dimension(260, 50));
+        button.setPreferredSize(new Dimension(260, 50));
+
+        // Add rounded corners and padding with a custom border
+        button.setBorder(new EmptyBorder(10, 15, 10, 15));
+
+        // Load and set icon with larger size
         try {
             ImageIcon icon = new ImageIcon(getClass().getResource("/icons/" + iconName));
-            Image img = icon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
+            Image img = icon.getImage().getScaledInstance(24, 24, Image.SCALE_SMOOTH); // Larger icon
             button.setIcon(new ImageIcon(img));
-            button.setIconTextGap(10);
+            button.setIconTextGap(15); // More space between icon and text
+            button.setHorizontalAlignment(SwingConstants.LEFT);
         } catch (Exception e) {
             System.out.println("Could not load icon: " + iconName);
         }
 
-        // Hover effect
+        // Enhanced hover effect with transition-like appearance
         button.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                button.setBackground(new Color(55, 65, 81));
+                if (!key.equals(activeButtonKey)) {
+                    button.setBackground(new Color(55, 65, 81));
+                }
             }
 
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                button.setBackground(AppConstants.SIDEBAR_COLOR);
+                if (!key.equals(activeButtonKey)) {
+                    button.setBackground(AppConstants.SIDEBAR_COLOR);
+                }
+            }
+
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                button.setBackground(new Color(45, 55, 71)); // Darker when pressed
+            }
+
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                if (key.equals(activeButtonKey)) {
+                    button.setBackground(new Color(55, 65, 81));
+                } else if (button.contains(evt.getPoint())) {
+                    button.setBackground(new Color(55, 65, 81));
+                } else {
+                    button.setBackground(AppConstants.SIDEBAR_COLOR);
+                }
             }
         });
 
         navigationButtons.put(key, button);
-        sidebar.add(button);
-        sidebar.add(Box.createVerticalStrut(5));
+
+        // Create a wrapper panel for the button to add a left indicator for active state
+        JPanel buttonPanel = new JPanel(new BorderLayout());
+        buttonPanel.setOpaque(false);
+        buttonPanel.setMaximumSize(new Dimension(280, 60));
+        buttonPanel.add(button, BorderLayout.CENTER);
+
+        // Add some vertical spacing between buttons
+        sidebar.add(buttonPanel);
+        sidebar.add(Box.createVerticalStrut(8));
     }
 
     private void initializeContentPanel() {
@@ -187,6 +229,7 @@ public class MainFrame extends JFrame {
             } else {
                 button.addActionListener(e -> {
                     cardLayout.show(contentPanel, key);
+                    activeButtonKey = key;
                     updateActiveButton(key);
                 });
             }
@@ -194,11 +237,21 @@ public class MainFrame extends JFrame {
     }
 
     private void updateActiveButton(String activeKey) {
+        activeButtonKey = activeKey;
         navigationButtons.forEach((key, button) -> {
             if (key.equals(activeKey)) {
+                // Active button styling
                 button.setBackground(new Color(55, 65, 81));
+
+                // Add a left border indicator for active button
+                button.setBorder(BorderFactory.createCompoundBorder(
+                        BorderFactory.createMatteBorder(0, 4, 0, 0, new Color(129, 140, 248)), // Left indicator
+                        new EmptyBorder(10, 11, 10, 15) // Adjust left padding to compensate for the border
+                ));
             } else {
+                // Inactive button styling
                 button.setBackground(AppConstants.SIDEBAR_COLOR);
+                button.setBorder(new EmptyBorder(10, 15, 10, 15));
             }
         });
     }
@@ -219,3 +272,4 @@ public class MainFrame extends JFrame {
         });
     }
 }
+

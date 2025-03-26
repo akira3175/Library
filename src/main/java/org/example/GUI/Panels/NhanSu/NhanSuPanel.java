@@ -22,7 +22,7 @@ public class NhanSuPanel extends JPanel {
         JPanel headerPanel = new JPanel(new BorderLayout(20, 0));
         headerPanel.setOpaque(false);
 
-        JLabel titleLabel = new JLabel("Quản lý người dùng");
+        JLabel titleLabel = new JLabel("Nhân sự");
         titleLabel.setFont(AppConstants.HEADER_FONT);
         titleLabel.setForeground(AppConstants.TEXT_COLOR);
 

@@ -2,7 +2,6 @@ package org.example.GUI;
 
 import org.example.GUI.Auth.LoginForm;
 import org.example.GUI.Constants.AppConstants;
-import org.example.GUI.Panels.BanHang.BanHangPanel;
 import org.example.GUI.Panels.NhapKho.NhapKhoPanel;
 import org.example.GUI.Panels.NhanSu.NhanSuPanel;
 import org.example.GUI.Panels.SanPham.SanPhamPanel;
@@ -14,6 +13,8 @@ import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import org.example.GUI.Panels.BanHang.BanHangPanel;
+
 
 public class MainFrame extends JFrame {
     private JPanel sidebar, contentPanel, headerPanel;
@@ -23,6 +24,7 @@ public class MainFrame extends JFrame {
     public MainFrame() {
         setTitle("Quản lý thư viện");
         setSize(1200, 800);
+        setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
         getContentPane().setBackground(AppConstants.BACKGROUND_COLOR);

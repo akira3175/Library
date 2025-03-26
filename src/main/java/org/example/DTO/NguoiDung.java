@@ -38,7 +38,9 @@ public class NguoiDung {
     public int getMaNguoiDung() { return maNguoiDung; }
     public void setMaNguoiDung(int maNguoiDung) { this.maNguoiDung = maNguoiDung; }
 
-    public int getMaVaiTro() { return maVaiTro; }
+    public int getMaVaiTro() {
+        return maVaiTro;
+    }
     public void setMaVaiTro(int maVaiTro) { this.maVaiTro = maVaiTro; }
 
     public String getAvatarURL() { return avatarURL; }

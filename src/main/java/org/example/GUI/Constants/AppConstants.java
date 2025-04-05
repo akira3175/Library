@@ -10,6 +10,8 @@ public class AppConstants {
     public static final Color SIDEBAR_COLOR = new Color(17, 24, 39);     // Dark background
     public static final Color TEXT_COLOR = new Color(31, 41, 55);       // Dark text
     public static final Color LIGHT_TEXT_COLOR = new Color(156, 163, 175); // Light text
+    public static final Color BLUE = new Color(59, 130, 246); // Blue
+
 
     // Fonts
     public static final Font HEADER_FONT = new Font("Segoe UI", Font.BOLD, 24);

@@ -16,6 +16,8 @@ dependencies {
     implementation 'mysql:mysql-connector-java:8.0.33'
     implementation 'com.formdev:flatlaf:3.2'
     implementation 'org.jfree:jfreechart:1.5.3'
+    implementation 'org.slf4j:slf4j-api:2.0.7'
+    implementation 'ch.qos.logback:logback-classic:1.4.11'
 }
 
 test {

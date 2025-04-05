@@ -1,5 +1,7 @@
 package org.example.GUI;
 
+import org.example.BUS.NguoiDungBUS;
+import org.example.DTO.NguoiDung;
 import org.example.GUI.Auth.LoginForm;
 import org.example.GUI.Constants.AppConstants;
 import org.example.GUI.Panels.NhapKho.NhapKhoPanel;
@@ -22,6 +24,7 @@ public class MainFrame extends JFrame {
     private CardLayout cardLayout;
     private Map<String, JButton> navigationButtons;
     private String activeButtonKey = "sell"; // Default active button
+    private NguoiDung nguoiDungHienTai;
 
     public MainFrame() {
         setTitle("Quản lý bán hàng");
@@ -30,6 +33,8 @@ public class MainFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
         getContentPane().setBackground(AppConstants.BACKGROUND_COLOR);
+
+        nguoiDungHienTai = NguoiDungBUS.getNguoiDungHienTai();
 
         initializeHeader();
         initializeSidebar();
@@ -77,7 +82,7 @@ public class MainFrame extends JFrame {
         // User profile panel
         JPanel profilePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         profilePanel.setOpaque(false);
-        JLabel userLabel = new JLabel("Admin");
+        JLabel userLabel = new JLabel("Xin chào " + nguoiDungHienTai.getHoTen());
         userLabel.setFont(AppConstants.NORMAL_FONT);
         profilePanel.add(userLabel);
 

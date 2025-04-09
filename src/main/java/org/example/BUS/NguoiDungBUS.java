@@ -67,13 +67,34 @@ public class NguoiDungBUS {
     }
 
     public NguoiDung themNguoiDung(NguoiDung nguoiDung) {
+        nguoiDung.setMatKhau(gereratePassword());
+
         return nguoiDungDAO.themNguoiDung(nguoiDung)
                 .orElseThrow(() -> new RuntimeException("Thêm người dùng thất bại!"));
     }
 
     public NguoiDung suaNguoiDung(NguoiDung nguoiDung) {
         return nguoiDungDAO.suaNguoiDung(nguoiDung)
-                .orElseThrow(() -> new RuntimeException("Thêm người dùng thất bại!"));
+                .orElseThrow(() -> new RuntimeException("Sửa người dùng thất bại!"));
     }
 
+    public NguoiDung thoiViecHoacKichHoatLaiNguoiDung(NguoiDung nguoiDung) {
+        nguoiDung.setConHoatDong(!nguoiDung.isConHoatDong());
+        return nguoiDungDAO.suaNguoiDung(nguoiDung)
+                .orElseThrow(
+                        () -> new RuntimeException("Cập nhật trạng thái thất bại!")
+                );
+    }
+
+    public NguoiDung resetMatKhau(NguoiDung nguoiDung) {
+        nguoiDung.setMatKhau(gereratePassword());
+        return nguoiDungDAO.suaNguoiDung(nguoiDung)
+                .orElseThrow(
+                        () -> new RuntimeException("Reset mật khẩu thất bại!")
+                );
+    }
+
+    private String gereratePassword() {
+        return "0000";
+    }
 }

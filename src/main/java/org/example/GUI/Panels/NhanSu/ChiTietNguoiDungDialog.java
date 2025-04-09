@@ -44,6 +44,7 @@ public class ChiTietNguoiDungDialog extends JDialog {
         this.isActive = nguoiDung.isConHoatDong();
         nguoiDungBUS = new NguoiDungBUS();
         vaiTroBUS = new VaiTroBUS();
+        this.nguoiDung = nguoiDung;
         initComponents();
 
         maNguoiDungField.setText(nguoiDung.getMaNguoiDung() + "");
@@ -266,10 +267,6 @@ public class ChiTietNguoiDungDialog extends JDialog {
         }
     }
 
-    private String generateRandomPassword() {
-        return "0000";
-    }
-
     private void resetPassword() {
         int confirm = JOptionPane.showConfirmDialog(
                 this,
@@ -280,11 +277,11 @@ public class ChiTietNguoiDungDialog extends JDialog {
         );
 
         if (confirm == JOptionPane.YES_OPTION) {
-            newPassword = generateRandomPassword();
+            nguoiDungBUS.resetMatKhau(capNhatNguoiDung());
 
             JOptionPane.showMessageDialog(
                     this,
-                    "Mật khẩu mới cho người dùng " + tenDangNhapField.getText() + " là: " + newPassword,
+                    "Mật khẩu mới cho người dùng " + nguoiDung.getTenDangNhap() + " là: " + nguoiDung.getMatKhau(),
                     "Đặt lại mật khẩu thành công",
                     JOptionPane.INFORMATION_MESSAGE
             );
@@ -299,6 +296,8 @@ public class ChiTietNguoiDungDialog extends JDialog {
                 : "Bạn có chắc chắn muốn đặt trạng thái thôi việc cho người dùng này?";
 
         String title = isActive ? "Xác nhận kích hoạt lại" : "Xác nhận thôi việc";
+
+        nguoiDungBUS.thoiViecHoacKichHoatLaiNguoiDung(capNhatNguoiDung());
 
         int confirm = JOptionPane.showConfirmDialog(
                 this,
@@ -411,7 +410,7 @@ public class ChiTietNguoiDungDialog extends JDialog {
     }
 
     public boolean isActive() {
-        return isActive;
+        return nguoiDung.isConHoatDong();
     }
 
     public String getNewPassword() {

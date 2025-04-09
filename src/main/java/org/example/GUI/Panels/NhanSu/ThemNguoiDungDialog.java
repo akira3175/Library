@@ -227,10 +227,6 @@ public class ThemNguoiDungDialog extends JDialog {
         return "NV" + String.format("%03d", 11); // Assuming we have 10 users already
     }
 
-    private String generateRandomPassword() {
-        return "0000";
-    }
-
     private void saveUser() {
         // Validate input fields
         if (tenDangNhapField.getText().trim().isEmpty()) {
@@ -258,7 +254,6 @@ public class ThemNguoiDungDialog extends JDialog {
         nguoiDung = new NguoiDung();
         nguoiDung.setTenDangNhap(tenDangNhapField.getText());
         nguoiDung.setHoTen(hoTenField.getText());
-        nguoiDung.setMatKhau(generateRandomPassword());
         nguoiDung.setSoDienThoai(soDienThoaiField.getText());
         nguoiDung.setNgaySinh(ngaySinh);
         nguoiDung.setGioiTinh((String) gioiTinhComboBox.getSelectedItem());

@@ -22,12 +22,14 @@ public class NhanSuPanel extends JPanel {
     private JTabbedPane tabbedPane;
     private JPanel danhSachPanel;
     private NhomQuyenPanel nhomQuyenPanel;
+    private NguoiDung nguoiDung;
 
     public NhanSuPanel() {
         setLayout(new BorderLayout(20, 20));
         setBackground(AppConstants.BACKGROUND_COLOR);
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         nguoiDungBUS = new NguoiDungBUS();
+        nguoiDung = new NguoiDung();
 
         add(createHeaderPanel(), BorderLayout.NORTH);
 
@@ -167,7 +169,7 @@ public class NhanSuPanel extends JPanel {
         DefaultTableModel model = (DefaultTableModel) table.getModel();
 
         String maNguoiDung = model.getValueAt(row, 0).toString();
-        NguoiDung nguoiDung = nguoiDungBUS.layNguoiDungTheoID(Integer.parseInt(maNguoiDung));
+        nguoiDung = nguoiDungBUS.layNguoiDungTheoID(Integer.parseInt(maNguoiDung));
 
         ChiTietNguoiDungDialog dialog = new ChiTietNguoiDungDialog(
                 SwingUtilities.getWindowAncestor(this),

@@ -1,7 +1,12 @@
 package org.example.GUI.Panels.NhanSu;
 
+import org.example.BUS.NguoiDungBUS;
+import org.example.BUS.VaiTroBUS;
+import org.example.DTO.NguoiDung;
+import org.example.DTO.VaiTro;
 import org.example.GUI.Components.StyledButton;
 import org.example.GUI.Constants.AppConstants;
+import org.example.GUI.Utils.DateUtils;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -12,7 +17,7 @@ import java.awt.event.ActionListener;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Random;
+import java.util.List;
 
 public class ChiTietNguoiDungDialog extends JDialog {
     private JTextField maNguoiDungField;
@@ -20,6 +25,7 @@ public class ChiTietNguoiDungDialog extends JDialog {
     private JTextField hoTenField;
     private JFormattedTextField ngaySinhField;
     private JComboBox<String> gioiTinhComboBox;
+    private JComboBox<VaiTro> vaiTroJComboBox;
     private JTextField emailField;
     private JTextField soDienThoaiField;
     private JTextArea diaChiArea;
@@ -28,26 +34,27 @@ public class ChiTietNguoiDungDialog extends JDialog {
     private boolean isConfirmed = false;
     private String newPassword = null;
     private StyledButton toggleActiveButton;
+    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+    private NguoiDung nguoiDung;
+    private NguoiDungBUS nguoiDungBUS;
+    private VaiTroBUS vaiTroBUS;
 
-    public ChiTietNguoiDungDialog(Window owner, String maNguoiDung, String tenDangNhap, String hoTen,
-                                  String email, String soDienThoai, boolean conHoatDong) {
+    public ChiTietNguoiDungDialog(Window owner, NguoiDung nguoiDung) {
         super(owner, "Chi tiết người dùng");
-        this.isActive = conHoatDong;
+        this.isActive = nguoiDung.isConHoatDong();
+        nguoiDungBUS = new NguoiDungBUS();
+        vaiTroBUS = new VaiTroBUS();
         initComponents();
 
-        // Populate fields with user data
-        maNguoiDungField.setText(maNguoiDung);
-        tenDangNhapField.setText(tenDangNhap);
-        hoTenField.setText(hoTen);
-        emailField.setText(email);
-        soDienThoaiField.setText(soDienThoai);
-
-        // In a real application, you would load the complete user data from the database
-        // For this example, we'll use placeholder data for the fields we don't have
-        ngaySinhField.setText("01/01/1990");
-        gioiTinhComboBox.setSelectedItem("Nam");
-        diaChiArea.setText("Địa chỉ mẫu");
-        ngayVaoLamField.setText("01/01/2023");
+        maNguoiDungField.setText(nguoiDung.getMaNguoiDung() + "");
+        tenDangNhapField.setText(nguoiDung.getTenDangNhap());
+        hoTenField.setText(nguoiDung.getHoTen());
+        emailField.setText(nguoiDung.getEmail());
+        soDienThoaiField.setText(nguoiDung.getSoDienThoai());
+        ngaySinhField.setText(sdf.format(nguoiDung.getNgaySinh()));
+        gioiTinhComboBox.setSelectedItem(nguoiDung.getGioiTinh());
+        diaChiArea.setText(nguoiDung.getDiaChi());
+        ngayVaoLamField.setText(sdf.format(nguoiDung.getNgayVaoLam()));
 
         pack();
         setLocationRelativeTo(owner);
@@ -95,19 +102,21 @@ public class ChiTietNguoiDungDialog extends JDialog {
         // Ngày vào làm
         addFormField(formPanel, "Ngày vào làm:", createNgayVaoLamField(), gbc, 8);
 
+        addFormField(formPanel, "Vai Trò: ", createVaiTroComboBox(), gbc, 9);
+
         // Additional action buttons
         JPanel actionButtonsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         actionButtonsPanel.setBorder(new EmptyBorder(10, 0, 0, 0));
 
         // Reset password button
-        StyledButton resetPasswordButton = new StyledButton("Đặt lại mật khẩu", new Color(59, 130, 246), 150, 35);
+        StyledButton resetPasswordButton = new StyledButton("Đặt lại mật khẩu", new Color(59, 130, 246), 200, 35);
         resetPasswordButton.addActionListener(e -> resetPassword());
 
         // Toggle active status button
         toggleActiveButton = new StyledButton(
                 isActive ? "Thôi việc" : "Kích hoạt lại",
                 isActive ? new Color(239, 68, 68) : new Color(34, 197, 94),
-                150, 35
+                200, 35
         );
         toggleActiveButton.addActionListener(e -> toggleActiveStatus());
 
@@ -115,13 +124,11 @@ public class ChiTietNguoiDungDialog extends JDialog {
         actionButtonsPanel.add(Box.createHorizontalStrut(10));
         actionButtonsPanel.add(toggleActiveButton);
 
-        // Add action buttons panel to form
         gbc.gridx = 0;
-        gbc.gridy = 9;
+        gbc.gridy = 10;
         gbc.gridwidth = 2;
         formPanel.add(actionButtonsPanel, gbc);
 
-        // Button panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonPanel.setBorder(new EmptyBorder(10, 0, 0, 0));
 
@@ -196,6 +203,17 @@ public class ChiTietNguoiDungDialog extends JDialog {
         return gioiTinhComboBox;
     }
 
+    private JComponent createVaiTroComboBox() {
+        vaiTroJComboBox = new JComboBox<>();
+        List<VaiTro> danhSachVaiTro = vaiTroBUS.danhSachVaitro();
+        for (VaiTro vaiTro: danhSachVaiTro) {
+            vaiTroJComboBox.addItem(vaiTro);
+        }
+        vaiTroJComboBox.setFont(AppConstants.NORMAL_FONT);
+
+        return vaiTroJComboBox;
+    }
+
     private JTextField createEmailField() {
         emailField = new JTextField();
         emailField.setFont(AppConstants.NORMAL_FONT);
@@ -228,8 +246,7 @@ public class ChiTietNguoiDungDialog extends JDialog {
 
             panel.add(ngayVaoLamField, BorderLayout.CENTER);
 
-            // Add button to set current date
-            StyledButton currentDateButton = new StyledButton("Hôm nay", new Color(59, 130, 246), 80, 30);
+            StyledButton currentDateButton = new StyledButton("Hôm nay", new Color(59, 130, 246), 120, 30);
             currentDateButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -250,15 +267,7 @@ public class ChiTietNguoiDungDialog extends JDialog {
     }
 
     private String generateRandomPassword() {
-        // Generate a random password with 8 characters
-        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        StringBuilder sb = new StringBuilder();
-        Random random = new Random();
-        for (int i = 0; i < 8; i++) {
-            int index = random.nextInt(chars.length());
-            sb.append(chars.charAt(index));
-        }
-        return sb.toString();
+        return "0000";
     }
 
     private void resetPassword() {
@@ -300,23 +309,24 @@ public class ChiTietNguoiDungDialog extends JDialog {
         );
 
         if (confirm == JOptionPane.NO_OPTION) {
-            // Revert the change if user cancels
             isActive = !isActive;
         } else {
-            // Update the button text and color
             toggleActiveButton.setText(isActive ? "Thôi việc" : "Kích hoạt lại");
             toggleActiveButton.setButtonBackgroundColor(isActive ? new Color(239, 68, 68) : new Color(34, 197, 94));
         }
     }
 
     private void saveUser() {
-        // Validate input fields
-        if (hoTenField.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Vui lòng nhập họ tên", "Lỗi", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
+        nguoiDung = nguoiDungBUS.suaNguoiDung(capNhatNguoiDung());
 
-        // In a real application, you would validate all fields and save to database
+        if (nguoiDung == null) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Cập nhật thông tin người dùng thất bại!",
+                    "Thất bại",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        }
 
         JOptionPane.showMessageDialog(
                 this,
@@ -327,6 +337,37 @@ public class ChiTietNguoiDungDialog extends JDialog {
 
         isConfirmed = true;
         dispose();
+    }
+
+    private NguoiDung capNhatNguoiDung() {
+        // Validate input fields
+        if (hoTenField.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập họ tên", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+
+        Date ngaySinh = DateUtils.parseDate(ngaySinhField.getText());
+        Date ngayVaoLam = DateUtils.parseDate(ngayVaoLamField.getText());
+
+        if (ngaySinh == null || ngayVaoLam == null) {
+            JOptionPane.showMessageDialog(this, "Ngày sinh hoặc ngày vào làm không hợp lệ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+
+        VaiTro selectedVaiTro = (VaiTro) vaiTroJComboBox.getSelectedItem();
+
+        nguoiDung = nguoiDungBUS.layNguoiDungTheoID(Integer.parseInt(maNguoiDungField.getText()));
+        nguoiDung.setHoTen(hoTenField.getText());
+        nguoiDung.setMatKhau(nguoiDung.getMatKhau());
+        nguoiDung.setSoDienThoai(soDienThoaiField.getText());
+        nguoiDung.setNgaySinh(ngaySinh);
+        nguoiDung.setGioiTinh((String) gioiTinhComboBox.getSelectedItem());
+        nguoiDung.setEmail(emailField.getText());
+        nguoiDung.setDiaChi(diaChiArea.getText());
+        nguoiDung.setNgayVaoLam(ngayVaoLam);
+        nguoiDung.setMaVaiTro(selectedVaiTro.getMaVaiTro());
+
+        return nguoiDung;
     }
 
     public boolean isConfirmed() {

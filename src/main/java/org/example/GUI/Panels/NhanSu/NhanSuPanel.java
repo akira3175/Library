@@ -7,19 +7,13 @@ import org.example.GUI.Components.StyledButton;
 import org.example.GUI.Constants.AppConstants;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.text.MaskFormatter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.Random;
 
 public class NhanSuPanel extends JPanel {
     private JTable table;
@@ -157,10 +151,6 @@ public class NhanSuPanel extends JPanel {
         dialog.setVisible(true);
 
         if (dialog.isConfirmed()) {
-            // In a real application, you would create a new NguoiDung object
-            // and add it to the database through the BUS layer
-
-            // For this example, we'll just add it to the table
             DefaultTableModel model = (DefaultTableModel) table.getModel();
             model.addRow(new Object[]{
                     dialog.getMaNguoiDung(),
@@ -177,37 +167,24 @@ public class NhanSuPanel extends JPanel {
         DefaultTableModel model = (DefaultTableModel) table.getModel();
 
         String maNguoiDung = model.getValueAt(row, 0).toString();
-        String tenDangNhap = (String) model.getValueAt(row, 1);
-        String hoTen = (String) model.getValueAt(row, 2);
-        String email = (String) model.getValueAt(row, 3);
-        String soDienThoai = (String) model.getValueAt(row, 4);
-        boolean conHoatDong = (boolean) model.getValueAt(row, 5);
+        NguoiDung nguoiDung = nguoiDungBUS.layNguoiDungTheoID(Integer.parseInt(maNguoiDung));
 
         ChiTietNguoiDungDialog dialog = new ChiTietNguoiDungDialog(
                 SwingUtilities.getWindowAncestor(this),
-                maNguoiDung,
-                tenDangNhap,
-                hoTen,
-                email,
-                soDienThoai,
-                conHoatDong
+                nguoiDung
         );
 
         dialog.setModal(true);
         dialog.setVisible(true);
 
         if (dialog.isConfirmed()) {
-            // Update the table with the new data
             model.setValueAt(dialog.getHoTen(), row, 2);
             model.setValueAt(dialog.getEmail(), row, 3);
             model.setValueAt(dialog.getSoDienThoai(), row, 4);
             model.setValueAt(dialog.isActive(), row, 5);
 
-            // In a real application, you would update the database through the BUS layer
-            // If a new password was generated, you would update that as well
             if (dialog.getNewPassword() != null) {
-                System.out.println("New password for " + tenDangNhap + ": " + dialog.getNewPassword());
-                // In a real app, you would hash this password and save it to the database
+                System.out.println("New password for " + nguoiDung.getTenDangNhap() + ": " + dialog.getNewPassword());
             }
         }
     }

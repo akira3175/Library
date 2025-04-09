@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Optional;
 
 public class NguoiDungBUS {
     private static NguoiDung nguoiDungHienTai;
@@ -54,4 +55,25 @@ public class NguoiDungBUS {
 
         return nguoiDungList;
     }
+
+    public NguoiDung layNguoiDungTheoID(int maNguoiDung) {
+        NguoiDung nguoiDung = nguoiDungDAO.layThongTinNguoiDungTheoID(maNguoiDung);
+
+        if (nguoiDung == null) {
+            logger.warn("⚠️ Người dùng không tồn tại!");
+        }
+
+        return nguoiDung;
+    }
+
+    public NguoiDung themNguoiDung(NguoiDung nguoiDung) {
+        return nguoiDungDAO.themNguoiDung(nguoiDung)
+                .orElseThrow(() -> new RuntimeException("Thêm người dùng thất bại!"));
+    }
+
+    public NguoiDung suaNguoiDung(NguoiDung nguoiDung) {
+        return nguoiDungDAO.suaNguoiDung(nguoiDung)
+                .orElseThrow(() -> new RuntimeException("Thêm người dùng thất bại!"));
+    }
+
 }

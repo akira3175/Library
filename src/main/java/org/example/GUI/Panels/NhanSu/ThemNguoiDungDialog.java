@@ -1,7 +1,12 @@
 package org.example.GUI.Panels.NhanSu;
 
+import org.example.BUS.NguoiDungBUS;
+import org.example.BUS.VaiTroBUS;
+import org.example.DTO.NguoiDung;
+import org.example.DTO.VaiTro;
 import org.example.GUI.Components.StyledButton;
 import org.example.GUI.Constants.AppConstants;
+import org.example.GUI.Utils.DateUtils;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -12,23 +17,29 @@ import java.awt.event.ActionListener;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Random;
+import java.util.List;
+
 
 public class ThemNguoiDungDialog extends JDialog {
-    private JTextField maNguoiDungField;
     private JTextField tenDangNhapField;
     private JTextField hoTenField;
     private JFormattedTextField ngaySinhField;
     private JComboBox<String> gioiTinhComboBox;
+    private JComboBox<VaiTro> vaiTroComboBox;
     private JTextField emailField;
     private JTextField soDienThoaiField;
     private JTextArea diaChiArea;
     private JFormattedTextField ngayVaoLamField;
     private String generatedPassword;
     private boolean isConfirmed = false;
+    private NguoiDung nguoiDung;
+    private NguoiDungBUS nguoiDungBUS;
+    private VaiTroBUS vaiTroBUS;
 
     public ThemNguoiDungDialog(Window owner) {
         super(owner, "Thêm người dùng mới");
+        vaiTroBUS = new VaiTroBUS();
+        nguoiDungBUS = new NguoiDungBUS();
         initComponents();
         pack();
         setLocationRelativeTo(owner);
@@ -48,9 +59,6 @@ public class ThemNguoiDungDialog extends JDialog {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(5, 5, 5, 5);
-
-        // Mã người dùng
-        addFormField(formPanel, "Mã người dùng:", createMaNguoiDungField(), gbc, 0);
 
         // Tên đăng nhập
         addFormField(formPanel, "Tên đăng nhập:", createTenDangNhapField(), gbc, 1);
@@ -75,6 +83,9 @@ public class ThemNguoiDungDialog extends JDialog {
 
         // Ngày vào làm
         addFormField(formPanel, "Ngày vào làm:", createNgayVaoLamField(), gbc, 8);
+
+        // Vai trò
+        addFormField(formPanel, "Vai trò", createVaiTroComboBox(), gbc, 9);
 
         // Button panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -110,14 +121,6 @@ public class ThemNguoiDungDialog extends JDialog {
         panel.add(field, gbc);
     }
 
-    private JTextField createMaNguoiDungField() {
-        maNguoiDungField = new JTextField();
-        maNguoiDungField.setEditable(false);
-        maNguoiDungField.setText(generateNextUserId());
-        maNguoiDungField.setFont(AppConstants.NORMAL_FONT);
-        return maNguoiDungField;
-    }
-
     private JTextField createTenDangNhapField() {
         tenDangNhapField = new JTextField();
         tenDangNhapField.setFont(AppConstants.NORMAL_FONT);
@@ -148,6 +151,17 @@ public class ThemNguoiDungDialog extends JDialog {
         gioiTinhComboBox = new JComboBox<>(new String[]{"Nam", "Nữ", "Khác"});
         gioiTinhComboBox.setFont(AppConstants.NORMAL_FONT);
         return gioiTinhComboBox;
+    }
+
+    private JComponent createVaiTroComboBox() {
+        vaiTroComboBox = new JComboBox<>();
+
+        List<VaiTro> danhSachVaiTro = vaiTroBUS.danhSachVaitro();
+        for (VaiTro vaiTro : danhSachVaiTro) {
+            vaiTroComboBox.addItem(vaiTro);
+        }
+
+        return vaiTroComboBox;
     }
 
     private JTextField createEmailField() {
@@ -214,15 +228,7 @@ public class ThemNguoiDungDialog extends JDialog {
     }
 
     private String generateRandomPassword() {
-        // Generate a random password with 8 characters
-        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        StringBuilder sb = new StringBuilder();
-        Random random = new Random();
-        for (int i = 0; i < 8; i++) {
-            int index = random.nextInt(chars.length());
-            sb.append(chars.charAt(index));
-        }
-        return sb.toString();
+        return "0000";
     }
 
     private void saveUser() {
@@ -237,10 +243,41 @@ public class ThemNguoiDungDialog extends JDialog {
             return;
         }
 
+        Date ngaySinh = DateUtils.parseDate(ngaySinhField.getText());
+        Date ngayVaoLam = DateUtils.parseDate(ngayVaoLamField.getText());
+
+        if (ngaySinh == null || ngayVaoLam == null) {
+            JOptionPane.showMessageDialog(this, "Ngày sinh hoặc ngày vào làm không hợp lệ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        VaiTro selectedVaiTro = (VaiTro) vaiTroComboBox.getSelectedItem();
+
         // In a real application, you would validate all fields and save to database
 
-        // Generate a random password
-        generatedPassword = generateRandomPassword();
+        nguoiDung = new NguoiDung();
+        nguoiDung.setTenDangNhap(tenDangNhapField.getText());
+        nguoiDung.setHoTen(hoTenField.getText());
+        nguoiDung.setMatKhau(generateRandomPassword());
+        nguoiDung.setSoDienThoai(soDienThoaiField.getText());
+        nguoiDung.setNgaySinh(ngaySinh);
+        nguoiDung.setGioiTinh((String) gioiTinhComboBox.getSelectedItem());
+        nguoiDung.setEmail(emailField.getText());
+        nguoiDung.setDiaChi(diaChiArea.getText());
+        nguoiDung.setNgayVaoLam(ngayVaoLam);
+        nguoiDung.setMaVaiTro(selectedVaiTro.getMaVaiTro());
+        nguoiDung.setConHoatDong(true);
+
+        nguoiDung = nguoiDungBUS.themNguoiDung(nguoiDung);
+
+        if (nguoiDung == null) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Thêm thất bại!",
+                    "Thất bại",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        }
 
         // Show success message with username and password
         JOptionPane.showMessageDialog(
@@ -258,8 +295,8 @@ public class ThemNguoiDungDialog extends JDialog {
         return isConfirmed;
     }
 
-    public String getMaNguoiDung() {
-        return maNguoiDungField.getText();
+    public int getMaNguoiDung() {
+        return nguoiDung.getMaNguoiDung();
     }
 
     public String getTenDangNhap() {

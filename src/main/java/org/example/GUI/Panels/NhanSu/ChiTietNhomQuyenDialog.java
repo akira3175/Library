@@ -1,5 +1,8 @@
 package org.example.GUI.Panels.NhanSu;
 
+import org.example.BUS.VaiTroBUS;
+import org.example.DAO.VaiTroDAO;
+import org.example.DTO.VaiTro;
 import org.example.GUI.Components.StyledButton;
 import org.example.GUI.Constants.AppConstants;
 import javax.swing.*;
@@ -19,9 +22,12 @@ public class ChiTietNhomQuyenDialog extends JDialog {
     private JTable quyenChiTietTable;
     private boolean isConfirmed = false;
     private String maNhomQuyen;
+    private VaiTro vaiTro;
+    private VaiTroBUS vaiTroBUS;
 
     public ChiTietNhomQuyenDialog(Window owner, String maNhomQuyen, String tenNhomQuyen, String moTa) {
         super(owner, "Chi tiết nhóm quyền");
+        vaiTroBUS = new VaiTroBUS();
         this.maNhomQuyen = maNhomQuyen;
 
         initComponents();
@@ -262,6 +268,18 @@ public class ChiTietNhomQuyenDialog extends JDialog {
             }
         }
 
+        String maVaiTro = maNhomQuyenField.getText();
+        String tenVaiTro = tenNhomQuyenField.getText();
+        String moTa = moTaNhomQuyenArea.getText();
+
+        vaiTro = new VaiTro(
+                maNhomQuyen.isEmpty() ? 0 : Integer.parseInt(maNhomQuyen),
+                tenVaiTro,
+                moTa
+        );
+
+        vaiTro = vaiTroBUS.themHoacSuaVaiTro(vaiTro);
+
         JOptionPane.showMessageDialog(
                 this,
                 "Đã lưu thay đổi cho nhóm quyền: " + tenNhomQuyenField.getText(),
@@ -278,15 +296,15 @@ public class ChiTietNhomQuyenDialog extends JDialog {
     }
 
     public String getMaNhomQuyen() {
-        return maNhomQuyenField.getText();
+        return vaiTro.getMaVaiTro() + "";
     }
 
     public String getTenNhomQuyen() {
-        return tenNhomQuyenField.getText();
+        return vaiTro.getTenVaiTro();
     }
 
     public String getMoTa() {
-        return moTaNhomQuyenArea.getText();
+        return vaiTro.getMoTa();
     }
 }
 

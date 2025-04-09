@@ -16,7 +16,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class NhomQuyenPanel extends JPanel {
-    private JTable nhomQuyenTable;
+    private JTable vaiTroTable;
     private JTextField searchField;
 
     public NhomQuyenPanel() {
@@ -51,7 +51,7 @@ public class NhomQuyenPanel extends JPanel {
         JPanel headerPanel = new JPanel(new BorderLayout(20, 0));
         headerPanel.setOpaque(false);
 
-        JLabel titleLabel = new JLabel("Quản lý nhóm quyền");
+        JLabel titleLabel = new JLabel("Quản lý vai trò");
         titleLabel.setFont(AppConstants.HEADER_FONT);
         titleLabel.setForeground(AppConstants.TEXT_COLOR);
 
@@ -59,11 +59,11 @@ public class NhomQuyenPanel extends JPanel {
         actionPanel.setOpaque(false);
 
         searchField = new JTextField(20);
-        searchField.putClientProperty("JTextField.placeholderText", "Tìm kiếm nhóm quyền...");
+        searchField.putClientProperty("JTextField.placeholderText", "Tìm kiếm vai trò...");
         searchField.setPreferredSize(new Dimension(200, 35));
 
         StyledButton refreshButton = new StyledButton("Làm mới", new Color(107, 114, 128), 120, 35);
-        StyledButton addButton = new StyledButton("Thêm nhóm quyền", AppConstants.PRIMARY_COLOR, 150, 35);
+        StyledButton addButton = new StyledButton("Thêm vai trò", AppConstants.PRIMARY_COLOR, 150, 35);
 
         addButton.addActionListener(new ActionListener() {
             @Override
@@ -95,14 +95,14 @@ public class NhomQuyenPanel extends JPanel {
         headerPanel.setBackground(new Color(249, 250, 251));
         headerPanel.setBorder(new EmptyBorder(15, 20, 15, 20));
 
-        JLabel titleLabel = new JLabel("Danh sách nhóm quyền");
+        JLabel titleLabel = new JLabel("Danh sách vai trò");
         titleLabel.setFont(new Font(AppConstants.NORMAL_FONT.getFamily(), Font.BOLD, 14));
         titleLabel.setForeground(new Color(17, 24, 39));
 
         headerPanel.add(titleLabel, BorderLayout.WEST);
 
         // Table
-        String[] columns = {"Mã nhóm", "Tên nhóm quyền", "Số người dùng", "Mô tả"};
+        String[] columns = {"Mã nhóm", "Tên vai trò", "Số người dùng", "Mô tả"};
         DefaultTableModel model = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -110,16 +110,16 @@ public class NhomQuyenPanel extends JPanel {
             }
         };
 
-        nhomQuyenTable = new JTable(model);
-        nhomQuyenTable.setRowHeight(45);
-        nhomQuyenTable.setShowVerticalLines(false);
-        nhomQuyenTable.setGridColor(new Color(229, 231, 235));
-        nhomQuyenTable.setSelectionBackground(new Color(243, 244, 246));
-        nhomQuyenTable.setSelectionForeground(new Color(17, 24, 39));
-        nhomQuyenTable.setFont(new Font(AppConstants.NORMAL_FONT.getFamily(), Font.PLAIN, 13));
+        vaiTroTable = new JTable(model);
+        vaiTroTable.setRowHeight(45);
+        vaiTroTable.setShowVerticalLines(false);
+        vaiTroTable.setGridColor(new Color(229, 231, 235));
+        vaiTroTable.setSelectionBackground(new Color(243, 244, 246));
+        vaiTroTable.setSelectionForeground(new Color(17, 24, 39));
+        vaiTroTable.setFont(new Font(AppConstants.NORMAL_FONT.getFamily(), Font.PLAIN, 13));
 
         // Style the table header
-        JTableHeader header = nhomQuyenTable.getTableHeader();
+        JTableHeader header = vaiTroTable.getTableHeader();
         header.setFont(new Font(AppConstants.NORMAL_FONT.getFamily(), Font.BOLD, 13));
         header.setBackground(new Color(243, 244, 246));
         header.setForeground(new Color(107, 114, 128));
@@ -129,21 +129,21 @@ public class NhomQuyenPanel extends JPanel {
         // Center align the first and third columns
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
-        nhomQuyenTable.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
-        nhomQuyenTable.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
+        vaiTroTable.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
+        vaiTroTable.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
 
         // Set column widths
-        nhomQuyenTable.getColumnModel().getColumn(0).setPreferredWidth(80);
-        nhomQuyenTable.getColumnModel().getColumn(1).setPreferredWidth(200);
-        nhomQuyenTable.getColumnModel().getColumn(2).setPreferredWidth(100);
-        nhomQuyenTable.getColumnModel().getColumn(3).setPreferredWidth(300);
+        vaiTroTable.getColumnModel().getColumn(0).setPreferredWidth(80);
+        vaiTroTable.getColumnModel().getColumn(1).setPreferredWidth(200);
+        vaiTroTable.getColumnModel().getColumn(2).setPreferredWidth(100);
+        vaiTroTable.getColumnModel().getColumn(3).setPreferredWidth(300);
 
         // Add double-click listener to open group details
-        nhomQuyenTable.addMouseListener(new MouseAdapter() {
+        vaiTroTable.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
-                    int selectedRow = nhomQuyenTable.getSelectedRow();
+                    int selectedRow = vaiTroTable.getSelectedRow();
                     if (selectedRow >= 0) {
                         showGroupDetailsDialog(selectedRow);
                     }
@@ -151,7 +151,7 @@ public class NhomQuyenPanel extends JPanel {
             }
         });
 
-        JScrollPane scrollPane = new JScrollPane(nhomQuyenTable);
+        JScrollPane scrollPane = new JScrollPane(vaiTroTable);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollPane.getViewport().setBackground(Color.WHITE);
 
@@ -166,13 +166,13 @@ public class NhomQuyenPanel extends JPanel {
         editButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int selectedRow = nhomQuyenTable.getSelectedRow();
+                int selectedRow = vaiTroTable.getSelectedRow();
                 if (selectedRow >= 0) {
                     showGroupDetailsDialog(selectedRow);
                 } else {
                     JOptionPane.showMessageDialog(
                             NhomQuyenPanel.this,
-                            "Vui lòng chọn một nhóm quyền để sửa",
+                            "Vui lòng chọn một vai trò để sửa",
                             "Thông báo",
                             JOptionPane.WARNING_MESSAGE
                     );
@@ -183,14 +183,14 @@ public class NhomQuyenPanel extends JPanel {
         deleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int selectedRow = nhomQuyenTable.getSelectedRow();
+                int selectedRow = vaiTroTable.getSelectedRow();
                 if (selectedRow >= 0) {
-                    String maNhomQuyen = (String) nhomQuyenTable.getValueAt(selectedRow, 0);
-                    String tenNhomQuyen = (String) nhomQuyenTable.getValueAt(selectedRow, 1);
+                    String maVaiTro = (String) vaiTroTable.getValueAt(selectedRow, 0);
+                    String tenVaiTro = (String) vaiTroTable.getValueAt(selectedRow, 1);
 
                     int confirm = JOptionPane.showConfirmDialog(
                             NhomQuyenPanel.this,
-                            "Bạn có chắc chắn muốn xóa nhóm quyền " + tenNhomQuyen + "?",
+                            "Bạn có chắc chắn muốn xóa vai trò " + tenVaiTro + "?",
                             "Xác nhận xóa",
                             JOptionPane.YES_NO_OPTION,
                             JOptionPane.QUESTION_MESSAGE
@@ -199,12 +199,12 @@ public class NhomQuyenPanel extends JPanel {
                     if (confirm == JOptionPane.YES_OPTION) {
                         // In a real application, you would delete from the database
                         // For this example, we'll just remove from the table
-                        DefaultTableModel model = (DefaultTableModel) nhomQuyenTable.getModel();
+                        DefaultTableModel model = (DefaultTableModel) vaiTroTable.getModel();
                         model.removeRow(selectedRow);
 
                         JOptionPane.showMessageDialog(
                                 NhomQuyenPanel.this,
-                                "Đã xóa nhóm quyền " + tenNhomQuyen,
+                                "Đã xóa vai trò " + tenVaiTro,
                                 "Thành công",
                                 JOptionPane.INFORMATION_MESSAGE
                         );
@@ -232,7 +232,7 @@ public class NhomQuyenPanel extends JPanel {
 
     private void loadSampleData() {
         // Sample data for permission groups
-        DefaultTableModel nhomQuyenModel = (DefaultTableModel) nhomQuyenTable.getModel();
+        DefaultTableModel nhomQuyenModel = (DefaultTableModel) vaiTroTable.getModel();
         nhomQuyenModel.addRow(new Object[]{"R001", "Quản trị viên", 2, "Nhóm quản trị hệ thống với toàn quyền truy cập và quản lý."});
         nhomQuyenModel.addRow(new Object[]{"R002", "Nhân viên bán hàng", 5, "Nhóm nhân viên bán hàng, có quyền bán hàng và quản lý khách hàng."});
         nhomQuyenModel.addRow(new Object[]{"R003", "Nhân viên kho", 3, "Nhóm nhân viên kho, có quyền quản lý sản phẩm và nhập kho."});
@@ -240,7 +240,7 @@ public class NhomQuyenPanel extends JPanel {
     }
 
     private void showGroupDetailsDialog(int row) {
-        DefaultTableModel model = (DefaultTableModel) nhomQuyenTable.getModel();
+        DefaultTableModel model = (DefaultTableModel) vaiTroTable.getModel();
 
         String maNhomQuyen = model.getValueAt(row, 0).toString();
         String tenNhomQuyen = (String) model.getValueAt(row, 1);
@@ -268,7 +268,7 @@ public class NhomQuyenPanel extends JPanel {
     private void showAddGroupDialog() {
         ChiTietNhomQuyenDialog dialog = new ChiTietNhomQuyenDialog(
                 SwingUtilities.getWindowAncestor(this),
-                generateNextGroupId(),
+                "",
                 "",
                 ""
         );
@@ -278,7 +278,7 @@ public class NhomQuyenPanel extends JPanel {
 
         if (dialog.isConfirmed()) {
             // Add the new group to the table
-            DefaultTableModel model = (DefaultTableModel) nhomQuyenTable.getModel();
+            DefaultTableModel model = (DefaultTableModel) vaiTroTable.getModel();
             model.addRow(new Object[]{
                     dialog.getMaNhomQuyen(),
                     dialog.getTenNhomQuyen(),
@@ -293,6 +293,6 @@ public class NhomQuyenPanel extends JPanel {
     private String generateNextGroupId() {
         // In a real application, this would query the database for the last ID
         // and generate the next one. For this example, we'll use a placeholder.
-        return "R" + String.format("%03d", nhomQuyenTable.getRowCount() + 1);
+        return "R" + String.format("%03d", vaiTroTable.getRowCount() + 1);
     }
 }

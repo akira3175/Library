@@ -23,7 +23,7 @@ public class NguoiDung {
     // Constructor đầy đủ
     public NguoiDung(int maNguoiDung, int maVaiTro, String avatarURL, String hoTen, Date ngaySinh,
                      String gioiTinh, String diaChi, String email, String soDienThoai, boolean conHoatDong,
-                     String tenDangNhap, Date ngayVaoLam) {
+                     String tenDangNhap, Date ngayVaoLam, String matKhau) {
         this.maNguoiDung = maNguoiDung;
         this.maVaiTro = maVaiTro;
         this.avatarURL = avatarURL;
@@ -36,6 +36,7 @@ public class NguoiDung {
         this.conHoatDong = conHoatDong;
         this.tenDangNhap = tenDangNhap;
         this.ngayVaoLam = ngayVaoLam;
+        this.matKhau = matKhau;
     }
 
     // Getters and Setters

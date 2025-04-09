@@ -1,7 +1,7 @@
 package org.example.BUS;
 
 import org.example.DAO.SanPhamDAO;
-import org.example.DTO.SanPhamDTO;
+import org.example.DTO.SanPham;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.util.List;
@@ -15,13 +15,13 @@ public class SanPhamBUS {
     }
 
     public void hienThiSanPhamLenTable(JTable table) {
-        List<SanPhamDTO> danhSachSanPham = sanPhamDAO.layDanhSachTatCaSanPham();
+        List<SanPham> danhSachSanPham = sanPhamDAO.layDanhSachTatCaSanPham();
 
         DefaultTableModel model = (DefaultTableModel) table.getModel();
 
         model.setRowCount(0);
 
-        for (SanPhamDTO sanPham : danhSachSanPham) {
+        for (SanPham sanPham : danhSachSanPham) {
             Object[] row = new Object[]{
                 sanPham.getMaSanPham(),
                 sanPham.getTenLoaiSanPham(),
@@ -45,13 +45,13 @@ public class SanPhamBUS {
     }
 
     public void HienThiSanPhamTimKiem(JTable table, String tuKhoa) {
-        List<SanPhamDTO> danhSachSanPham = sanPhamDAO.layDanhSachTimKiem(tuKhoa);
+        List<SanPham> danhSachSanPham = sanPhamDAO.layDanhSachTimKiem(tuKhoa);
 
         DefaultTableModel model = (DefaultTableModel) table.getModel();
 
         model.setRowCount(0);
 
-        for (SanPhamDTO sanPham : danhSachSanPham) {
+        for (SanPham sanPham : danhSachSanPham) {
             Object[] row = new Object[]{
                 sanPham.getMaSanPham(),
                 sanPham.getMaLoaiSanPham(),
@@ -74,11 +74,11 @@ public class SanPhamBUS {
         }
     }
 
-    public boolean themSanPham(SanPhamDTO sanPham) {
+    public boolean themSanPham(SanPham sanPham) {
         return sanPhamDAO.themSanPham(sanPham);
     }
 
-    public boolean suaSanPham(SanPhamDTO sanPham) {
+    public boolean suaSanPham(SanPham sanPham) {
         return sanPhamDAO.suaSanPham(sanPham);
     }
 

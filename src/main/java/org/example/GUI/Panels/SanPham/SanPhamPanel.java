@@ -9,7 +9,7 @@ import org.example.GUI.Constants.AppConstants;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import org.example.DTO.SanPhamDTO;
+import org.example.DTO.SanPham;
 
 /**
  *
@@ -215,7 +215,7 @@ public class SanPhamPanel extends javax.swing.JPanel {
         }
 
         DefaultTableModel model = (DefaultTableModel) Tb_SanPham.getModel();
-        SanPhamDTO sanPham = new SanPhamDTO();
+        SanPham sanPham = new SanPham();
         sanPham.setMaSanPham((Integer) model.getValueAt(selectedRow, 0));
         sanPham.setTenLoaiSanPham((String) model.getValueAt(selectedRow, 1));
         sanPham.setAnhSanPhamURL((String) model.getValueAt(selectedRow, 2));

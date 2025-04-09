@@ -10,7 +10,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import org.example.BUS.SanPhamBUS;
 import org.example.DAO.SanPhamDAO;
-import org.example.DTO.SanPhamDTO;
+import org.example.DTO.SanPham;
 
 /**
  *
@@ -22,9 +22,9 @@ public class SanPham_Sua_Dialog extends javax.swing.JDialog {
     private SanPhamDAO loaiSanPhamDAO;
     private SanPhamDAO nhaSanXuatDAO;
     private SanPhamBUS sanPhamBUS;
-    private SanPhamDTO sanPham;
+    private SanPham sanPham;
 
-    public SanPham_Sua_Dialog(java.awt.Frame parent, boolean modal, SanPhamBUS sanPhamBUS, JTable tbSanPham, SanPhamDTO sanPham) {
+    public SanPham_Sua_Dialog(java.awt.Frame parent, boolean modal, SanPhamBUS sanPhamBUS, JTable tbSanPham, SanPham sanPham) {
         super(parent, modal);
         this.loaiSanPhamDAO = new SanPhamDAO();
         this.nhaSanXuatDAO = new SanPhamDAO();
@@ -283,8 +283,8 @@ public class SanPham_Sua_Dialog extends javax.swing.JDialog {
         dispose();
     }//GEN-LAST:event_SanPham_btn_HuyActionPerformed
     private int layMaLoaiSanPhamTuTen(String tenLoaiSanPham) {
-        List<SanPhamDTO> danhSachLoai = loaiSanPhamDAO.layDanhSachLoaiSanPham();
-        for (SanPhamDTO loai : danhSachLoai) {
+        List<SanPham> danhSachLoai = loaiSanPhamDAO.layDanhSachLoaiSanPham();
+        for (SanPham loai : danhSachLoai) {
             if (loai.getTenLoaiSanPham().equals(tenLoaiSanPham)) {
                 return loai.getMaLoaiSanPham();
             }
@@ -293,18 +293,18 @@ public class SanPham_Sua_Dialog extends javax.swing.JDialog {
     }
 
     private void taiDuLieuNhaSanXuat() {
-        List<SanPhamDTO> danhSachNhaSanXuat = nhaSanXuatDAO.layDanhSachNhaSanXuat();
+        List<SanPham> danhSachNhaSanXuat = nhaSanXuatDAO.layDanhSachNhaSanXuat();
         DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
-        for (SanPhamDTO nhaSX : danhSachNhaSanXuat) {
+        for (SanPham nhaSX : danhSachNhaSanXuat) {
             model.addElement(nhaSX.getTenNhaCungCap());
         }
         SanPham_Sua_cbo_NhaSanXuat.setModel(model);
     }
 
     private void taiDuLieuLoaiSanPham() {
-        List<SanPhamDTO> danhSachLoaiSanPham = loaiSanPhamDAO.layDanhSachLoaiSanPham();
+        List<SanPham> danhSachLoaiSanPham = loaiSanPhamDAO.layDanhSachLoaiSanPham();
         DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
-        for (SanPhamDTO loai : danhSachLoaiSanPham) {
+        for (SanPham loai : danhSachLoaiSanPham) {
             model.addElement(loai.getTenLoaiSanPham());
         }
         SanPham_Sua_cbo_LoaiSanPham.setModel(model);
@@ -341,7 +341,7 @@ public class SanPham_Sua_Dialog extends javax.swing.JDialog {
         java.awt.EventQueue.invokeLater(() -> {
             SanPhamBUS sanPhamBUS = new SanPhamBUS();
             JTable tbSanPham = new JTable();
-            SanPhamDTO sanPham = new SanPhamDTO();
+            SanPham sanPham = new SanPham();
             SanPham_Sua_Dialog dialog = new SanPham_Sua_Dialog(new javax.swing.JFrame(), true, sanPhamBUS, tbSanPham, sanPham);
             dialog.setVisible(true);
         });

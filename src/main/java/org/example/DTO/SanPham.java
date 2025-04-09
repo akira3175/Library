@@ -1,6 +1,6 @@
 package org.example.DTO;
 
-public class SanPhamDTO {
+public class SanPham {
 
     private int MaSanPham;
     private int MaLoaiSanPham;
@@ -18,11 +18,11 @@ public class SanPhamDTO {
     private String tenNhaCungCap;
 
     // Constructor mặc định
-    public SanPhamDTO() {
+    public SanPham() {
     }
 
     // Constructor đầy đủ
-    public SanPhamDTO(int MaSanPham, int MaLoaiSanPham, String AnhSanPhamURL, String TenSanPham,
+    public SanPham(int MaSanPham, int MaLoaiSanPham, String AnhSanPhamURL, String TenSanPham,
             String NhaSanXuat, String sanphamcol, boolean TrangThai,
             int SoLuong, double GiaVon, double GiaLoi) {
         this.MaSanPham = MaSanPham;

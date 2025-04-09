@@ -18,6 +18,8 @@ public class PhieuNhap {
         this.thoiGianLap = thoiGianLap;
         this.trangThai = trangThai;
     }
+    
+    public PhieuNhap(){};
 
 
     // Getters

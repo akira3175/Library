@@ -1,6 +1,6 @@
 package org.example.DAO;
 
-import org.example.DTO.SanPhamDTO;
+import org.example.DTO.SanPham;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,8 +8,8 @@ import java.util.List;
 public class SanPhamDAO {
 
     // Lấy danh sách tất cả sản phẩm
-    public List<SanPhamDTO> layDanhSachTatCaSanPham() {
-        List<SanPhamDTO> danhSachSanPham = new ArrayList<>();
+    public List<SanPham> layDanhSachTatCaSanPham() {
+        List<SanPham> danhSachSanPham = new ArrayList<>();
         // **Chỗ cần thay đổi**: JOIN để lấy TenLoaiSanPham, không lấy MaLoaiSanPham trực tiếp từ sanpham
         String sql = "SELECT sp.MaSanPham, lsp.TenLoaiSanPham, sp.AnhSanPhamURL, sp.TenSanPham, "
                 + "sp.NhaSanXuat, sp.SoLuong, sp.GiaVon, sp.GiaLoi, sp.TrangThai, sp.sanphamcol "
@@ -19,7 +19,7 @@ public class SanPhamDAO {
         try (Connection conn = DatabaseConnection.getConnection(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                SanPhamDTO sanPham = new SanPhamDTO();
+                SanPham sanPham = new SanPham();
                 sanPham.setMaSanPham(rs.getInt("MaSanPham"));
                 sanPham.setTenLoaiSanPham(rs.getString("TenLoaiSanPham"));
                 sanPham.setAnhSanPhamURL(rs.getString("AnhSanPhamURL"));
@@ -39,8 +39,8 @@ public class SanPhamDAO {
         return danhSachSanPham;
     }
 
-    public List<SanPhamDTO> layDanhSachTimKiem(String tuKhoa) {
-        List<SanPhamDTO> danhSachSanPham = new ArrayList<>();
+    public List<SanPham> layDanhSachTimKiem(String tuKhoa) {
+        List<SanPham> danhSachSanPham = new ArrayList<>();
         // Sử dụng PreparedStatement để tránh SQL Injection
         String sql = "SELECT * FROM sanpham WHERE TenSanPham LIKE ? OR MaSanPham LIKE ?";
 
@@ -53,7 +53,7 @@ public class SanPhamDAO {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    SanPhamDTO sanPham = new SanPhamDTO();
+                    SanPham sanPham = new SanPham();
                     sanPham.setMaSanPham(rs.getInt("MaSanPham"));
                     sanPham.setMaLoaiSanPham(rs.getInt("MaLoaiSanPham"));
                     sanPham.setAnhSanPhamURL(rs.getString("AnhSanPhamURL"));
@@ -74,14 +74,14 @@ public class SanPhamDAO {
         return danhSachSanPham;
     }
 
-    public List<SanPhamDTO> layDanhSachLoaiSanPham() {
-        List<SanPhamDTO> danhSach = new ArrayList<>();
+    public List<SanPham> layDanhSachLoaiSanPham() {
+        List<SanPham> danhSach = new ArrayList<>();
         String sql = "SELECT MaLoaiSanPham, TenLoaiSanPham FROM loaisanpham";
 
         try (Connection conn = DatabaseConnection.getConnection(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                SanPhamDTO loai = new SanPhamDTO();
+                SanPham loai = new SanPham();
                 loai.setMaLoaiSanPham(rs.getInt("MaLoaiSanPham"));
                 loai.setTenLoaiSanPham(rs.getString("TenLoaiSanPham"));
                 danhSach.add(loai);
@@ -92,14 +92,14 @@ public class SanPhamDAO {
         return danhSach;
     }
 
-    public List<SanPhamDTO> layDanhSachNhaSanXuat() {
-        List<SanPhamDTO> danhSach = new ArrayList<>();
+    public List<SanPham> layDanhSachNhaSanXuat() {
+        List<SanPham> danhSach = new ArrayList<>();
         String sql = "SELECT MaNhaCungCap, TenNhaCungCap FROM nhacungcap";
 
         try (Connection conn = DatabaseConnection.getConnection(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                SanPhamDTO nhaSX = new SanPhamDTO();
+                SanPham nhaSX = new SanPham();
                 nhaSX.setMaNhaCungCap(rs.getInt("MaNhaCungCap"));
                 nhaSX.setTenNhaCungCap(rs.getString("TenNhaCungCap"));
                 danhSach.add(nhaSX);
@@ -110,7 +110,7 @@ public class SanPhamDAO {
         return danhSach;
     }
 
-    public boolean themSanPham(SanPhamDTO sanPham) {
+    public boolean themSanPham(SanPham sanPham) {
         String sql = "INSERT INTO sanpham (MaSanPham, MaLoaiSanPham, AnhSanPhamURL, TenSanPham, "
                 + "NhaSanXuat, SoLuong, GiaVon, GiaLoi, TrangThai) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -135,7 +135,7 @@ public class SanPhamDAO {
         }
     }
 
-    public boolean suaSanPham(SanPhamDTO sanPham) {
+    public boolean suaSanPham(SanPham sanPham) {
         String sql = "UPDATE sanpham SET MaLoaiSanPham = ?, AnhSanPhamURL = ?, TenSanPham = ?, "
                 + "NhaSanXuat = ?, SoLuong = ?, GiaVon = ?, GiaLoi = ?, TrangThai = ? "
                 + "WHERE MaSanPham = ?";

@@ -1,3 +1,5 @@
+package org.example.DTO;
+
 public class ChiTietPhieuNhap {
     
     private int MaChiTietPhieuNhap;
@@ -5,6 +7,17 @@ public class ChiTietPhieuNhap {
     private int MaSanPham;
     private int DonGia;
     private int SoLuong;
+
+    public ChiTietPhieuNhap(int MaChiTietPhieuNhap, int MaPhieuNhap, int MaSanPham, int DonGia, int SoLuong) {
+        this.MaChiTietPhieuNhap = MaChiTietPhieuNhap;
+        this.MaPhieuNhap = MaPhieuNhap;
+        this.MaSanPham = MaSanPham;
+        this.DonGia = DonGia;
+        this.SoLuong = SoLuong;
+    }
+
+    public ChiTietPhieuNhap() {
+    }
 
     public int getMaChiTietPhieuNhap() {
         return MaChiTietPhieuNhap;

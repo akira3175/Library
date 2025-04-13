@@ -4,7 +4,6 @@
  */
 package org.example.DAO;
 
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +15,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author MTeumb
  */
-public class NhapHangDAO {
+public class PhieuNhapDAO {
     private static final Logger logger = LoggerFactory.getLogger(NguoiDungDAO.class);
     
     public List<PhieuNhap> layTatCaPhieuNhap () {
@@ -37,7 +36,7 @@ public class NhapHangDAO {
                 p.add(phieuNhap);
             }
         } catch (SQLException e) {
-            logger.error("Lấy danh sách phieu nhap thất bại! Message: {}", e.getMessage(), e);
+            logger.error("Lấy danh sách người dùng thất bại! Message: {}", e.getMessage(), e);
         }
         return p;
     }

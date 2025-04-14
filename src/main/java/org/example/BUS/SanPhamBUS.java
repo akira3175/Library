@@ -2,6 +2,7 @@ package org.example.BUS;
 
 import org.example.DAO.SanPhamDAO;
 import org.example.DTO.SanPhamDTO;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.util.List;
@@ -16,61 +17,35 @@ public class SanPhamBUS {
 
     public void hienThiSanPhamLenTable(JTable table) {
         List<SanPhamDTO> danhSachSanPham = sanPhamDAO.layDanhSachTatCaSanPham();
-
         DefaultTableModel model = (DefaultTableModel) table.getModel();
-
         model.setRowCount(0);
 
         for (SanPhamDTO sanPham : danhSachSanPham) {
-            Object[] row = new Object[]{
+            model.addRow(new Object[]{
                 sanPham.getMaSanPham(),
                 sanPham.getTenLoaiSanPham(),
                 sanPham.getAnhSanPhamURL(),
                 sanPham.getTenSanPham(),
-                sanPham.getNhaSanXuat(),
-                sanPham.isTrangThai() ? "Hoạt động" : "Không hoạt động",
                 sanPham.getSoLuong(),
                 sanPham.getGiaVon(),
-                sanPham.getGiaLoi(),};
-            model.addRow(row);
-        }
-
-        table.setModel(model);
-
-        if (danhSachSanPham.isEmpty()) {
-            System.out.println("️ Không có sản phẩm nào trong danh sách.");
-        } else {
-            System.out.println("Đa tải " + danhSachSanPham.size() + " sản phẩm lên bảng.");
+                sanPham.getGiaLoi(),});
         }
     }
 
     public void HienThiSanPhamTimKiem(JTable table, String tuKhoa) {
         List<SanPhamDTO> danhSachSanPham = sanPhamDAO.layDanhSachTimKiem(tuKhoa);
-
         DefaultTableModel model = (DefaultTableModel) table.getModel();
-
         model.setRowCount(0);
 
         for (SanPhamDTO sanPham : danhSachSanPham) {
-            Object[] row = new Object[]{
+            model.addRow(new Object[]{
                 sanPham.getMaSanPham(),
-                sanPham.getMaLoaiSanPham(),
+                sanPham.getTenLoaiSanPham(), // Sử dụng TenLoaiSanPham thay vì MaLoaiSanPham
                 sanPham.getAnhSanPhamURL(),
                 sanPham.getTenSanPham(),
-                sanPham.getNhaSanXuat(),
-                sanPham.isTrangThai() ? "Còn hàng" : "Không còn hàng",
                 sanPham.getSoLuong(),
                 sanPham.getGiaVon(),
-                sanPham.getGiaLoi(),};
-            model.addRow(row);
-        }
-
-        table.setModel(model);
-
-        if (danhSachSanPham.isEmpty()) {
-            System.out.println("️ Không có sản phẩm nào trong danh sách.");
-        } else {
-            System.out.println(" Đa tai " + danhSachSanPham.size() + " san pham len bang.");
+                sanPham.getGiaLoi(),});
         }
     }
 
@@ -84,5 +59,13 @@ public class SanPhamBUS {
 
     public boolean xoaSanPham(int maSanPham) {
         return sanPhamDAO.xoaSanPham(maSanPham);
+    }
+
+    public List<SanPhamDTO> layDanhSachTatCaSanPham() {
+        return sanPhamDAO.layDanhSachTatCaSanPham();
+    }
+
+    public SanPhamDTO laySanPhamTheoMa(int maSanPham) {
+        return sanPhamDAO.laySanPhamTheoMa(maSanPham);
     }
 }

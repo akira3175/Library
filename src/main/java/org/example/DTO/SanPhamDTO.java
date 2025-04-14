@@ -14,8 +14,6 @@ public class SanPhamDTO {
     private double GiaVon;
     private double GiaLoi;
     private int maLoaiSanPham;
-    private int maNhaCungCap;
-    private String tenNhaCungCap;
 
     // Constructor mặc định
     public SanPhamDTO() {
@@ -125,21 +123,4 @@ public class SanPhamDTO {
     public void setGiaLoi(double GiaLoi) {
         this.GiaLoi = GiaLoi;
     }
-
-    public int getMaNhaCungCap() {
-        return maNhaCungCap;
-    }
-
-    public void setMaNhaCungCap(int maNhaCungCap) {
-        this.maNhaCungCap = maNhaCungCap;
-    }
-
-    public String getTenNhaCungCap() {
-        return tenNhaCungCap;
-    }
-
-    public void setTenNhaCungCap(String tenNhaCungCap) {
-        this.tenNhaCungCap = tenNhaCungCap;
-    }
-
 }

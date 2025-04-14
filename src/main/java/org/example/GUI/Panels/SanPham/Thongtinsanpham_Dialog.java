@@ -9,10 +9,12 @@ import org.example.GUI.Constants.AppConstants;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.List;
 
-public class SanPham_Them_Dialog extends JDialog {
+public class Thongtinsanpham_Dialog extends JDialog {
 
     private JTextField maSanPhamField;
     private JComboBox<String> loaiSanPhamComboBox;
@@ -22,18 +24,23 @@ public class SanPham_Them_Dialog extends JDialog {
     private JTextField soLuongField;
     private JTextField giaVonField;
     private JTextField giaLoiField;
+
     private SanPhamBUS sanPhamBUS;
+    private SanPhamDTO sanPham;
     private JTable tbSanPham;
     private SanPhamDAO sanPhamDAO;
     private String duongDanAnh;
 
-    public SanPham_Them_Dialog(Window owner, boolean modal, SanPhamBUS sanPhamBUS, JTable tbSanPham) {
-        super(owner, "Thêm sản phẩm mới");
+    public Thongtinsanpham_Dialog(Window owner, boolean modal, SanPhamBUS sanPhamBUS, JTable tbSanPham, SanPhamDTO sanPham) {
+        super(owner, "Thông tin sản phẩm");
         this.sanPhamBUS = sanPhamBUS;
         this.tbSanPham = tbSanPham;
+        this.sanPham = sanPham;
         this.sanPhamDAO = new SanPhamDAO();
+        this.duongDanAnh = sanPham.getAnhSanPhamURL();
         initComponents();
-        taiDuLieuLoaiSanPham();
+        hienThiDuLieuSanPham();
+        hienThiDuLieuLoaiSanPham();
         pack();
         setLocationRelativeTo(owner);
         setResizable(false);
@@ -44,11 +51,10 @@ public class SanPham_Them_Dialog extends JDialog {
         mainPanel.setLayout(new BorderLayout(0, 0));
         mainPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
 
-        
         JPanel anhPanel = new JPanel();
         anhPanel.setLayout(new BoxLayout(anhPanel, BoxLayout.Y_AXIS));
         anhPanel.setBorder(new EmptyBorder(0, 0, 0, 20));
-        anhPanel.setPreferredSize(new Dimension(240, Integer.MAX_VALUE)); 
+        anhPanel.setPreferredSize(new Dimension(240, Integer.MAX_VALUE));
 
         anhSanPhamLabel = new JLabel("Chưa chọn ảnh", SwingConstants.CENTER);
         anhSanPhamLabel.setFont(AppConstants.NORMAL_FONT);
@@ -57,19 +63,11 @@ public class SanPham_Them_Dialog extends JDialog {
         anhSanPhamLabel.setPreferredSize(new Dimension(240, 240));
         anhSanPhamLabel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 240));
         anhSanPhamLabel.setMinimumSize(new Dimension(240, 240));
-        anhSanPhamLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
         anhSanPhamLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        StyledButton chonAnhButton = new StyledButton("Chọn", AppConstants.BLUE, 0, 30);
-        chonAnhButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
-        chonAnhButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        chonAnhButton.addActionListener(e -> chonAnh());
+        anhSanPhamLabel.setBorder(BorderFactory.createLineBorder(Color.black, 1));
 
         anhPanel.add(anhSanPhamLabel);
-        anhPanel.add(Box.createVerticalStrut(5));
-        anhPanel.add(chonAnhButton);
         anhPanel.add(Box.createVerticalGlue());
-
 
         JPanel formPanel = new JPanel();
         formPanel.setLayout(new GridBagLayout());
@@ -86,20 +84,15 @@ public class SanPham_Them_Dialog extends JDialog {
         addFormField(formPanel, "Số lượng:", taoSoLuongField(), gbc, 4);
         addFormField(formPanel, "Giá vốn:", taoGiaVonField(), gbc, 5);
         addFormField(formPanel, "Giá lời:", taoGiaLoiField(), gbc, 6);
-
-
+        
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonPanel.setBorder(new EmptyBorder(10, 0, 0, 0));
 
-        StyledButton cancelButton = new StyledButton("Hủy", new Color(107, 114, 128), 100, 35);
-        StyledButton saveButton = new StyledButton("Lưu", AppConstants.PRIMARY_COLOR, 100, 35);
+        StyledButton closeButton = new StyledButton("Đóng", new Color(107, 114, 128), 100, 35);
+        closeButton.addActionListener(e -> dispose());
 
-        cancelButton.addActionListener(e -> dispose());
-        saveButton.addActionListener(e -> luuSanPham());
-
-        buttonPanel.add(cancelButton);
-        buttonPanel.add(saveButton);
-
+        buttonPanel.add(closeButton);
+        
 
         JPanel centerPanel = new JPanel(new BorderLayout());
         centerPanel.add(formPanel, BorderLayout.CENTER);
@@ -129,131 +122,104 @@ public class SanPham_Them_Dialog extends JDialog {
     private JTextField taoMaSanPhamField() {
         maSanPhamField = new JTextField();
         maSanPhamField.setFont(AppConstants.NORMAL_FONT);
+        maSanPhamField.setEditable(false);
         return maSanPhamField;
     }
 
     private JComboBox<String> taoLoaiSanPhamComboBox() {
         loaiSanPhamComboBox = new JComboBox<>();
         loaiSanPhamComboBox.setFont(AppConstants.NORMAL_FONT);
+        loaiSanPhamComboBox.setEnabled(false);
         return loaiSanPhamComboBox;
     }
 
     private JTextField taoTenSanPhamField() {
         tenSanPhamField = new JTextField();
         tenSanPhamField.setFont(AppConstants.NORMAL_FONT);
+        tenSanPhamField.setEditable(false);
         return tenSanPhamField;
     }
 
     private JTextField taoNhaSanXuatField() {
         nhaSanXuatField = new JTextField();
         nhaSanXuatField.setFont(AppConstants.NORMAL_FONT);
+        nhaSanXuatField.setEditable(false);
         return nhaSanXuatField;
     }
 
     private JTextField taoSoLuongField() {
         soLuongField = new JTextField();
         soLuongField.setFont(AppConstants.NORMAL_FONT);
+        soLuongField.setEditable(false);
         return soLuongField;
     }
 
     private JTextField taoGiaVonField() {
         giaVonField = new JTextField();
         giaVonField.setFont(AppConstants.NORMAL_FONT);
+        giaVonField.setEditable(false);
         return giaVonField;
     }
 
     private JTextField taoGiaLoiField() {
         giaLoiField = new JTextField();
         giaLoiField.setFont(AppConstants.NORMAL_FONT);
+        giaLoiField.setEditable(false);
         return giaLoiField;
     }
-
-    private void chonAnh() {
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        int result = fileChooser.showOpenDialog(this);
-        if (result == JFileChooser.APPROVE_OPTION) {
-            File selectedFile = fileChooser.getSelectedFile();
-            duongDanAnh = selectedFile.getAbsolutePath();
-
-            ImageIcon originalIcon = new ImageIcon(duongDanAnh);
-            Image img = originalIcon.getImage();
-
-            int maxWidth = 240;
-            int maxHeight = 240;
-            int originalWidth = originalIcon.getIconWidth();
-            int originalHeight = originalIcon.getIconHeight();
-
-            int newWidth, newHeight;
-            if ((float) originalWidth / originalHeight > 1f) {
-                newWidth = maxWidth;
-                newHeight = (int) (maxWidth * originalHeight / originalWidth);
-            } else {
-                newHeight = maxHeight;
-                newWidth = (int) (maxHeight * originalWidth / originalHeight);
-            }
-
-            Image scaledImg = img.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
-            anhSanPhamLabel.setText("");
-            anhSanPhamLabel.setIcon(new ImageIcon(scaledImg));
-        }
-    }
-
-    private void taiDuLieuLoaiSanPham() {
+    
+    private void hienThiDuLieuLoaiSanPham(){
         List<SanPhamDTO> danhSachLoaiSanPham = sanPhamDAO.layDanhSachLoaiSanPham();
         DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
-        for (SanPhamDTO loai : danhSachLoaiSanPham) {
+        for(SanPhamDTO loai : danhSachLoaiSanPham){
             model.addElement(loai.getTenLoaiSanPham());
         }
         loaiSanPhamComboBox.setModel(model);
     }
 
-    private int layMaLoaiSanPhamTuTen(String tenLoaiSanPham) {
-        List<SanPhamDTO> danhSachLoai = sanPhamDAO.layDanhSachLoaiSanPham();
-        for (SanPhamDTO loai : danhSachLoai) {
-            if (loai.getTenLoaiSanPham().equals(tenLoaiSanPham)) {
-                return loai.getMaLoaiSanPham();
-            }
+    private void hienThiDuLieuSanPham() {
+        if (sanPham == null) {
+            JOptionPane.showMessageDialog(this, "Không có dữ liệu sản phẩm để hiển thị!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
         }
-        return -1;
-    }
 
-    private void luuSanPham() {
-        try {
-            if (maSanPhamField.getText().trim().isEmpty()
-                    || soLuongField.getText().trim().isEmpty()
-                    || giaVonField.getText().trim().isEmpty()
-                    || giaLoiField.getText().trim().isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ các trường số!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+        maSanPhamField.setText(String.valueOf(sanPham.getMaSanPham()));
+        loaiSanPhamComboBox.setSelectedItem(sanPham.getTenLoaiSanPham());
+        tenSanPhamField.setText(sanPham.getTenSanPham());
+        nhaSanXuatField.setText(sanPham.getNhaSanXuat());
+        soLuongField.setText(String.valueOf(sanPham.getSoLuong()));
+        giaVonField.setText(String.valueOf(sanPham.getGiaVon()));
+        giaLoiField.setText(String.valueOf(sanPham.getGiaLoi()));
 
-            SanPhamDTO sanPham = new SanPhamDTO();
-            sanPham.setMaSanPham(Integer.parseInt(maSanPhamField.getText().trim()));
-            int maLoaiSanPham = layMaLoaiSanPhamTuTen(loaiSanPhamComboBox.getSelectedItem().toString());
-            if (maLoaiSanPham == -1) {
-                JOptionPane.showMessageDialog(this, "Loại sản phẩm không hợp lệ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            sanPham.setMaLoaiSanPham(maLoaiSanPham);
-            sanPham.setAnhSanPhamURL(duongDanAnh != null ? duongDanAnh : "");
-            sanPham.setTenSanPham(tenSanPhamField.getText().trim());
-            sanPham.setNhaSanXuat(nhaSanXuatField.getText().trim());
-            sanPham.setSoLuong(Integer.parseInt(soLuongField.getText().trim()));
-            sanPham.setGiaVon(Double.parseDouble(giaVonField.getText().trim()));
-            sanPham.setGiaLoi(Double.parseDouble(giaLoiField.getText().trim()));
+        if (sanPham.getAnhSanPhamURL() != null && !sanPham.getAnhSanPhamURL().isEmpty()) {
+            try {
+                ImageIcon originalIcon = new ImageIcon(sanPham.getAnhSanPhamURL());
+                Image img = originalIcon.getImage();
 
-            if (sanPhamBUS.themSanPham(sanPham)) {
-                JOptionPane.showMessageDialog(this, "Thêm sản phẩm thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-                sanPhamBUS.hienThiSanPhamLenTable(tbSanPham);
-                dispose();
-            } else {
-                JOptionPane.showMessageDialog(this, "Thêm sản phẩm thất bại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                int maxWidth = 240;
+                int maxHeight = 240;
+                int originalWidth = originalIcon.getIconWidth();
+                int originalHeight = originalIcon.getIconHeight();
+
+                int newWidth, newHeight;
+                if ((float) originalWidth / originalHeight > 1f) {
+                    newWidth = maxWidth;
+                    newHeight = (int) (maxWidth * originalHeight / originalWidth);
+                } else {
+                    newHeight = maxHeight;
+                    newWidth = (int) (maxHeight * originalWidth / originalHeight);
+                }
+
+                Image scaledImg = img.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+                anhSanPhamLabel.setText("");
+                anhSanPhamLabel.setIcon(new ImageIcon(scaledImg));
+            } catch (Exception e) {
+                anhSanPhamLabel.setText("Lỗi tải ảnh");
+                anhSanPhamLabel.setIcon(null);
             }
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Vui lòng nhập đúng định dạng số cho các trường số!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Có lỗi xảy ra: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+        } else {
+            anhSanPhamLabel.setText("Chưa chọn ảnh");
+            anhSanPhamLabel.setIcon(null);
         }
     }
 }

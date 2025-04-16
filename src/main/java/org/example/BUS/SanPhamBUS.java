@@ -14,7 +14,7 @@ public class SanPhamBUS {
     public SanPhamBUS() {
         this.sanPhamDAO = new SanPhamDAO();
     }
-
+    
     public void hienThiSanPhamLenTable(JTable table) {
         List<SanPhamDTO> danhSachSanPham = sanPhamDAO.layDanhSachTatCaSanPham();
         DefaultTableModel model = (DefaultTableModel) table.getModel();
@@ -28,7 +28,35 @@ public class SanPhamBUS {
                 sanPham.getTenSanPham(),
                 sanPham.getSoLuong(),
                 sanPham.getGiaVon(),
-                sanPham.getGiaLoi(),});
+                sanPham.getGiaLoi(),
+                sanPham.getTrangThai() ? "Hoạt động" : "Không hoạt động"
+            });
+        }
+    }
+    public void hienThiSanPhamLenTable(JTable table, String filter) {
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        model.setRowCount(0);
+        List<SanPhamDTO> danhSachSanPham;
+
+        if ("Không hoạt động".equals(filter)) {
+            danhSachSanPham = layDanhSachTatCaSanPhamKhongHoatDong();
+        } else if ("Đang hoạt động".equals(filter)) {
+            danhSachSanPham = layDanhSachTatCaSanPhamHoatDong();
+        } else {
+            danhSachSanPham = layDanhSachTatCaSanPham();
+        }
+
+        for (SanPhamDTO sanPham : danhSachSanPham) {
+            model.addRow(new Object[]{
+                sanPham.getMaSanPham(),
+                sanPham.getTenLoaiSanPham(),
+                sanPham.getTenSanPham(),
+                sanPham.getAnhSanPhamURL(),
+                sanPham.getSoLuong(),
+                sanPham.getGiaVon(),
+                sanPham.getGiaLoi(),
+                sanPham.getTrangThai() ? "Hoạt động" : "Không hoạt động"
+            });
         }
     }
 
@@ -40,12 +68,14 @@ public class SanPhamBUS {
         for (SanPhamDTO sanPham : danhSachSanPham) {
             model.addRow(new Object[]{
                 sanPham.getMaSanPham(),
-                sanPham.getTenLoaiSanPham(), // Sử dụng TenLoaiSanPham thay vì MaLoaiSanPham
+                sanPham.getTenLoaiSanPham(),
                 sanPham.getAnhSanPhamURL(),
                 sanPham.getTenSanPham(),
                 sanPham.getSoLuong(),
                 sanPham.getGiaVon(),
-                sanPham.getGiaLoi(),});
+                sanPham.getGiaLoi(),
+                sanPham.getTrangThai() ? "Hoạt động" : "Không hoạt động"
+            });
         }
     }
 
@@ -63,6 +93,14 @@ public class SanPhamBUS {
 
     public List<SanPhamDTO> layDanhSachTatCaSanPham() {
         return sanPhamDAO.layDanhSachTatCaSanPham();
+    }
+
+    public List<SanPhamDTO> layDanhSachTatCaSanPhamHoatDong() {
+        return sanPhamDAO.layDanhSachTatCaSanPhamHoatDong();
+    }
+
+    public List<SanPhamDTO> layDanhSachTatCaSanPhamKhongHoatDong() {
+        return sanPhamDAO.layDanhSachTatCaSanPhamKhongHoatDong();
     }
 
     public SanPhamDTO laySanPhamTheoMa(int maSanPham) {

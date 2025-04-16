@@ -19,6 +19,7 @@ public class SanPhamPanel extends JPanel {
     private JTextField searchField;
     private JTabbedPane tabbedPane;
     private JPanel danhSachPanel;
+    private JComboBox<String> statusFilterComboBox;
 
     public SanPhamPanel() {
         setLayout(new BorderLayout(20, 20));
@@ -50,6 +51,11 @@ public class SanPhamPanel extends JPanel {
         JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         actionPanel.setOpaque(false);
 
+        String[] filterOptions = {"Tất cả", "Không hoạt động", "Đang hoạt động"};
+        statusFilterComboBox = new JComboBox<>(filterOptions);
+        statusFilterComboBox.setPreferredSize(new Dimension(150, 35));
+        statusFilterComboBox.addActionListener(e -> XuatSanPhamTable());
+
         searchField = new JTextField(20);
         searchField.putClientProperty("JTextField.placeholderText", "Tìm kiếm sản phẩm...");
         searchField.setPreferredSize(new Dimension(200, 35));
@@ -71,6 +77,7 @@ public class SanPhamPanel extends JPanel {
             dialog.setVisible(true);
         });
 
+        actionPanel.add(statusFilterComboBox);
         actionPanel.add(searchField);
         actionPanel.add(searchButton);
         actionPanel.add(addButton);
@@ -89,7 +96,7 @@ public class SanPhamPanel extends JPanel {
                 BorderFactory.createEmptyBorder(15, 15, 15, 15)
         ));
 
-        String[] columns = {"Mã sản phẩm", "Loại sản phẩm", "Tên sản phẩm", "Ảnh sản phẩm URL", "Số lượng", "Giá vốn", "Giá lời"};
+        String[] columns = {"Mã sản phẩm", "Loại sản phẩm", "Tên sản phẩm", "Ảnh sản phẩm URL", "Số lượng", "Giá vốn", "Giá lời", "Trạng Thái"};
         DefaultTableModel model = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -136,19 +143,8 @@ public class SanPhamPanel extends JPanel {
     }
 
     private void XuatSanPhamTable() {
-        DefaultTableModel model = (DefaultTableModel) tbSanPham.getModel();
-        model.setRowCount(0);
-        java.util.List<SanPhamDTO> danhSachSanPham = sanPhamBUS.layDanhSachTatCaSanPham();
-        for (SanPhamDTO sanPham : danhSachSanPham) {
-            model.addRow(new Object[]{
-                sanPham.getMaSanPham(),
-                sanPham.getTenLoaiSanPham(),
-                sanPham.getTenSanPham(),
-                sanPham.getAnhSanPhamURL(),
-                sanPham.getSoLuong(),
-                sanPham.getGiaVon(),
-                sanPham.getGiaLoi(),});
-        }
+        String selectedFilter = (String) statusFilterComboBox.getSelectedItem();
+        sanPhamBUS.hienThiSanPhamLenTable(tbSanPham, selectedFilter);
     }
 
     private void SuaSanPham() {
@@ -167,7 +163,7 @@ public class SanPhamPanel extends JPanel {
                         "Lỗi", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            Thongtinsanpham_Dialog dialog = new Thongtinsanpham_Dialog(null, true, sanPhamBUS, tbSanPham, sanPham);
+            SanPham_Thongtinsanpham_Dialog dialog = new SanPham_Thongtinsanpham_Dialog(null, true, sanPhamBUS, tbSanPham, sanPham);
             dialog.setLocationRelativeTo(null);
             dialog.setVisible(true);
         } catch (Exception e) {
@@ -185,19 +181,34 @@ public class SanPhamPanel extends JPanel {
         }
 
         DefaultTableModel model = (DefaultTableModel) tbSanPham.getModel();
-        int maSanPham = (Integer) model.getValueAt(selectedRow, 0);
+        Object maSanPhamObj = model.getValueAt(selectedRow, 0);
+        int maSanPham;
+        try {
+            maSanPham = Integer.parseInt(maSanPhamObj.toString());
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Mã sản phẩm không hợp lệ!",
+                    "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         int confirm = JOptionPane.showConfirmDialog(this,
                 "Bạn có chắc chắn muốn xóa sản phẩm với mã " + maSanPham + " không?",
                 "Xác nhận xóa", JOptionPane.YES_NO_OPTION);
 
         if (confirm == JOptionPane.YES_OPTION) {
-            if (sanPhamBUS.xoaSanPham(maSanPham)) {
-                JOptionPane.showMessageDialog(this, "Xóa sản phẩm thành công!",
-                        "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-                XuatSanPhamTable();
-            } else {
-                JOptionPane.showMessageDialog(this, "Xóa sản phẩm thất bại!",
+            try {
+                if (sanPhamBUS.xoaSanPham(maSanPham)) {
+                    JOptionPane.showMessageDialog(this, "Xóa sản phẩm thành công!",
+                            "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                    XuatSanPhamTable();
+                } else {
+                    JOptionPane.showMessageDialog(this,
+                            "Xóa sản phẩm thất bại! Sản phẩm không tồn tại hoặc đã bị xóa.",
+                            "Lỗi", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this,
+                        "Lỗi hệ thống khi xóa sản phẩm: " + e.getMessage(),
                         "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
         }

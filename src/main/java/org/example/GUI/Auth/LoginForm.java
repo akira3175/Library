@@ -194,6 +194,8 @@ public class LoginForm extends JFrame {
             }
         });
 
+        getRootPane().setDefaultButton(loginButton);
+
         registerLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {

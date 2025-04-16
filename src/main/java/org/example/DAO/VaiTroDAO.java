@@ -85,7 +85,7 @@ public class VaiTroDAO {
         }
     }
 
-    public Optional<VaiTro> layVaiTroTheoID(int maVaiTro) {
+    public VaiTro layVaiTroTheoID(int maVaiTro) {
         String sql = "SELECT * FROM VaiTro WHERE MaVaiTro = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -97,13 +97,13 @@ public class VaiTroDAO {
                     vaiTro.setMaVaiTro(rs.getInt("MaVaiTro"));
                     vaiTro.setTenVaiTro(rs.getString("TenVaiTro"));
                     vaiTro.setMoTa(rs.getString("MoTa"));
-                    return Optional.of(vaiTro);
+                    return vaiTro;
                 }
             }
         } catch (Exception e) {
             logger.error("Lỗi khi lấy vai trò theo ID: ", e);
         }
-        return Optional.empty();
+        return null;
     }
 
     public List<VaiTro> layDanhSachTatCaVaiTro() {

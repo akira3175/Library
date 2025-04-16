@@ -4,6 +4,7 @@ import org.example.BUS.NguoiDungBUS;
 import org.example.DTO.NguoiDung;
 import org.example.GUI.Auth.LoginForm;
 import org.example.GUI.Constants.AppConstants;
+import org.example.GUI.Panels.KhachHang.KhachHangPanel;
 import org.example.GUI.Panels.NhapKho.NhapKhoPanel;
 import org.example.GUI.Panels.NhanSu.NhanSuPanel;
 import org.example.GUI.Panels.SanPham.SanPhamPanel;
@@ -112,6 +113,7 @@ public class MainFrame extends JFrame {
         // Add navigation buttons with icons
         addNavigationButton("sell", "Bán hàng", "book.png");
         addNavigationButton("products", "Sản phẩm", "book.png");
+        addNavigationButton("consumers", "Khách hàng", "book.png");
         addNavigationButton("users", "Nhân sự", "user.png");
         addNavigationButton("import", "Nhập kho", "loan.png");
         addNavigationButton("statistics", "Thống kê", "home.png");
@@ -208,6 +210,7 @@ public class MainFrame extends JFrame {
         // Add panels
         contentPanel.add(new BanHangPanel(), "sell");
         contentPanel.add(new SanPhamPanel(), "products");
+        contentPanel.add(new KhachHangPanel(), "consumers");
         contentPanel.add(new NhanSuPanel(), "users");
         contentPanel.add(new NhapKhoPanel(), "import");
         contentPanel.add(new ThongKePanel(), "statistics");

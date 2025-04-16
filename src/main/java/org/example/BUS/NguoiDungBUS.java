@@ -50,7 +50,7 @@ public class NguoiDungBUS {
         List<NguoiDung> nguoiDungList = nguoiDungDAO.layDanhSachTatCaNguoiDung();
 
         if (nguoiDungList == null || nguoiDungList.isEmpty()) {
-            logger.warn("⚠️ Danh sách người dùng trống!");
+            logger.warn("Danh sách người dùng trống!");
         }
 
         return nguoiDungList;
@@ -60,7 +60,7 @@ public class NguoiDungBUS {
         NguoiDung nguoiDung = nguoiDungDAO.layThongTinNguoiDungTheoID(maNguoiDung);
 
         if (nguoiDung == null) {
-            logger.warn("⚠️ Người dùng không tồn tại!");
+            logger.warn("Người dùng không tồn tại!");
         }
 
         return nguoiDung;

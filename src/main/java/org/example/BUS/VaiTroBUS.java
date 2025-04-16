@@ -34,9 +34,19 @@ public class VaiTroBUS {
         List<VaiTro> vaiTroList = vaiTroDAO.layDanhSachTatCaVaiTro();
 
         if (vaiTroList == null || vaiTroList.isEmpty()) {
-            logger.warn("⚠️ Danh sách người dùng trống!");
+            logger.warn("Danh sách vai trò trống!");
         }
 
         return vaiTroList;
+    }
+
+    public VaiTro layVaiTroTheoID(int maVaiTro) {
+        VaiTro vaiTro = vaiTroDAO.layVaiTroTheoID(maVaiTro);
+
+        if(vaiTro == null) {
+            logger.warn("Vai trò không tồn tại");
+        }
+
+        return vaiTro;
     }
 }

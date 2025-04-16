@@ -127,4 +127,34 @@ public class VaiTroDAO {
         }
         return danhSach;
     }
+
+    public List<VaiTro> layDanhSachVaiTroVaSoLuongNguoiDung() {
+        List<VaiTro> danhSach = new ArrayList<>();
+        String sql = "SELECT vt.MaVaiTro, vt.TenVaiTro, vt.MoTa, COUNT(nd.MaNguoiDung) AS SoLuongNguoiDung " +
+                "FROM VaiTro vt " +
+                "LEFT JOIN NguoiDung nd ON vt.MaVaiTro = nd.MaVaiTro " +
+                "GROUP BY vt.MaVaiTro, vt.TenVaiTro, vt.MoTa";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                VaiTro vttk = new VaiTro();
+                vttk.setMaVaiTro(rs.getInt("MaVaiTro"));
+                vttk.setTenVaiTro(rs.getString("TenVaiTro"));
+                vttk.setMoTa(rs.getString("MoTa"));
+                vttk.setSoLuongNguoiDung(rs.getInt("SoLuongNguoiDung"));
+
+                danhSach.add(vttk);
+            }
+
+            logger.info("Lấy danh sách vai trò kèm số lượng người dùng theo quyền thành công. Số lượng: {}", danhSach.size());
+        } catch (Exception e) {
+            logger.error("Lỗi khi lấy danh sách vai trò theo quyền: ", e);
+        }
+
+        return danhSach;
+    }
 }

@@ -1,7 +1,7 @@
 package org.example.GUI.Panels.NhanSu;
 
 import org.example.BUS.VaiTroBUS;
-import org.example.DAO.VaiTroDAO;
+import org.example.BUS.QuyenBUS;
 import org.example.DTO.VaiTro;
 import org.example.GUI.Components.StyledButton;
 import org.example.GUI.Constants.AppConstants;
@@ -12,30 +12,34 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.util.List;
+import org.example.DTO.Quyen;
+
 
 public class ChiTietNhomQuyenDialog extends JDialog {
-    private JTextField maNhomQuyenField;
-    private JTextField tenNhomQuyenField;
-    private JTextArea moTaNhomQuyenArea;
+    private JTextField maVaiTroField;
+    private JTextField tenVaiTroField;
+    private JTextArea moTaVaiTroArea;
     private JTable quyenChiTietTable;
     private boolean isConfirmed = false;
-    private String maNhomQuyen;
+    private String maVaiTro;
     private VaiTro vaiTro;
     private VaiTroBUS vaiTroBUS;
+    private QuyenBUS quyenBUS;
+    private List<Quyen> danhSachQuyen;
 
-    public ChiTietNhomQuyenDialog(Window owner, String maNhomQuyen, String tenNhomQuyen, String moTa) {
-        super(owner, "Chi tiết nhóm quyền");
+    public ChiTietNhomQuyenDialog(Window owner, String maVaiTro, String tenVaiTro, String moTa) {
+        super(owner, "Chi tiết vai trò");
         vaiTroBUS = new VaiTroBUS();
-        this.maNhomQuyen = maNhomQuyen;
-
+        quyenBUS = new QuyenBUS();
+        this.maVaiTro = maVaiTro;
+        
         initComponents();
 
         // Populate fields with group data
-        maNhomQuyenField.setText(maNhomQuyen);
-        tenNhomQuyenField.setText(tenNhomQuyen);
-        moTaNhomQuyenArea.setText(moTa);
+        maVaiTroField.setText(maVaiTro);
+        tenVaiTroField.setText(tenVaiTro);
+        moTaVaiTroArea.setText(moTa);
 
         // Load permissions for this group
         loadPermissionsForGroup();
@@ -60,29 +64,29 @@ public class ChiTietNhomQuyenDialog extends JDialog {
         idPanel.setOpaque(false);
         idPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60));
 
-        JLabel idLabel = new JLabel("Mã nhóm quyền:");
+        JLabel idLabel = new JLabel("Mã vai trò:");
         idLabel.setFont(new Font(AppConstants.NORMAL_FONT.getFamily(), Font.BOLD, 13));
 
-        maNhomQuyenField = new JTextField();
-        maNhomQuyenField.setEditable(false);
-        maNhomQuyenField.setFont(new Font(AppConstants.NORMAL_FONT.getFamily(), Font.PLAIN, 13));
+        maVaiTroField = new JTextField();
+        maVaiTroField.setEditable(false);
+        maVaiTroField.setFont(new Font(AppConstants.NORMAL_FONT.getFamily(), Font.PLAIN, 13));
 
         idPanel.add(idLabel, BorderLayout.NORTH);
-        idPanel.add(maNhomQuyenField, BorderLayout.CENTER);
+        idPanel.add(maVaiTroField, BorderLayout.CENTER);
 
         // Group name field
         JPanel namePanel = new JPanel(new BorderLayout(0, 5));
         namePanel.setOpaque(false);
         namePanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60));
 
-        JLabel nameLabel = new JLabel("Tên nhóm quyền:");
+        JLabel nameLabel = new JLabel("Tên vai trò:");
         nameLabel.setFont(new Font(AppConstants.NORMAL_FONT.getFamily(), Font.BOLD, 13));
 
-        tenNhomQuyenField = new JTextField();
-        tenNhomQuyenField.setFont(new Font(AppConstants.NORMAL_FONT.getFamily(), Font.PLAIN, 13));
+        tenVaiTroField = new JTextField();
+        tenVaiTroField.setFont(new Font(AppConstants.NORMAL_FONT.getFamily(), Font.PLAIN, 13));
 
         namePanel.add(nameLabel, BorderLayout.NORTH);
-        namePanel.add(tenNhomQuyenField, BorderLayout.CENTER);
+        namePanel.add(tenVaiTroField, BorderLayout.CENTER);
 
         // Description field
         JPanel descPanel = new JPanel(new BorderLayout(0, 5));
@@ -92,13 +96,13 @@ public class ChiTietNhomQuyenDialog extends JDialog {
         JLabel descLabel = new JLabel("Mô tả:");
         descLabel.setFont(new Font(AppConstants.NORMAL_FONT.getFamily(), Font.BOLD, 13));
 
-        moTaNhomQuyenArea = new JTextArea();
-        moTaNhomQuyenArea.setFont(new Font(AppConstants.NORMAL_FONT.getFamily(), Font.PLAIN, 13));
-        moTaNhomQuyenArea.setLineWrap(true);
-        moTaNhomQuyenArea.setWrapStyleWord(true);
-        moTaNhomQuyenArea.setBorder(new LineBorder(new Color(229, 231, 235), 1));
+        moTaVaiTroArea = new JTextArea();
+        moTaVaiTroArea.setFont(new Font(AppConstants.NORMAL_FONT.getFamily(), Font.PLAIN, 13));
+        moTaVaiTroArea.setLineWrap(true);
+        moTaVaiTroArea.setWrapStyleWord(true);
+        moTaVaiTroArea.setBorder(new LineBorder(new Color(229, 231, 235), 1));
 
-        JScrollPane descScrollPane = new JScrollPane(moTaNhomQuyenArea);
+        JScrollPane descScrollPane = new JScrollPane(moTaVaiTroArea);
         descScrollPane.setPreferredSize(new Dimension(Integer.MAX_VALUE, 80));
 
         descPanel.add(descLabel, BorderLayout.NORTH);
@@ -108,7 +112,7 @@ public class ChiTietNhomQuyenDialog extends JDialog {
         JPanel permissionsPanel = new JPanel(new BorderLayout(0, 10));
         permissionsPanel.setOpaque(false);
 
-        JLabel permissionsLabel = new JLabel("Danh sách quyền trong nhóm:");
+        JLabel permissionsLabel = new JLabel("Danh sách quyền trong vai trò:");
         permissionsLabel.setFont(new Font(AppConstants.NORMAL_FONT.getFamily(), Font.BOLD, 13));
         permissionsLabel.setBorder(new EmptyBorder(15, 0, 5, 0));
 
@@ -132,6 +136,16 @@ public class ChiTietNhomQuyenDialog extends JDialog {
         quyenChiTietTable.setGridColor(new Color(229, 231, 235));
         quyenChiTietTable.setSelectionBackground(new Color(243, 244, 246));
         quyenChiTietTable.setFont(new Font(AppConstants.NORMAL_FONT.getFamily(), Font.PLAIN, 13));
+
+        model.addTableModelListener(e -> {
+            int row = e.getFirstRow();
+            int column = e.getColumn();
+
+            if (column == 2 && row >= 0 && row < danhSachQuyen.size()) {
+                Boolean isSelected = (Boolean) model.getValueAt(row, column);
+                danhSachQuyen.get(row).setIsChecked(isSelected);
+            }
+        });
 
         // Style the table header
         JTableHeader header = quyenChiTietTable.getTableHeader();
@@ -193,65 +207,31 @@ public class ChiTietNhomQuyenDialog extends JDialog {
         quyenChiTietModel.setRowCount(0);
 
         // Load permissions based on the selected group
-        if (maNhomQuyen != null) {
-            if (maNhomQuyen.equals("R001")) {
-                // Admin group - has all permissions
-                quyenChiTietModel.addRow(new Object[]{"Q001", "Quản lý sản phẩm", true});
-                quyenChiTietModel.addRow(new Object[]{"Q002", "Quản lý nhân sự", true});
-                quyenChiTietModel.addRow(new Object[]{"Q003", "Bán hàng", true});
-                quyenChiTietModel.addRow(new Object[]{"Q004", "Nhập kho", true});
-                quyenChiTietModel.addRow(new Object[]{"Q005", "Xem báo cáo", true});
-                quyenChiTietModel.addRow(new Object[]{"Q006", "Quản lý hệ thống", true});
-                quyenChiTietModel.addRow(new Object[]{"Q007", "Quản lý khách hàng", true});
-                quyenChiTietModel.addRow(new Object[]{"Q008", "Quản lý nhà cung cấp", true});
-            } else if (maNhomQuyen.equals("R002")) {
-                // Sales group
-                quyenChiTietModel.addRow(new Object[]{"Q001", "Quản lý sản phẩm", false});
-                quyenChiTietModel.addRow(new Object[]{"Q002", "Quản lý nhân sự", false});
-                quyenChiTietModel.addRow(new Object[]{"Q003", "Bán hàng", true});
-                quyenChiTietModel.addRow(new Object[]{"Q004", "Nhập kho", false});
-                quyenChiTietModel.addRow(new Object[]{"Q005", "Xem báo cáo", true});
-                quyenChiTietModel.addRow(new Object[]{"Q006", "Quản lý hệ thống", false});
-                quyenChiTietModel.addRow(new Object[]{"Q007", "Quản lý khách hàng", true});
-                quyenChiTietModel.addRow(new Object[]{"Q008", "Quản lý nhà cung cấp", false});
-            } else if (maNhomQuyen.equals("R003")) {
-                // Inventory group
-                quyenChiTietModel.addRow(new Object[]{"Q001", "Quản lý sản phẩm", true});
-                quyenChiTietModel.addRow(new Object[]{"Q002", "Quản lý nhân sự", false});
-                quyenChiTietModel.addRow(new Object[]{"Q003", "Bán hàng", false});
-                quyenChiTietModel.addRow(new Object[]{"Q004", "Nhập kho", true});
-                quyenChiTietModel.addRow(new Object[]{"Q005", "Xem báo cáo", true});
-                quyenChiTietModel.addRow(new Object[]{"Q006", "Quản lý hệ thống", false});
-                quyenChiTietModel.addRow(new Object[]{"Q007", "Quản lý khách hàng", false});
-                quyenChiTietModel.addRow(new Object[]{"Q008", "Quản lý nhà cung cấp", true});
-            } else if (maNhomQuyen.equals("R004")) {
-                // Manager group
-                quyenChiTietModel.addRow(new Object[]{"Q001", "Quản lý sản phẩm", true});
-                quyenChiTietModel.addRow(new Object[]{"Q002", "Quản lý nhân sự", true});
-                quyenChiTietModel.addRow(new Object[]{"Q003", "Bán hàng", false});
-                quyenChiTietModel.addRow(new Object[]{"Q004", "Nhập kho", false});
-                quyenChiTietModel.addRow(new Object[]{"Q005", "Xem báo cáo", true});
-                quyenChiTietModel.addRow(new Object[]{"Q006", "Quản lý hệ thống", true});
-                quyenChiTietModel.addRow(new Object[]{"Q007", "Quản lý khách hàng", false});
-                quyenChiTietModel.addRow(new Object[]{"Q008", "Quản lý nhà cung cấp", false});
-            } else {
-                // New group - no permissions by default
-                quyenChiTietModel.addRow(new Object[]{"Q001", "Quản lý sản phẩm", false});
-                quyenChiTietModel.addRow(new Object[]{"Q002", "Quản lý nhân sự", false});
-                quyenChiTietModel.addRow(new Object[]{"Q003", "Bán hàng", false});
-                quyenChiTietModel.addRow(new Object[]{"Q004", "Nhập kho", false});
-                quyenChiTietModel.addRow(new Object[]{"Q005", "Xem báo cáo", false});
-                quyenChiTietModel.addRow(new Object[]{"Q006", "Quản lý hệ thống", false});
-                quyenChiTietModel.addRow(new Object[]{"Q007", "Quản lý khách hàng", false});
-                quyenChiTietModel.addRow(new Object[]{"Q008", "Quản lý nhà cung cấp", false});
+        if (maVaiTro.isEmpty() || maVaiTro == null) {
+            danhSachQuyen = quyenBUS.layDanhSachQuyen();
+            for (Quyen quyen : danhSachQuyen) {
+                quyenChiTietModel.addRow(new Object[] {
+                    quyen.getMaQuyen(),
+                    quyen.getTenQuyen(),
+                    false
+                });
+            }
+        } else {
+            danhSachQuyen = vaiTroBUS.layDanhSachQuyenTheoVaiTro(Integer.parseInt(maVaiTro));
+            for (Quyen quyen : danhSachQuyen) {
+                quyenChiTietModel.addRow(new Object[] {
+                    quyen.getMaQuyen(),
+                    quyen.getTenQuyen(),
+                    quyen.isChecked()
+                }); 
             }
         }
     }
 
     private void saveGroup() {
         // Validate input fields
-        if (tenNhomQuyenField.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Vui lòng nhập tên nhóm quyền", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        if (tenVaiTroField.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập tên vai trò", "Lỗi", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -263,26 +243,29 @@ public class ChiTietNhomQuyenDialog extends JDialog {
         for (int i = 0; i < model.getRowCount(); i++) {
             boolean selected = (boolean) model.getValueAt(i, 2);
             if (selected) {
-                String maQuyen = (String) model.getValueAt(i, 0);
+                String maQuyen = model.getValueAt(i, 0).toString();
                 permissions.append(maQuyen).append(", ");
             }
         }
 
-        String maVaiTro = maNhomQuyenField.getText();
-        String tenVaiTro = tenNhomQuyenField.getText();
-        String moTa = moTaNhomQuyenArea.getText();
+        String maVaiTro = maVaiTroField.getText();
+        String tenVaiTro = tenVaiTroField.getText();
+        String moTa = moTaVaiTroArea.getText();
 
         vaiTro = new VaiTro(
-                maNhomQuyen.isEmpty() ? 0 : Integer.parseInt(maNhomQuyen),
+                maVaiTro.isEmpty() ? 0 : Integer.parseInt(maVaiTro),
                 tenVaiTro,
                 moTa
         );
 
+        System.out.println(vaiTro.getMaVaiTro());
         vaiTro = vaiTroBUS.themHoacSuaVaiTro(vaiTro);
+        System.out.println(vaiTro.getMaVaiTro());
+        quyenBUS.capNhatQuyenVaoVaiTro(vaiTro.getMaVaiTro(), danhSachQuyen);
 
         JOptionPane.showMessageDialog(
                 this,
-                "Đã lưu thay đổi cho nhóm quyền: " + tenNhomQuyenField.getText(),
+                "Đã lưu thay đổi cho vai trò: " + tenVaiTroField.getText(),
                 "Thành công",
                 JOptionPane.INFORMATION_MESSAGE
         );
@@ -300,11 +283,11 @@ public class ChiTietNhomQuyenDialog extends JDialog {
     }
 
     public String getTenNhomQuyen() {
-        return vaiTro.getTenVaiTro();
+        return tenVaiTroField.getText();
     }
 
     public String getMoTa() {
-        return vaiTro.getMoTa();
+        return moTaVaiTroArea.getText();
     }
 }
 

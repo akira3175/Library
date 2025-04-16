@@ -13,8 +13,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.List;
+import javax.swing.table.DefaultTableModel;
 
-public class Thongtinsanpham_Dialog extends JDialog {
+public class SanPham_Thongtinsanpham_Dialog extends JDialog {
 
     private JTextField maSanPhamField;
     private JComboBox<String> loaiSanPhamComboBox;
@@ -31,13 +32,24 @@ public class Thongtinsanpham_Dialog extends JDialog {
     private SanPhamDAO sanPhamDAO;
     private String duongDanAnh;
 
-    public Thongtinsanpham_Dialog(Window owner, boolean modal, SanPhamBUS sanPhamBUS, JTable tbSanPham, SanPhamDTO sanPham) {
+    private StyledButton suaButton;
+    private StyledButton xoaButton;
+    private StyledButton xacnhanButton;
+    private StyledButton huyButton;
+    private StyledButton thoatButton;
+    private JPanel thanhCongCuPanel;
+
+    private boolean isEdit = false;
+    private SanPhamDTO originalSanPham;
+
+    public SanPham_Thongtinsanpham_Dialog(Window owner, boolean modal, SanPhamBUS sanPhamBUS, JTable tbSanPham, SanPhamDTO sanPham) {
         super(owner, "Thông tin sản phẩm");
         this.sanPhamBUS = sanPhamBUS;
         this.tbSanPham = tbSanPham;
         this.sanPham = sanPham;
         this.sanPhamDAO = new SanPhamDAO();
         this.duongDanAnh = sanPham.getAnhSanPhamURL();
+        this.originalSanPham = new SanPhamDTO(sanPham);
         initComponents();
         hienThiDuLieuSanPham();
         hienThiDuLieuLoaiSanPham();
@@ -63,10 +75,17 @@ public class Thongtinsanpham_Dialog extends JDialog {
         anhSanPhamLabel.setPreferredSize(new Dimension(240, 240));
         anhSanPhamLabel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 240));
         anhSanPhamLabel.setMinimumSize(new Dimension(240, 240));
+        anhSanPhamLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
         anhSanPhamLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        anhSanPhamLabel.setBorder(BorderFactory.createLineBorder(Color.black, 1));
+
+        StyledButton chonAnhButton = new StyledButton("Chọn", AppConstants.BLUE, 0, 30);
+        chonAnhButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
+        chonAnhButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        chonAnhButton.addActionListener(e -> chonAnh());
 
         anhPanel.add(anhSanPhamLabel);
+        anhPanel.add(Box.createVerticalStrut(5));
+        anhPanel.add(chonAnhButton);
         anhPanel.add(Box.createVerticalGlue());
 
         JPanel formPanel = new JPanel();
@@ -84,15 +103,36 @@ public class Thongtinsanpham_Dialog extends JDialog {
         addFormField(formPanel, "Số lượng:", taoSoLuongField(), gbc, 4);
         addFormField(formPanel, "Giá vốn:", taoGiaVonField(), gbc, 5);
         addFormField(formPanel, "Giá lời:", taoGiaLoiField(), gbc, 6);
-        
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+
+        JPanel buttonPanel = new JPanel(new BorderLayout());
         buttonPanel.setBorder(new EmptyBorder(10, 0, 0, 0));
 
-        StyledButton closeButton = new StyledButton("Đóng", new Color(107, 114, 128), 100, 35);
-        closeButton.addActionListener(e -> dispose());
+        thanhCongCuPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        suaButton = new StyledButton("Sửa", new Color(59, 130, 246), 100, 35);
+        xoaButton = new StyledButton("Xóa", new Color(239, 68, 68), 100, 35);
+        xacnhanButton = new StyledButton("Xác nhận", new Color(34, 197, 94), 100, 35);
+        huyButton = new StyledButton("Hủy", new Color(107, 114, 128), 100, 35);
 
-        buttonPanel.add(closeButton);
-        
+        suaButton.addActionListener(e -> enterEditMode());
+        xoaButton.addActionListener(e -> xoaSanPham());
+        xacnhanButton.addActionListener(e -> xacNhanSua());
+        huyButton.addActionListener(e -> huySua());
+
+        thanhCongCuPanel.add(suaButton);
+        thanhCongCuPanel.add(xoaButton);
+        thanhCongCuPanel.add(xacnhanButton);
+        thanhCongCuPanel.add(huyButton);
+
+        xacnhanButton.setVisible(false);
+        huyButton.setVisible(false);
+
+        JPanel closePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        thoatButton = new StyledButton("Đóng", new Color(107, 114, 128), 100, 35);
+        thoatButton.addActionListener(e -> dispose());
+        closePanel.add(thoatButton);
+
+        buttonPanel.add(thanhCongCuPanel, BorderLayout.WEST);
+        buttonPanel.add(closePanel, BorderLayout.EAST);
 
         JPanel centerPanel = new JPanel(new BorderLayout());
         centerPanel.add(formPanel, BorderLayout.CENTER);
@@ -167,11 +207,42 @@ public class Thongtinsanpham_Dialog extends JDialog {
         giaLoiField.setEditable(false);
         return giaLoiField;
     }
-    
-    private void hienThiDuLieuLoaiSanPham(){
+
+    private void chonAnh() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        int result = fileChooser.showOpenDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+            duongDanAnh = selectedFile.getAbsolutePath();
+
+            ImageIcon originalIcon = new ImageIcon(duongDanAnh);
+            Image img = originalIcon.getImage();
+
+            int maxWidth = 240;
+            int maxHeight = 240;
+            int originalWidth = originalIcon.getIconWidth();
+            int originalHeight = originalIcon.getIconHeight();
+
+            int newWidth, newHeight;
+            if ((float) originalWidth / originalHeight > 1f) {
+                newWidth = maxWidth;
+                newHeight = (int) (maxWidth * originalHeight / originalWidth);
+            } else {
+                newHeight = maxHeight;
+                newWidth = (int) (maxHeight * originalWidth / originalHeight);
+            }
+
+            Image scaledImg = img.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+            anhSanPhamLabel.setText("");
+            anhSanPhamLabel.setIcon(new ImageIcon(scaledImg));
+        }
+    }
+
+    private void hienThiDuLieuLoaiSanPham() {
         List<SanPhamDTO> danhSachLoaiSanPham = sanPhamDAO.layDanhSachLoaiSanPham();
         DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
-        for(SanPhamDTO loai : danhSachLoaiSanPham){
+        for (SanPhamDTO loai : danhSachLoaiSanPham) {
             model.addElement(loai.getTenLoaiSanPham());
         }
         loaiSanPhamComboBox.setModel(model);
@@ -220,6 +291,114 @@ public class Thongtinsanpham_Dialog extends JDialog {
         } else {
             anhSanPhamLabel.setText("Chưa chọn ảnh");
             anhSanPhamLabel.setIcon(null);
+        }
+    }
+
+    private void enterEditMode() {
+        isEdit = true;
+
+        loaiSanPhamComboBox.setEnabled(true);
+        tenSanPhamField.setEditable(true);
+        nhaSanXuatField.setEditable(true);
+        giaVonField.setEditable(true);
+        giaLoiField.setEditable(true);
+
+        suaButton.setVisible(false);
+        xoaButton.setVisible(false);
+
+        xacnhanButton.setVisible(true);
+        huyButton.setVisible(true);
+
+        thanhCongCuPanel.revalidate();
+        thanhCongCuPanel.repaint();
+    }
+
+    private void xacNhanSua() {
+        try {
+            sanPham.setTenLoaiSanPham((String) loaiSanPhamComboBox.getSelectedItem());
+            sanPham.setTenSanPham(tenSanPhamField.getText().trim());
+            sanPham.setNhaSanXuat(nhaSanXuatField.getText().trim());
+            sanPham.setSoLuong(Integer.parseInt(soLuongField.getText().trim()));
+            sanPham.setGiaVon(Double.parseDouble(giaVonField.getText().trim()));
+            sanPham.setGiaLoi(Double.parseDouble(giaLoiField.getText().trim()));
+
+            if (sanPhamBUS.suaSanPham(sanPham)) {
+                JOptionPane.showMessageDialog(this, "Cập nhật sản phẩm thành công!",
+                        "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+
+                originalSanPham = new SanPhamDTO(sanPham);
+                updateTable();
+                exitEditMode();
+            } else {
+                JOptionPane.showMessageDialog(this, "Cập nhật sản phẩm thất bại!",
+                        "Lỗi", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập số hợp lệ cho số lượng, giá vốn và giá lời!",
+                    "Lỗi", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Lỗi khi cập nhật sản phẩm: " + e.getMessage(),
+                    "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void huySua() {
+        sanPham = new SanPhamDTO(originalSanPham);
+        hienThiDuLieuSanPham();
+        exitEditMode();
+    }
+
+    private void xoaSanPham() {
+        int confirm = JOptionPane.showConfirmDialog(this,
+                "Bạn có chắc chắn muốn xóa sản phẩm với mã " + sanPham.getMaSanPham() + " không?",
+                "Xác nhận xóa", JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            if (sanPhamBUS.xoaSanPham(sanPham.getMaSanPham())) {
+                JOptionPane.showMessageDialog(this, "Xóa sản phẩm thành công!",
+                        "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                updateTable();
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, "Xóa sản phẩm thất bại!",
+                        "Lỗi", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private void exitEditMode() {
+        isEdit = false;
+
+        loaiSanPhamComboBox.setEnabled(false);
+        tenSanPhamField.setEditable(false);
+        nhaSanXuatField.setEditable(false);
+        giaVonField.setEditable(false);
+        giaLoiField.setEditable(false);
+
+        suaButton.setVisible(true);
+        xoaButton.setVisible(true);
+
+        xacnhanButton.setVisible(false);
+        huyButton.setVisible(false);
+
+        thanhCongCuPanel.revalidate();
+        thanhCongCuPanel.repaint();
+    }
+
+    private void updateTable() {
+        DefaultTableModel model = (DefaultTableModel) tbSanPham.getModel();
+        model.setRowCount(0);
+        List<SanPhamDTO> danhSachSanPham = sanPhamBUS.layDanhSachTatCaSanPham();
+        for (SanPhamDTO sp : danhSachSanPham) {
+            model.addRow(new Object[]{
+                sp.getMaSanPham(),
+                sp.getTenLoaiSanPham(),
+                sp.getTenSanPham(),
+                sp.getAnhSanPhamURL(),
+                sp.getSoLuong(),
+                sp.getGiaVon(),
+                sp.getGiaLoi()
+            });
         }
     }
 }

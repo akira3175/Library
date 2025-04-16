@@ -38,6 +38,68 @@ public class SanPhamDAO {
         return danhSachSanPham;
     }
 
+    public List<SanPhamDTO> layDanhSachTatCaSanPhamHoatDong() {
+        List<SanPhamDTO> danhSachSanPham = new ArrayList<>();
+        String sql = "SELECT sp.MaSanPham, lsp.TenLoaiSanPham, sp.AnhSanPhamURL, sp.TenSanPham, "
+                + "sp.NhaSanXuat, sp.SoLuong, sp.GiaVon, sp.GiaLoi, sp.TrangThai, sp.sanphamcol "
+                + "FROM sanpham sp "
+                + "LEFT JOIN loaisanpham lsp ON sp.MaLoaiSanPham = lsp.MaLoaiSanPham "
+                + "WHERE sp.TrangThai = 1";
+
+        try (Connection conn = DatabaseConnection.getConnection(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                SanPhamDTO sanPham = new SanPhamDTO();
+                sanPham.setMaSanPham(rs.getInt("MaSanPham"));
+                sanPham.setTenLoaiSanPham(rs.getString("TenLoaiSanPham"));
+                sanPham.setAnhSanPhamURL(rs.getString("AnhSanPhamURL"));
+                sanPham.setTenSanPham(rs.getString("TenSanPham"));
+                sanPham.setNhaSanXuat(rs.getString("NhaSanXuat"));
+                sanPham.setTrangThai(rs.getBoolean("TrangThai"));
+                sanPham.setsanphamcol(rs.getString("sanphamcol"));
+                sanPham.setSoLuong(rs.getInt("SoLuong"));
+                sanPham.setGiaVon(rs.getDouble("GiaVon"));
+                sanPham.setGiaLoi(rs.getDouble("GiaLoi"));
+
+                danhSachSanPham.add(sanPham);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return danhSachSanPham;
+    }
+
+    public List<SanPhamDTO> layDanhSachTatCaSanPhamKhongHoatDong() {
+        List<SanPhamDTO> danhSachSanPham = new ArrayList<>();
+        String sql = "SELECT sp.MaSanPham, lsp.TenLoaiSanPham, sp.AnhSanPhamURL, sp.TenSanPham, "
+                + "sp.NhaSanXuat, sp.SoLuong, sp.GiaVon, sp.GiaLoi, sp.TrangThai, sp.sanphamcol "
+                + "FROM sanpham sp "
+                + "LEFT JOIN loaisanpham lsp ON sp.MaLoaiSanPham = lsp.MaLoaiSanPham "
+                + "WHERE sp.TrangThai = 0";
+
+        try (Connection conn = DatabaseConnection.getConnection(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                SanPhamDTO sanPham = new SanPhamDTO();
+                sanPham.setMaSanPham(rs.getInt("MaSanPham"));
+                sanPham.setTenLoaiSanPham(rs.getString("TenLoaiSanPham"));
+                sanPham.setAnhSanPhamURL(rs.getString("AnhSanPhamURL"));
+                sanPham.setTenSanPham(rs.getString("TenSanPham"));
+                sanPham.setNhaSanXuat(rs.getString("NhaSanXuat"));
+                sanPham.setTrangThai(rs.getBoolean("TrangThai"));
+                sanPham.setsanphamcol(rs.getString("sanphamcol"));
+                sanPham.setSoLuong(rs.getInt("SoLuong"));
+                sanPham.setGiaVon(rs.getDouble("GiaVon"));
+                sanPham.setGiaLoi(rs.getDouble("GiaLoi"));
+
+                danhSachSanPham.add(sanPham);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return danhSachSanPham;
+    }
+
     public SanPhamDTO laySanPhamTheoMa(int maSanPham) {
         Connection conn = DatabaseConnection.getConnection();
         SanPhamDTO sanPham = null;
@@ -176,11 +238,12 @@ public class SanPhamDAO {
     }
 
     public boolean xoaSanPham(int maSanPham) {
-        String sql = "DELETE FROM sanpham WHERE MaSanPham = ?";
+        String sql = "UPDATE sanpham SET TrangThai = ? WHERE MaSanPham = ?";
 
         try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setInt(1, maSanPham);
+            stmt.setInt(2, maSanPham);
+            stmt.setBoolean(1, false);
 
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;

@@ -13,18 +13,16 @@ public class SanPhamDTO {
     private boolean TrangThai;
     private double GiaVon;
     private double GiaLoi;
-    private int maLoaiSanPham;
 
-    // Constructor mặc định
     public SanPhamDTO() {
     }
 
-    // Constructor đầy đủ
     public SanPhamDTO(int MaSanPham, int MaLoaiSanPham, String AnhSanPhamURL, String TenSanPham,
-            String NhaSanXuat, String sanphamcol, boolean TrangThai,
-            int SoLuong, double GiaVon, double GiaLoi) {
+                      String NhaSanXuat, String sanphamcol, boolean TrangThai,
+                      int SoLuong, double GiaVon, double GiaLoi) {
         this.MaSanPham = MaSanPham;
-        this.MaLoaiSanPham = MaLoaiSanPham;
+    this.MaLoaiSanPham = MaLoaiSanPham;
+        this.tenLoaiSanPham = null;
         this.AnhSanPhamURL = AnhSanPhamURL;
         this.TenSanPham = TenSanPham;
         this.NhaSanXuat = NhaSanXuat;
@@ -35,7 +33,20 @@ public class SanPhamDTO {
         this.GiaLoi = GiaLoi;
     }
 
-    // Getters and Setters
+    public SanPhamDTO(SanPhamDTO other) {
+        this.MaSanPham = other.getMaSanPham();
+        this.MaLoaiSanPham = other.getMaLoaiSanPham();
+        this.tenLoaiSanPham = other.getTenLoaiSanPham();
+        this.AnhSanPhamURL = other.getAnhSanPhamURL();
+        this.TenSanPham = other.getTenSanPham();
+        this.NhaSanXuat = other.getNhaSanXuat();
+        this.sanphamcol = other.getsanphamcol();
+        this.SoLuong = other.getSoLuong();
+        this.TrangThai = other.getTrangThai();
+        this.GiaVon = other.getGiaVon();
+        this.GiaLoi = other.getGiaLoi();
+    }
+
     public int getMaSanPham() {
         return MaSanPham;
     }
@@ -48,16 +59,16 @@ public class SanPhamDTO {
         return MaLoaiSanPham;
     }
 
+    public void setMaLoaiSanPham(int MaLoaiSanPham) {
+        this.MaLoaiSanPham = MaLoaiSanPham;
+    }
+
     public String getTenLoaiSanPham() {
         return tenLoaiSanPham;
     }
 
     public void setTenLoaiSanPham(String tenLoaiSanPham) {
         this.tenLoaiSanPham = tenLoaiSanPham;
-    }
-
-    public void setMaLoaiSanPham(int MaLoaiSanPham) {
-        this.MaLoaiSanPham = MaLoaiSanPham;
     }
 
     public String getAnhSanPhamURL() {
@@ -100,13 +111,14 @@ public class SanPhamDTO {
         this.SoLuong = SoLuong;
     }
 
-    public boolean isTrangThai() {
+    public boolean getTrangThai() {
         return TrangThai;
     }
 
     public void setTrangThai(boolean TrangThai) {
         this.TrangThai = TrangThai;
     }
+    
 
     public double getGiaVon() {
         return GiaVon;

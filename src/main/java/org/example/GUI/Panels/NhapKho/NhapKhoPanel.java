@@ -5,7 +5,7 @@
 package org.example.GUI.Panels.NhapKho;
 
 import org.example.GUI.Constants.AppConstants;
-import org.example.BUS.NhapHangBUS;
+import org.example.BUS.PhieuNhapBUS;
 
 /**
  *
@@ -13,11 +13,15 @@ import org.example.BUS.NhapHangBUS;
  */
 public class NhapKhoPanel extends javax.swing.JPanel {
 
+    private PhieuNhapBUS pnBUS;
+
     /**
      * Creates new form NhapKhoPanel
      */
     public NhapKhoPanel() {
         initComponents();
+        pnBUS = new PhieuNhapBUS();
+        pnBUS.hienThiPhieuNhapLenTable(jTable1);
     }
 
     /**
@@ -106,9 +110,6 @@ public class NhapKhoPanel extends javax.swing.JPanel {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        
-        NhapHang t = new NhapHang();
-        t.setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
 
 

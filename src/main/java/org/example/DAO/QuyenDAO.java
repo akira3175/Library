@@ -188,4 +188,21 @@ public class QuyenDAO {
     
         return danhSachQuyen;
     }    
+
+    public boolean coTenQuyen(String tenQuyen) {
+        String sql = "SELECT COUNT(MaQuyen) FROM Quyen WHERE TenQuyen = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, tenQuyen);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Lỗi khi kiểm tra tên quyền: ", e);
+        }
+        return false;
+    }
 }

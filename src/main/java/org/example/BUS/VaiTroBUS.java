@@ -6,7 +6,8 @@ import org.example.DTO.Quyen;
 import org.example.DAO.QuyenDAO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import javax.swing.JOptionPane;
+import java.util.ArrayList;
 import java.util.List;
 
 public class VaiTroBUS {
@@ -32,11 +33,31 @@ public class VaiTroBUS {
                 .orElseThrow(() -> new RuntimeException("Sửa vai trò thất bại!"));
     }
 
+    public boolean xoaVaiTro(int maVaiTro) {
+        VaiTro vaiTro = layVaiTroTheoID(maVaiTro);
+        if (vaiTro.getTenVaiTro().equals("Quản trị viên")) {
+            logger.warn("Không thể xóa vai trò Quản trị viên!");
+            JOptionPane.showMessageDialog(null, "Không thể xóa vai trò Quản trị viên!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        return vaiTroDAO.xoaVaiTro(maVaiTro);
+    }
+
     public List<VaiTro> danhSachVaitro() {
         List<VaiTro> vaiTroList = vaiTroDAO.layDanhSachTatCaVaiTro();
 
         if (vaiTroList == null || vaiTroList.isEmpty()) {
-            logger.warn("Danh sách vai trò trống!");
+            vaiTroList = new ArrayList<>();
+            vaiTroList.add(new VaiTro(0, "Quản trị viên", "Quản trị viên toàn quyền trên hệ thống"));
+            vaiTroList.add(new VaiTro(1, "Quản lý", "Quản lý nhân sự, hệ thống"));
+            vaiTroList.add(new VaiTro(2, "Nhân viên Bán hàng", "Nhân viên bán hàng "));
+
+            for (VaiTro vaiTro : vaiTroList) {
+                themVaiTro(vaiTro);
+            }
+
+            vaiTroList = vaiTroDAO.layDanhSachTatCaVaiTro();
         }
 
         return vaiTroList;
@@ -65,4 +86,8 @@ public class VaiTroBUS {
     public List<Quyen> layDanhSachQuyenTheoVaiTro(int maVaiTro) {
         return quyenDAO.layDanhSachQuyenTheoVaiTro(maVaiTro);
     }   
+
+    public boolean coTenVaiTro(String tenVaiTro) {
+        return vaiTroDAO.coTenVaiTro(tenVaiTro);
+    }
 }

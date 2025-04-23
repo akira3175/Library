@@ -190,7 +190,7 @@ public class NhomQuyenPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 int selectedRow = vaiTroTable.getSelectedRow();
                 if (selectedRow >= 0) {
-                    String maVaiTro = (String) vaiTroTable.getValueAt(selectedRow, 0);
+                    String maVaiTro = vaiTroTable.getValueAt(selectedRow, 0).toString();
                     String tenVaiTro = (String) vaiTroTable.getValueAt(selectedRow, 1);
 
                     int confirm = JOptionPane.showConfirmDialog(
@@ -202,17 +202,25 @@ public class NhomQuyenPanel extends JPanel {
                     );
 
                     if (confirm == JOptionPane.YES_OPTION) {
-                        // In a real application, you would delete from the database
-                        // For this example, we'll just remove from the table
-                        DefaultTableModel model = (DefaultTableModel) vaiTroTable.getModel();
-                        model.removeRow(selectedRow);
+                        boolean thanhCong = vaiTroBUS.xoaVaiTro(Integer.parseInt(maVaiTro));
+                        if (thanhCong) {
+                            DefaultTableModel model = (DefaultTableModel) vaiTroTable.getModel();
+                            model.removeRow(selectedRow);
 
-                        JOptionPane.showMessageDialog(
-                                NhomQuyenPanel.this,
-                                "Đã xóa vai trò " + tenVaiTro,
-                                "Thành công",
-                                JOptionPane.INFORMATION_MESSAGE
-                        );
+                            JOptionPane.showMessageDialog(
+                                    NhomQuyenPanel.this,
+                                    "Đã xóa vai trò " + tenVaiTro,
+                                    "Thành công",
+                                    JOptionPane.INFORMATION_MESSAGE
+                            );
+                        } else {
+                            JOptionPane.showMessageDialog(
+                                    NhomQuyenPanel.this,
+                                    "Không thể xóa vai trò " + tenVaiTro,
+                                    "Lỗi",
+                                    JOptionPane.ERROR_MESSAGE
+                            );
+                        }
                     }
                 } else {
                     JOptionPane.showMessageDialog(

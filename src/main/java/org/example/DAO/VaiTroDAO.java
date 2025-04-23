@@ -157,4 +157,21 @@ public class VaiTroDAO {
 
         return danhSach;
     }
+
+    public boolean coTenVaiTro(String tenVaiTro) {
+        String sql = "SELECT COUNT(MaVaiTro) FROM VaiTro WHERE TenVaiTro = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, tenVaiTro);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Lỗi khi kiểm tra tên vai trò: ", e);
+        }
+        return false;
+    }
 }

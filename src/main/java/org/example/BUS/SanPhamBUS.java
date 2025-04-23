@@ -69,8 +69,8 @@ public class SanPhamBUS {
             model.addRow(new Object[]{
                 sanPham.getMaSanPham(),
                 sanPham.getTenLoaiSanPham(),
-                sanPham.getAnhSanPhamURL(),
                 sanPham.getTenSanPham(),
+                sanPham.getAnhSanPhamURL(),
                 sanPham.getSoLuong(),
                 sanPham.getGiaVon(),
                 sanPham.getGiaLoi(),

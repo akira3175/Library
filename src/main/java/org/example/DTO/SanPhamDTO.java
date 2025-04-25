@@ -21,7 +21,7 @@ public class SanPhamDTO {
                       String NhaSanXuat, String sanphamcol, boolean TrangThai,
                       int SoLuong, double GiaVon, double GiaLoi) {
         this.MaSanPham = MaSanPham;
-    this.MaLoaiSanPham = MaLoaiSanPham;
+        this.MaLoaiSanPham = MaLoaiSanPham;
         this.tenLoaiSanPham = null;
         this.AnhSanPhamURL = AnhSanPhamURL;
         this.TenSanPham = TenSanPham;

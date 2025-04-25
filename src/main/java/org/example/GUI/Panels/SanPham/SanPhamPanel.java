@@ -17,7 +17,6 @@ public class SanPhamPanel extends JPanel {
     private SanPhamBUS sanPhamBUS;
     private JTable tbSanPham;
     private JTextField searchField;
-    private JTabbedPane tabbedPane;
     private JPanel danhSachPanel;
     private JComboBox<String> statusFilterComboBox;
 
@@ -29,13 +28,8 @@ public class SanPhamPanel extends JPanel {
 
         add(createHeaderPanel(), BorderLayout.NORTH);
 
-        tabbedPane = new JTabbedPane();
-        tabbedPane.setFont(AppConstants.NORMAL_FONT);
-
         danhSachPanel = createDanhSachPanel();
-        tabbedPane.addTab("Danh sách sản phẩm", danhSachPanel);
-
-        add(tabbedPane, BorderLayout.CENTER);
+        add(danhSachPanel, BorderLayout.CENTER);
 
         XuatSanPhamTable();
     }
@@ -48,13 +42,12 @@ public class SanPhamPanel extends JPanel {
         titleLabel.setFont(AppConstants.HEADER_FONT);
         titleLabel.setForeground(AppConstants.TEXT_COLOR);
 
-        JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JPanel actionPanel = new JPanel();
         actionPanel.setOpaque(false);
+        actionPanel.setLayout(new BoxLayout(actionPanel, BoxLayout.Y_AXIS));
 
-        String[] filterOptions = {"Tất cả", "Không hoạt động", "Đang hoạt động"};
-        statusFilterComboBox = new JComboBox<>(filterOptions);
-        statusFilterComboBox.setPreferredSize(new Dimension(150, 35));
-        statusFilterComboBox.addActionListener(e -> XuatSanPhamTable());
+        JPanel topRowPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        topRowPanel.setOpaque(false);
 
         searchField = new JTextField(20);
         searchField.putClientProperty("JTextField.placeholderText", "Tìm kiếm sản phẩm...");
@@ -77,10 +70,23 @@ public class SanPhamPanel extends JPanel {
             dialog.setVisible(true);
         });
 
-        actionPanel.add(statusFilterComboBox);
-        actionPanel.add(searchField);
-        actionPanel.add(searchButton);
-        actionPanel.add(addButton);
+        topRowPanel.add(searchField);
+        topRowPanel.add(searchButton);
+        topRowPanel.add(addButton);
+
+        JPanel bottomRowPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        bottomRowPanel.setOpaque(false);
+
+        String[] filterOptions = {"Tất cả", "Không hoạt động", "Đang hoạt động"};
+        statusFilterComboBox = new JComboBox<>(filterOptions);
+        statusFilterComboBox.setPreferredSize(new Dimension(150, 35));
+        statusFilterComboBox.addActionListener(e -> XuatSanPhamTable());
+
+        bottomRowPanel.add(statusFilterComboBox);
+
+        actionPanel.add(topRowPanel);
+        actionPanel.add(Box.createVerticalStrut(5));
+        actionPanel.add(bottomRowPanel);
 
         headerPanel.add(titleLabel, BorderLayout.WEST);
         headerPanel.add(actionPanel, BorderLayout.EAST);

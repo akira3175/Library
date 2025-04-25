@@ -1,5 +1,7 @@
 package org.example.GUI.Panels.NhanSu;
 
+import org.example.BUS.VaiTroBUS;
+import org.example.DTO.VaiTro;
 import org.example.GUI.Components.StyledButton;
 import org.example.GUI.Constants.AppConstants;
 import javax.swing.*;
@@ -14,14 +16,17 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
 
 public class NhomQuyenPanel extends JPanel {
     private JTable vaiTroTable;
     private JTextField searchField;
+    private VaiTroBUS vaiTroBUS;
 
     public NhomQuyenPanel() {
         setLayout(new BorderLayout(0, 0));
         setBackground(AppConstants.BACKGROUND_COLOR);
+        vaiTroBUS = new VaiTroBUS();
 
         // Create main content panel with padding
         JPanel contentPanel = new JPanel(new BorderLayout(20, 20));
@@ -185,7 +190,7 @@ public class NhomQuyenPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 int selectedRow = vaiTroTable.getSelectedRow();
                 if (selectedRow >= 0) {
-                    String maVaiTro = (String) vaiTroTable.getValueAt(selectedRow, 0);
+                    String maVaiTro = vaiTroTable.getValueAt(selectedRow, 0).toString();
                     String tenVaiTro = (String) vaiTroTable.getValueAt(selectedRow, 1);
 
                     int confirm = JOptionPane.showConfirmDialog(
@@ -197,17 +202,25 @@ public class NhomQuyenPanel extends JPanel {
                     );
 
                     if (confirm == JOptionPane.YES_OPTION) {
-                        // In a real application, you would delete from the database
-                        // For this example, we'll just remove from the table
-                        DefaultTableModel model = (DefaultTableModel) vaiTroTable.getModel();
-                        model.removeRow(selectedRow);
+                        boolean thanhCong = vaiTroBUS.xoaVaiTro(Integer.parseInt(maVaiTro));
+                        if (thanhCong) {
+                            DefaultTableModel model = (DefaultTableModel) vaiTroTable.getModel();
+                            model.removeRow(selectedRow);
 
-                        JOptionPane.showMessageDialog(
-                                NhomQuyenPanel.this,
-                                "Đã xóa vai trò " + tenVaiTro,
-                                "Thành công",
-                                JOptionPane.INFORMATION_MESSAGE
-                        );
+                            JOptionPane.showMessageDialog(
+                                    NhomQuyenPanel.this,
+                                    "Đã xóa vai trò " + tenVaiTro,
+                                    "Thành công",
+                                    JOptionPane.INFORMATION_MESSAGE
+                            );
+                        } else {
+                            JOptionPane.showMessageDialog(
+                                    NhomQuyenPanel.this,
+                                    "Không thể xóa vai trò " + tenVaiTro,
+                                    "Lỗi",
+                                    JOptionPane.ERROR_MESSAGE
+                            );
+                        }
                     }
                 } else {
                     JOptionPane.showMessageDialog(
@@ -233,10 +246,11 @@ public class NhomQuyenPanel extends JPanel {
     private void loadSampleData() {
         // Sample data for permission groups
         DefaultTableModel nhomQuyenModel = (DefaultTableModel) vaiTroTable.getModel();
-        nhomQuyenModel.addRow(new Object[]{"R001", "Quản trị viên", 2, "Nhóm quản trị hệ thống với toàn quyền truy cập và quản lý."});
-        nhomQuyenModel.addRow(new Object[]{"R002", "Nhân viên bán hàng", 5, "Nhóm nhân viên bán hàng, có quyền bán hàng và quản lý khách hàng."});
-        nhomQuyenModel.addRow(new Object[]{"R003", "Nhân viên kho", 3, "Nhóm nhân viên kho, có quyền quản lý sản phẩm và nhập kho."});
-        nhomQuyenModel.addRow(new Object[]{"R004", "Quản lý", 2, "Nhóm quản lý, có quyền xem báo cáo và quản lý nhân sự."});
+        List<VaiTro> danhSachVaiTro = vaiTroBUS.danhSachVaitroKemSoLuongNguoiDung();
+
+        for(VaiTro vaiTro: danhSachVaiTro) {
+            nhomQuyenModel.addRow(new Object[]{vaiTro.getMaVaiTro(), vaiTro.getTenVaiTro(), vaiTro.getSoLuongNguoiDung(), vaiTro.getMoTa()});
+        }
     }
 
     private void showGroupDetailsDialog(int row) {

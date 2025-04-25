@@ -4,6 +4,7 @@
  */
 package org.example.GUI.Panels.NhapKho;
 
+import org.example.BUS.ChiTietPhieuNhapBUS;
 import org.example.GUI.Constants.AppConstants;
 import org.example.BUS.PhieuNhapBUS;
 
@@ -14,6 +15,7 @@ import org.example.BUS.PhieuNhapBUS;
 public class NhapKhoPanel extends javax.swing.JPanel {
 
     private PhieuNhapBUS pnBUS;
+    private ChiTietPhieuNhapBUS ctpnBUS;
 
     /**
      * Creates new form NhapKhoPanel
@@ -22,6 +24,7 @@ public class NhapKhoPanel extends javax.swing.JPanel {
         initComponents();
         pnBUS = new PhieuNhapBUS();
         pnBUS.hienThiPhieuNhapLenTable(jTable1);
+        ctpnBUS = new ChiTietPhieuNhapBUS();
     }
 
     /**
@@ -60,6 +63,11 @@ public class NhapKhoPanel extends javax.swing.JPanel {
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
+            }
+        });
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTable1MouseClicked(evt);
             }
         });
         jScrollPane1.setViewportView(jTable1);
@@ -110,7 +118,23 @@ public class NhapKhoPanel extends javax.swing.JPanel {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
+                 
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
+        // TODO add your handling code here:
+        int selectedRow = jTable1.getSelectedRow();
+        if (selectedRow == -1) {
+            return;
+        }
+
+        int id = (int) jTable1.getValueAt(selectedRow, 0); 
+        ChiTietPhieuNhap dialog = new ChiTietPhieuNhap(null, true);
+        ctpnBUS.hienThiChiTietPhieuNhap(dialog.getTable(), id); 
+
+        dialog.setLocationRelativeTo(null); 
+        dialog.setVisible(true);  
+    }//GEN-LAST:event_jTable1MouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

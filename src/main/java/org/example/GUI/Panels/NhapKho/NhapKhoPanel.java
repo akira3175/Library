@@ -4,9 +4,15 @@
  */
 package org.example.GUI.Panels.NhapKho;
 
+import java.util.List;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 import org.example.BUS.ChiTietPhieuNhapBUS;
 import org.example.GUI.Constants.AppConstants;
 import org.example.BUS.PhieuNhapBUS;
+import org.example.DTO.ChiTietPhieuNhapDTO;
+import org.example.DTO.PhieuNhapDTO;
+import org.example.GUI.Panels.NhapKho.ChiTietPhieuNhap;
 
 /**
  *
@@ -14,7 +20,7 @@ import org.example.BUS.PhieuNhapBUS;
  */
 public class NhapKhoPanel extends javax.swing.JPanel {
 
-    private PhieuNhapBUS pnBUS;
+    private PhieuNhapBUS pnBUS = new PhieuNhapBUS();
     private ChiTietPhieuNhapBUS ctpnBUS;
 
     /**
@@ -22,9 +28,44 @@ public class NhapKhoPanel extends javax.swing.JPanel {
      */
     public NhapKhoPanel() {
         initComponents();
-        pnBUS = new PhieuNhapBUS();
-        pnBUS.hienThiPhieuNhapLenTable(jTable1);
+        hienThiPhieuNhapLenTable(jTable1);
         ctpnBUS = new ChiTietPhieuNhapBUS();
+    }
+
+    public void hienThiPhieuNhapLenTable(JTable table) {
+        List<PhieuNhapDTO> listpn = pnBUS.layTatCaPhieuNhap();
+
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+
+        model.setRowCount(0);
+
+        for (PhieuNhapDTO phieunhap : listpn) {
+            Object[] row = new Object[]{
+                phieunhap.getMaPhieuNhap(),
+                phieunhap.getHoTenNguoiDung(),
+                phieunhap.getTenNhaCungCap(),
+                phieunhap.getThoiGianLap(),
+                phieunhap.getTrangThai() == 1 ? "Đã Thanh Toán" : "Chưa thanh toán",};
+            model.addRow(row);
+        }
+
+        table.setModel(model);
+    }
+    
+     public void hienThiChiTietPhieuNhap(JTable table, int id) {
+        List<ChiTietPhieuNhapDTO> listct = ctpnBUS.layChiTietPhieuNhap(id);
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        model.setRowCount(0);
+
+        for (ChiTietPhieuNhapDTO ctpn : listct) {
+            Object[] row = new Object[]{
+                ctpn.getTenSanPham(),
+                ctpn.getDonGia(),
+                ctpn.getSoLuong(),
+                ctpn.getDonGia() * ctpn.getSoLuong(),};
+            model.addRow(row);
+        }
+        table.setModel(model);
     }
 
     /**
@@ -39,6 +80,7 @@ public class NhapKhoPanel extends javax.swing.JPanel {
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
+        jTable1.getTableHeader().setReorderingAllowed(false);
         jButton1 = new javax.swing.JButton();
 
         setBorder(javax.swing.BorderFactory.createEmptyBorder(20, 20, 20, 20));
@@ -54,7 +96,7 @@ public class NhapKhoPanel extends javax.swing.JPanel {
                 {null, null, null, null, null}
             },
             new String [] {
-                "Mã Phiếu Nhập", "Mã Người Dùng", "Mã Nhà Cung Cấp", "Thời Gian Lập", "Trạng Thái"
+                "Mã Phiếu Nhập", "Tên Người Dùng", "Tên Nhà Cung Cấp", "Thời Gian Lập", "Trạng Thái"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -94,14 +136,12 @@ public class NhapKhoPanel extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 548, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 288, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton1)))
-                .addContainerGap())
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 703, Short.MAX_VALUE)
+                        .addComponent(jButton1)
+                        .addContainerGap())))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -111,29 +151,31 @@ public class NhapKhoPanel extends javax.swing.JPanel {
                     .addComponent(jLabel1)
                     .addComponent(jButton1))
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jScrollPane1)
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-                 
+
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
         // TODO add your handling code here:
-        int selectedRow = jTable1.getSelectedRow();
-        if (selectedRow == -1) {
-            return;
+        if (evt.getClickCount() == 2) {
+            int selectedRow = jTable1.getSelectedRow();
+            if (selectedRow == -1) {
+                return;
+            }
+
+            int id = (int) jTable1.getValueAt(selectedRow, 0);
+            ChiTietPhieuNhap dialog = new ChiTietPhieuNhap(null, true);
+            hienThiChiTietPhieuNhap(dialog.getTable(), id);
+
+            dialog.setLocationRelativeTo(null);
+            dialog.setVisible(true);
         }
-
-        int id = (int) jTable1.getValueAt(selectedRow, 0); 
-        ChiTietPhieuNhap dialog = new ChiTietPhieuNhap(null, true);
-        ctpnBUS.hienThiChiTietPhieuNhap(dialog.getTable(), id); 
-
-        dialog.setLocationRelativeTo(null); 
-        dialog.setVisible(true);  
     }//GEN-LAST:event_jTable1MouseClicked
 
 

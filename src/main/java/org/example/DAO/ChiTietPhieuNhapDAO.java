@@ -11,7 +11,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import org.example.DTO.ChiTietPhieuNhap;
+import org.example.DTO.ChiTietPhieuNhapDTO;
 
 /**
  *
@@ -19,20 +19,24 @@ import org.example.DTO.ChiTietPhieuNhap;
  */
 public class ChiTietPhieuNhapDAO {
 
-    public List<ChiTietPhieuNhap> layChiTietPhieuNhap(int id) {
-        List<ChiTietPhieuNhap> c = new ArrayList<>();
-        String sql = "SELECT * FROM ChiTietPhieuNhap WHERE MaPhieuNhap=?";
+    public List<ChiTietPhieuNhapDTO> layChiTietPhieuNhap(int id) {
+        List<ChiTietPhieuNhapDTO> c = new ArrayList<>();
+        String sql = "SELECT ct.MaChiTietPhieuNhap, ct.MaSanPham, sp.TenSanPham, ct.DonGia, ct.SoLuong "
+                + "FROM ChiTietPhieuNhap ct "
+                + "JOIN SanPham sp ON sp.MaSanPham = ct.MaSanPham "
+                + "WHERE ct.MaPhieuNhap = ?";
 
         try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql);) {
             stmt.setInt(1, id);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    ChiTietPhieuNhap ctpn = new ChiTietPhieuNhap();
-                    ctpn.setMaChiTietPhieuNhap(rs.getInt(1));
+                    ChiTietPhieuNhapDTO ctpn = new ChiTietPhieuNhapDTO();
+                    ctpn.setMaChiTietPhieuNhap(rs.getInt("MaChiTietPhieuNhap"));
                     ctpn.setMaPhieuNhap(id);
-                    ctpn.setMaSanPham(rs.getInt(3));
-                    ctpn.setDonGia(rs.getInt(4));
-                    ctpn.setSoLuong(rs.getInt(5));
+                    ctpn.setMaSanPham(rs.getInt("MaSanPham"));
+                    ctpn.setTenSanPham(rs.getString("TenSanPham"));
+                    ctpn.setDonGia(rs.getInt("DonGia"));
+                    ctpn.setSoLuong(rs.getInt("SoLuong"));
                     c.add(ctpn);
                 }
             }

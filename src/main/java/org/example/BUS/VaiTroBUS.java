@@ -29,6 +29,12 @@ public class VaiTroBUS {
     }
 
     public VaiTro suaVaiTro(VaiTro vaiTro) {
+        if (vaiTro.getTenVaiTro().equals("Quản trị viên")) {
+            logger.warn("Không thể sửa vai trò Quản trị viên!");
+            JOptionPane.showMessageDialog(null, "Không thể sửa vai trò Quản trị viên!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+
         return vaiTroDAO.suaVaiTro(vaiTro)
                 .orElseThrow(() -> new RuntimeException("Sửa vai trò thất bại!"));
     }
@@ -89,5 +95,24 @@ public class VaiTroBUS {
 
     public boolean coTenVaiTro(String tenVaiTro) {
         return vaiTroDAO.coTenVaiTro(tenVaiTro);
+    }
+
+    public List<VaiTro> khoiTaoVaiTro() {
+        List<VaiTro> danhSachVaiTro = new ArrayList<>();
+        if (!coTenVaiTro("Quản trị viên")) {
+            danhSachVaiTro.add(new VaiTro(0, "Quản trị viên", "Quản trị viên toàn quyền trên hệ thống"));
+        }
+        if (!coTenVaiTro("Quản lý")) {
+            danhSachVaiTro.add(new VaiTro(1, "Quản lý", "Quản lý nhân sự, hệ thống"));
+        }
+
+        for (VaiTro vaiTro : danhSachVaiTro) {
+            themVaiTro(vaiTro);
+        }
+
+        logger.info("Khởi tạo vai trò thành công");
+        danhSachVaiTro = vaiTroDAO.layDanhSachTatCaVaiTro();
+
+        return danhSachVaiTro;
     }
 }

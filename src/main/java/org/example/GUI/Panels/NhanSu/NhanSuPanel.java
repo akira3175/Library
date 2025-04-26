@@ -1,7 +1,9 @@
 package org.example.GUI.Panels.NhanSu;
 
 import org.example.BUS.NguoiDungBUS;
+import org.example.BUS.VaiTroBUS;
 import org.example.DTO.NguoiDung;
+import org.example.DTO.VaiTro;
 import org.example.GUI.Components.BooleanRenderer;
 import org.example.GUI.Components.StyledButton;
 import org.example.GUI.Constants.AppConstants;
@@ -23,6 +25,8 @@ public class NhanSuPanel extends JPanel {
     private JPanel danhSachPanel;
     private NhomQuyenPanel nhomQuyenPanel;
     private NguoiDung nguoiDung;
+    private NguoiDung nguoiDungHienTai;
+    private VaiTroBUS vaiTroBUS;
 
     public NhanSuPanel() {
         setLayout(new BorderLayout(20, 20));
@@ -30,6 +34,8 @@ public class NhanSuPanel extends JPanel {
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         nguoiDungBUS = new NguoiDungBUS();
         nguoiDung = new NguoiDung();
+        nguoiDungHienTai = NguoiDungBUS.getNguoiDungHienTai();
+        vaiTroBUS = new VaiTroBUS();
 
         add(createHeaderPanel(), BorderLayout.NORTH);
 
@@ -43,7 +49,7 @@ public class NhanSuPanel extends JPanel {
 
         // Add tabs
         tabbedPane.addTab("Danh sách nhân sự", danhSachPanel);
-        tabbedPane.addTab("Nhóm quyền", nhomQuyenPanel);
+        showVaiTroPanel();
 
         // Add tabbed pane to main panel
         add(tabbedPane, BorderLayout.CENTER);
@@ -128,6 +134,16 @@ public class NhanSuPanel extends JPanel {
         contentPanel.add(scrollPane, BorderLayout.CENTER);
 
         return contentPanel;
+    }
+
+    private void showVaiTroPanel() {
+        VaiTro vaitro = vaiTroBUS.layVaiTroTheoID(nguoiDungHienTai.getMaVaiTro());
+
+        System.out.println(vaitro.getTenVaiTro());
+        
+        if (vaitro.getTenVaiTro().equals("Quản trị viên")) {
+            tabbedPane.addTab("Nhóm quyền", nhomQuyenPanel);
+        }
     }
 
     private void loadDataNhanSuTable() {

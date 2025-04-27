@@ -19,6 +19,7 @@ public class SanPhamPanel extends JPanel {
     private JTextField searchField;
     private JPanel danhSachPanel;
     private JComboBox<String> statusFilterComboBox;
+    private JButton exportExcelButton; 
 
     public SanPhamPanel() {
         setLayout(new BorderLayout(20, 20));
@@ -82,7 +83,17 @@ public class SanPhamPanel extends JPanel {
         statusFilterComboBox.setPreferredSize(new Dimension(150, 35));
         statusFilterComboBox.addActionListener(e -> XuatSanPhamTable());
 
+        exportExcelButton = new JButton("Xuất Excel");
+        exportExcelButton.setBackground(new Color(255, 165, 0));
+        exportExcelButton.setForeground(Color.WHITE);
+        exportExcelButton.setPreferredSize(new Dimension(100, 35));
+        exportExcelButton.addActionListener(e -> {
+            String selectedFilter = (String) statusFilterComboBox.getSelectedItem();
+            sanPhamBUS.xuatDanhSachSanPhamRaExcel(tbSanPham, selectedFilter);
+        });
+
         bottomRowPanel.add(statusFilterComboBox);
+        bottomRowPanel.add(exportExcelButton);
 
         actionPanel.add(topRowPanel);
         actionPanel.add(Box.createVerticalStrut(5));

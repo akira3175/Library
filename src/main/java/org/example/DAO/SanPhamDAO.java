@@ -29,7 +29,6 @@ public class SanPhamDAO {
                 sanPham.setSoLuong(rs.getInt("SoLuong"));
                 sanPham.setGiaVon(rs.getDouble("GiaVon"));
                 sanPham.setGiaLoi(rs.getDouble("GiaLoi"));
-
                 danhSachSanPham.add(sanPham);
             }
         } catch (SQLException e) {
@@ -122,6 +121,7 @@ public class SanPhamDAO {
                 sanPham.setGiaVon(rs.getDouble("GiaVon"));
                 sanPham.setGiaLoi(rs.getDouble("GiaLoi"));
                 sanPham.setAnhSanPhamURL(rs.getString("AnhSanPhamURL"));
+                sanPham.setTrangThai(rs.getBoolean("TrangThai"));
             }
             rs.close();
             stmt.close();
@@ -225,7 +225,7 @@ public class SanPhamDAO {
             stmt.setInt(5, sanPham.getSoLuong());
             stmt.setDouble(6, sanPham.getGiaVon());
             stmt.setDouble(7, sanPham.getGiaLoi());
-            stmt.setBoolean(8, sanPham.getSoLuong() > 0);
+            stmt.setBoolean(8, sanPham.getTrangThai());
             stmt.setInt(9, sanPham.getMaSanPham());
 
             int rowsAffected = stmt.executeUpdate();

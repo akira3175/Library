@@ -59,6 +59,7 @@ public class MainFrame extends JFrame {
 
         quyenBUS.khoiTaoQuyen();
         vaiTroBUS.khoiTaoVaiTro();
+        vaiTroBUS.ganVaiTroChoQuanTriVien();
     }
 
     private void initializeHeader() {

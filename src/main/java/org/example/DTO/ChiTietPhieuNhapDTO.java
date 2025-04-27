@@ -1,22 +1,31 @@
 package org.example.DTO;
 
-public class ChiTietPhieuNhap {
+public class ChiTietPhieuNhapDTO {
     
     private int MaChiTietPhieuNhap;
     private int MaPhieuNhap;
     private int MaSanPham;
     private int DonGia;
     private int SoLuong;
-
-    public ChiTietPhieuNhap(int MaChiTietPhieuNhap, int MaPhieuNhap, int MaSanPham, int DonGia, int SoLuong) {
+    private String TenSanPham;
+    
+    public ChiTietPhieuNhapDTO(int MaChiTietPhieuNhap, int MaPhieuNhap, int MaSanPham, int DonGia, int SoLuong, String TenSanPham) {
         this.MaChiTietPhieuNhap = MaChiTietPhieuNhap;
         this.MaPhieuNhap = MaPhieuNhap;
         this.MaSanPham = MaSanPham;
         this.DonGia = DonGia;
         this.SoLuong = SoLuong;
+        this.TenSanPham = TenSanPham;
+    }
+    public String getTenSanPham() {
+        return TenSanPham;
     }
 
-    public ChiTietPhieuNhap() {
+    public void setTenSanPham(String TenSanPham) {
+        this.TenSanPham = TenSanPham;
+    }
+
+    public ChiTietPhieuNhapDTO() {
     }
 
     public int getMaChiTietPhieuNhap() {

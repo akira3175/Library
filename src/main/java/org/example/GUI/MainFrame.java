@@ -1,7 +1,10 @@
 package org.example.GUI;
 
 import org.example.BUS.NguoiDungBUS;
+import org.example.BUS.VaiTroBUS;
+import org.example.BUS.QuyenBUS;
 import org.example.DTO.NguoiDung;
+import org.example.DTO.Quyen;
 import org.example.GUI.Auth.LoginForm;
 import org.example.GUI.Constants.AppConstants;
 import org.example.GUI.Panels.KhachHang.KhachHangPanel;
@@ -9,14 +12,18 @@ import org.example.GUI.Panels.NhapKho.NhapKhoPanel;
 import org.example.GUI.Panels.NhanSu.NhanSuPanel;
 import org.example.GUI.Panels.SanPham.SanPhamPanel;
 import org.example.GUI.Panels.ThongKe.ThongKePanel;
+import org.example.GUI.Panels.KhuyenMai.KhuyenMaiPanel;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 import java.awt.*;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.example.GUI.Panels.BanHang.BanHangPanel;
 
 
@@ -26,6 +33,9 @@ public class MainFrame extends JFrame {
     private Map<String, JButton> navigationButtons;
     private String activeButtonKey = "sell"; // Default active button
     private NguoiDung nguoiDungHienTai;
+    private QuyenBUS quyenBUS;
+    private VaiTroBUS vaiTroBUS;
+
 
     public MainFrame() {
         setTitle("Quản lý bán hàng");
@@ -36,6 +46,8 @@ public class MainFrame extends JFrame {
         getContentPane().setBackground(AppConstants.BACKGROUND_COLOR);
 
         nguoiDungHienTai = NguoiDungBUS.getNguoiDungHienTai();
+        quyenBUS = new QuyenBUS();
+        vaiTroBUS = new VaiTroBUS();
 
         initializeHeader();
         initializeSidebar();
@@ -44,6 +56,9 @@ public class MainFrame extends JFrame {
         add(headerPanel, BorderLayout.NORTH);
         add(sidebar, BorderLayout.WEST);
         add(contentPanel, BorderLayout.CENTER);
+
+        quyenBUS.khoiTaoQuyen();
+        vaiTroBUS.khoiTaoVaiTro();
     }
 
     private void initializeHeader() {
@@ -109,14 +124,34 @@ public class MainFrame extends JFrame {
         sidebar.add(Box.createVerticalStrut(30));
 
         navigationButtons = new HashMap<>();
+        List<Quyen> danhSachQuyen = quyenBUS.layDanhSachQuyenTheoVaiTro(nguoiDungHienTai.getMaVaiTro());
+        Set<String> danhSachTenQuyen = danhSachQuyen.stream()
+                                            .filter(Quyen::isChecked)
+                                            .map(Quyen::getTenQuyen)
+                                            .collect(Collectors.toSet());;
 
         // Add navigation buttons with icons
-        addNavigationButton("sell", "Bán hàng", "book.png");
-        addNavigationButton("products", "Sản phẩm", "book.png");
-        addNavigationButton("consumers", "Khách hàng", "book.png");
-        addNavigationButton("users", "Nhân sự", "user.png");
-        addNavigationButton("import", "Nhập kho", "loan.png");
-        addNavigationButton("statistics", "Thống kê", "home.png");
+        if (danhSachTenQuyen.contains("Bán hàng")) {
+            addNavigationButton("sell", "Bán hàng", "book.png");
+        }
+        if (danhSachTenQuyen.contains("Quản lý sản phẩm")) {
+            addNavigationButton("products", "Sản phẩm", "book.png");
+        }
+        if (danhSachTenQuyen.contains("Quản lý khuyến mãi")) {
+            addNavigationButton("promotions", "Khuyến mãi", "book.png");
+        }
+        if (danhSachTenQuyen.contains("Quản lý khách hàng")) {
+            addNavigationButton("consumers", "Khách hàng", "book.png");
+        }
+        if (danhSachTenQuyen.contains("Quản lý nhân sự")) {
+            addNavigationButton("users", "Nhân sự", "user.png");
+        }
+        if (danhSachTenQuyen.contains("Quản lý kho")) {
+            addNavigationButton("import", "Nhập kho", "loan.png");
+        }
+        if (danhSachTenQuyen.contains("Thống kê")) {
+            addNavigationButton("statistics", "Thống kê", "home.png");
+        }
 
         sidebar.add(Box.createVerticalGlue());
 
@@ -210,6 +245,7 @@ public class MainFrame extends JFrame {
         // Add panels
         contentPanel.add(new BanHangPanel(), "sell");
         contentPanel.add(new SanPhamPanel(), "products");
+        contentPanel.add(new KhuyenMaiPanel(), "promotions");
         contentPanel.add(new KhachHangPanel(), "consumers");
         contentPanel.add(new NhanSuPanel(), "users");
         contentPanel.add(new NhapKhoPanel(), "import");

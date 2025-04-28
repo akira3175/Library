@@ -337,8 +337,8 @@ public class SanPham_Thongtinsanpham_Dialog extends JDialog {
             sanPham.setTenSanPham(tenSanPhamField.getText().trim());
             sanPham.setNhaSanXuat(nhaSanXuatField.getText().trim());
             sanPham.setSoLuong(Integer.parseInt(soLuongField.getText().trim()));
-            sanPham.setGiaVon(Double.parseDouble(giaVonField.getText().trim()));
-            sanPham.setGiaLoi(Double.parseDouble(giaLoiField.getText().trim()));
+            sanPham.setGiaVon(Integer.parseInt(giaVonField.getText().trim()));
+            sanPham.setGiaLoi(Integer.parseInt(giaLoiField.getText().trim()));
             sanPham.setAnhSanPhamURL(duongDanAnh != null ? duongDanAnh : "");
             sanPham.setTrangThai(trangThaiCheckBox.isSelected());
 

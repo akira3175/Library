@@ -307,7 +307,6 @@ public class SanPham_Thongtinsanpham_Dialog extends JDialog {
         loaiSanPhamComboBox.setEnabled(true);
         tenSanPhamField.setEditable(true);
         nhaSanXuatField.setEditable(true);
-        soLuongField.setEditable(true);
         giaVonField.setEditable(true);
         giaLoiField.setEditable(true);
         trangThaiCheckBox.setEnabled(true);
@@ -324,12 +323,47 @@ public class SanPham_Thongtinsanpham_Dialog extends JDialog {
 
     private void xacNhanSua() {
         try {
-            if (tenSanPhamField.getText().trim().isEmpty() ||
-                nhaSanXuatField.getText().trim().isEmpty() ||
-                soLuongField.getText().trim().isEmpty() ||
-                giaVonField.getText().trim().isEmpty() ||
-                giaLoiField.getText().trim().isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            StringBuilder errorMessage = new StringBuilder();
+
+            if (tenSanPhamField.getText().trim().isEmpty()) {
+                errorMessage.append("- Vui lòng nhập tên sản phẩm!\n");
+            }
+            if (nhaSanXuatField.getText().trim().isEmpty()) {
+                errorMessage.append("- Vui lòng nhập nhà sản xuất!\n");
+            }
+            if (duongDanAnh == null || duongDanAnh.trim().isEmpty()) {
+                errorMessage.append("- Vui lòng chọn ảnh sản phẩm!\n");
+            }
+            if (giaVonField.getText().trim().isEmpty()) {
+                errorMessage.append("- Vui lòng nhập giá vốn!\n");
+            }
+            if (giaLoiField.getText().trim().isEmpty()) {
+                errorMessage.append("- Vui lòng nhập giá lời!\n");
+            }
+
+            if (errorMessage.length() > 0) {
+                JOptionPane.showMessageDialog(this, "Vui lòng hoàn thành các thông tin sau:\n" + errorMessage.toString(),
+                        "Lỗi nhập liệu", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            double giaVon, giaLoi;
+            try {
+                giaVon = Double.parseDouble(giaVonField.getText().trim());
+                giaLoi = Double.parseDouble(giaLoiField.getText().trim());
+                if (giaVon < 0 || giaLoi < 0) {
+                    JOptionPane.showMessageDialog(this, "Giá vốn và giá lời phải là số không âm!",
+                            "Lỗi định dạng", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                if (giaLoi <= giaVon) {
+                    JOptionPane.showMessageDialog(this, "Giá lời phải lớn hơn giá vốn!",
+                            "Lỗi nhập liệu", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Giá vốn và giá lời phải là số hợp lệ!",
+                        "Lỗi định dạng", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 

@@ -2,15 +2,13 @@ package org.example.GUI.Panels.SanPham;
 
 import org.example.BUS.SanPhamBUS;
 import org.example.DTO.SanPhamDTO;
+import org.example.GUI.Components.StyledButton;
 import org.example.GUI.Constants.AppConstants;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 
 public class SanPhamPanel extends JPanel {
 
@@ -19,19 +17,16 @@ public class SanPhamPanel extends JPanel {
     private JTextField searchField;
     private JPanel danhSachPanel;
     private JComboBox<String> statusFilterComboBox;
-    private JButton exportExcelButton; 
+    private JButton exportExcelButton;
 
     public SanPhamPanel() {
         setLayout(new BorderLayout(20, 20));
         setBackground(AppConstants.BACKGROUND_COLOR);
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         sanPhamBUS = new SanPhamBUS();
-
         add(createHeaderPanel(), BorderLayout.NORTH);
-
         danhSachPanel = createDanhSachPanel();
         add(danhSachPanel, BorderLayout.CENTER);
-
         XuatSanPhamTable();
     }
 
@@ -53,18 +48,15 @@ public class SanPhamPanel extends JPanel {
         searchField = new JTextField(20);
         searchField.putClientProperty("JTextField.placeholderText", "Tìm kiếm sản phẩm...");
         searchField.setPreferredSize(new Dimension(200, 35));
+        searchField.setFont(AppConstants.NORMAL_FONT);
 
-        JButton searchButton = new JButton("Tìm");
-        searchButton.setPreferredSize(new Dimension(80, 35));
+        StyledButton searchButton = new StyledButton("Tìm", AppConstants.BLUE, 100, 35);
         searchButton.addActionListener(e -> {
             String tuKhoa = searchField.getText().trim();
             sanPhamBUS.HienThiSanPhamTimKiem(tbSanPham, tuKhoa);
         });
 
-        JButton addButton = new JButton("Thêm sản phẩm");
-        addButton.setBackground(AppConstants.PRIMARY_COLOR);
-        addButton.setForeground(Color.WHITE);
-        addButton.setPreferredSize(new Dimension(150, 35));
+        StyledButton addButton = new StyledButton("Thêm sản phẩm", AppConstants.PRIMARY_COLOR, 130, 35);
         addButton.addActionListener(e -> {
             SanPham_Them_Dialog dialog = new SanPham_Them_Dialog(null, true, sanPhamBUS, tbSanPham);
             dialog.setLocationRelativeTo(null);
@@ -81,12 +73,17 @@ public class SanPhamPanel extends JPanel {
         String[] filterOptions = {"Tất cả", "Không hoạt động", "Đang hoạt động"};
         statusFilterComboBox = new JComboBox<>(filterOptions);
         statusFilterComboBox.setPreferredSize(new Dimension(150, 35));
+        statusFilterComboBox.setFont(AppConstants.NORMAL_FONT);
         statusFilterComboBox.addActionListener(e -> XuatSanPhamTable());
 
-        exportExcelButton = new JButton("Xuất Excel");
-        exportExcelButton.setBackground(new Color(255, 165, 0));
-        exportExcelButton.setForeground(Color.WHITE);
-        exportExcelButton.setPreferredSize(new Dimension(100, 35));
+        StyledButton filterButton = new StyledButton("Lọc nâng cao", new Color(100, 149, 237), 130, 35);
+        filterButton.addActionListener(e -> {
+            SanPham_Loc_Dialog dialog = new SanPham_Loc_Dialog(null, true, sanPhamBUS, tbSanPham);
+            dialog.setLocationRelativeTo(null);
+            dialog.setVisible(true);
+        });
+
+        StyledButton exportExcelButton = new StyledButton("Xuất Excel", new Color(255, 165, 0), 100, 35);
         exportExcelButton.addActionListener(e -> {
             String selectedFilter = (String) statusFilterComboBox.getSelectedItem();
             sanPhamBUS.xuatDanhSachSanPhamRaExcel(tbSanPham, selectedFilter);
@@ -94,6 +91,7 @@ public class SanPhamPanel extends JPanel {
 
         bottomRowPanel.add(statusFilterComboBox);
         bottomRowPanel.add(exportExcelButton);
+        bottomRowPanel.add(filterButton);
 
         actionPanel.add(topRowPanel);
         actionPanel.add(Box.createVerticalStrut(5));
@@ -124,11 +122,9 @@ public class SanPhamPanel extends JPanel {
             public Class<?> getColumnClass(int columnIndex) {
                 switch (columnIndex) {
                     case 0:
-                        return Integer.class;
                     case 4:
                         return Integer.class;
                     case 5:
-                        return Double.class;
                     case 6:
                         return Double.class;
                     default:

@@ -13,6 +13,7 @@ import org.example.BUS.PhieuNhapBUS;
 import org.example.DTO.ChiTietPhieuNhapDTO;
 import org.example.DTO.PhieuNhapDTO;
 import org.example.GUI.Panels.NhapKho.ChiTietPhieuNhap;
+import org.example.GUI.Panels.NhapKho.NhapHang;
 
 /**
  *
@@ -123,6 +124,11 @@ public class NhapKhoPanel extends javax.swing.JPanel {
 
         jButton1.setFont(AppConstants.NORMAL_FONT);
         jButton1.setText("Nhập");
+        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton1MouseClicked(evt);
+            }
+        });
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -158,7 +164,6 @@ public class NhapKhoPanel extends javax.swing.JPanel {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
@@ -177,6 +182,12 @@ public class NhapKhoPanel extends javax.swing.JPanel {
             dialog.setVisible(true);
         }
     }//GEN-LAST:event_jTable1MouseClicked
+
+    private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
+        // TODO add your handling code here:
+        NhapHang NhapHangDiag = new NhapHang(null, true);
+        NhapHangDiag.setVisible(true);
+    }//GEN-LAST:event_jButton1MouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

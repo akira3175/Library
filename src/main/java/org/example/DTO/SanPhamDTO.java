@@ -11,15 +11,15 @@ public class SanPhamDTO {
     private String sanphamcol;
     private int SoLuong;
     private boolean TrangThai;
-    private double GiaVon;
-    private double GiaLoi;
-
+    private int GiaVon;
+    private int GiaLoi;
+    
     public SanPhamDTO() {
     }
 
     public SanPhamDTO(int MaSanPham, int MaLoaiSanPham, String AnhSanPhamURL, String TenSanPham,
                       String NhaSanXuat, String sanphamcol, boolean TrangThai,
-                      int SoLuong, double GiaVon, double GiaLoi) {
+                      int SoLuong, int GiaVon, int GiaLoi) {
         this.MaSanPham = MaSanPham;
         this.MaLoaiSanPham = MaLoaiSanPham;
         this.tenLoaiSanPham = null;
@@ -120,19 +120,19 @@ public class SanPhamDTO {
     }
     
 
-    public double getGiaVon() {
+    public int getGiaVon() {
         return GiaVon;
     }
 
-    public void setGiaVon(double GiaVon) {
+    public void setGiaVon(int GiaVon) {
         this.GiaVon = GiaVon;
     }
 
-    public double getGiaLoi() {
+    public int getGiaLoi() {
         return GiaLoi;
     }
 
-    public void setGiaLoi(double GiaLoi) {
+    public void setGiaLoi(int GiaLoi) {
         this.GiaLoi = GiaLoi;
     }
 }

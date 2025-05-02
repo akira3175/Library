@@ -2,17 +2,21 @@ package org.example.BUS;
 
 import org.example.DAO.SanPhamDAO;
 import org.example.DTO.SanPhamDTO;
+import org.example.Utils.ExcelUtils;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.util.List;
 
+
 public class SanPhamBUS {
 
     private SanPhamDAO sanPhamDAO;
+    private ExcelUtils excelUtils;
 
     public SanPhamBUS() {
         this.sanPhamDAO = new SanPhamDAO();
+        this.excelUtils = new ExcelUtils();
     }
     
     public void hienThiSanPhamLenTable(JTable table) {
@@ -77,6 +81,23 @@ public class SanPhamBUS {
                 sanPham.getTrangThai() ? "Hoạt động" : "Không hoạt động"
             });
         }
+    }
+    
+     public void xuatDanhSachSanPhamRaExcel(JTable table) {
+        List<SanPhamDTO> danhSachSanPham = layDanhSachTatCaSanPham();
+        excelUtils.xuatDanhSachSanPhamRaExcel(danhSachSanPham, table);
+    }
+
+    public void xuatDanhSachSanPhamRaExcel(JTable table, String filter) {
+        List<SanPhamDTO> danhSachSanPham;
+        if ("Không hoạt động".equals(filter)) {
+            danhSachSanPham = layDanhSachTatCaSanPhamKhongHoatDong();
+        } else if ("Đang hoạt động".equals(filter)) {
+            danhSachSanPham = layDanhSachTatCaSanPhamHoatDong();
+        } else {
+            danhSachSanPham = layDanhSachTatCaSanPham();
+        }
+        excelUtils.xuatDanhSachSanPhamRaExcel(danhSachSanPham, table);
     }
 
     public boolean themSanPham(SanPhamDTO sanPham) {

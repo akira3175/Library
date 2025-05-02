@@ -106,6 +106,24 @@ public class VaiTroDAO {
         return null;
     }
 
+    public VaiTro layVaiTroTheoTen(String tenVaiTro) {
+        String sql = "SELECT * FROM VaiTro WHERE TenVaiTro = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, tenVaiTro);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return new VaiTro(rs.getInt("MaVaiTro"), rs.getString("TenVaiTro"), rs.getString("MoTa"));
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Lỗi khi lấy vai trò theo tên: ", e);
+        }
+        return null;
+    }
+
+
     public List<VaiTro> layDanhSachTatCaVaiTro() {
         List<VaiTro> danhSach = new ArrayList<>();
         String sql = "SELECT * FROM VaiTro";

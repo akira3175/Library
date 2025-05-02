@@ -82,6 +82,35 @@ public class NguoiDungDAO {
         return null;
     }
 
+    public NguoiDung layNguoiDungTheoTenDangNhap(String tenDangNhap) {
+        String sql = "SELECT * FROM NguoiDung WHERE TenDangNhap = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, tenDangNhap);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new NguoiDung(rs.getInt("MaNguoiDung"), 
+                                    rs.getInt("MaVaiTro"), 
+                                    rs.getString("AvatarURL"), 
+                                    rs.getString("HoTen"), 
+                                    rs.getDate("NgaySinh"), 
+                                    rs.getString("GioiTinh"), 
+                                    rs.getString("DiaChi"), 
+                                    rs.getString("Email"), 
+                                    rs.getString("SoDienThoai"), 
+                                    rs.getBoolean("ConHoatDong"), 
+                                    rs.getString("TenDangNhap"),                                         rs.getDate("NgayVaoLam"), 
+                                    rs.getString("MatKhau"));
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Lỗi SQL khi lấy người dùng: {}", e.getMessage(), e);
+            throw new RuntimeException("Lỗi hệ thống khi lấy người dùng", e);
+        }
+        return null;
+    }
+
     public List<NguoiDung> layDanhSachTatCaNguoiDung() {
         List<NguoiDung> danhSachNguoiDung = new ArrayList<>();
         String sql = "SELECT * FROM NguoiDung";

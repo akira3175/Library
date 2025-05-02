@@ -9,8 +9,6 @@ import org.example.GUI.Constants.AppConstants;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
@@ -25,6 +23,7 @@ public class SanPham_Thongtinsanpham_Dialog extends JDialog {
     private JTextField soLuongField;
     private JTextField giaVonField;
     private JTextField giaLoiField;
+    private JCheckBox trangThaiCheckBox;
 
     private SanPhamBUS sanPhamBUS;
     private SanPhamDTO sanPham;
@@ -103,6 +102,7 @@ public class SanPham_Thongtinsanpham_Dialog extends JDialog {
         addFormField(formPanel, "Số lượng:", taoSoLuongField(), gbc, 4);
         addFormField(formPanel, "Giá vốn:", taoGiaVonField(), gbc, 5);
         addFormField(formPanel, "Giá lời:", taoGiaLoiField(), gbc, 6);
+        addFormField(formPanel, "Trạng thái:", taoTrangThaiCheckBox(), gbc, 7);
 
         JPanel buttonPanel = new JPanel(new BorderLayout());
         buttonPanel.setBorder(new EmptyBorder(10, 0, 0, 0));
@@ -142,7 +142,7 @@ public class SanPham_Thongtinsanpham_Dialog extends JDialog {
         mainPanel.add(centerPanel, BorderLayout.CENTER);
 
         setContentPane(mainPanel);
-        setMinimumSize(new Dimension(600, 400));
+        setMinimumSize(new Dimension(600, 420));
     }
 
     private void addFormField(JPanel panel, String labelText, JComponent field, GridBagConstraints gbc, int row) {
@@ -208,6 +208,13 @@ public class SanPham_Thongtinsanpham_Dialog extends JDialog {
         return giaLoiField;
     }
 
+    private JCheckBox taoTrangThaiCheckBox() {
+        trangThaiCheckBox = new JCheckBox("Hoạt động");
+        trangThaiCheckBox.setFont(AppConstants.NORMAL_FONT);
+        trangThaiCheckBox.setEnabled(false); 
+        return trangThaiCheckBox;
+    }
+
     private void chonAnh() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -253,7 +260,6 @@ public class SanPham_Thongtinsanpham_Dialog extends JDialog {
             JOptionPane.showMessageDialog(this, "Không có dữ liệu sản phẩm để hiển thị!", "Lỗi", JOptionPane.ERROR_MESSAGE);
             return;
         }
-
         maSanPhamField.setText(String.valueOf(sanPham.getMaSanPham()));
         loaiSanPhamComboBox.setSelectedItem(sanPham.getTenLoaiSanPham());
         tenSanPhamField.setText(sanPham.getTenSanPham());
@@ -261,6 +267,7 @@ public class SanPham_Thongtinsanpham_Dialog extends JDialog {
         soLuongField.setText(String.valueOf(sanPham.getSoLuong()));
         giaVonField.setText(String.valueOf(sanPham.getGiaVon()));
         giaLoiField.setText(String.valueOf(sanPham.getGiaLoi()));
+        trangThaiCheckBox.setSelected(sanPham.getTrangThai());
 
         if (sanPham.getAnhSanPhamURL() != null && !sanPham.getAnhSanPhamURL().isEmpty()) {
             try {
@@ -300,8 +307,10 @@ public class SanPham_Thongtinsanpham_Dialog extends JDialog {
         loaiSanPhamComboBox.setEnabled(true);
         tenSanPhamField.setEditable(true);
         nhaSanXuatField.setEditable(true);
+        soLuongField.setEditable(true);
         giaVonField.setEditable(true);
         giaLoiField.setEditable(true);
+        trangThaiCheckBox.setEnabled(true);
 
         suaButton.setVisible(false);
         xoaButton.setVisible(false);
@@ -315,12 +324,23 @@ public class SanPham_Thongtinsanpham_Dialog extends JDialog {
 
     private void xacNhanSua() {
         try {
-            sanPham.setTenLoaiSanPham((String) loaiSanPhamComboBox.getSelectedItem());
+            if (tenSanPhamField.getText().trim().isEmpty() ||
+                nhaSanXuatField.getText().trim().isEmpty() ||
+                soLuongField.getText().trim().isEmpty() ||
+                giaVonField.getText().trim().isEmpty() ||
+                giaLoiField.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            sanPham.setMaLoaiSanPham(layMaLoaiSanPhamTuTen((String) loaiSanPhamComboBox.getSelectedItem()));
             sanPham.setTenSanPham(tenSanPhamField.getText().trim());
             sanPham.setNhaSanXuat(nhaSanXuatField.getText().trim());
             sanPham.setSoLuong(Integer.parseInt(soLuongField.getText().trim()));
-            sanPham.setGiaVon(Double.parseDouble(giaVonField.getText().trim()));
-            sanPham.setGiaLoi(Double.parseDouble(giaLoiField.getText().trim()));
+            sanPham.setGiaVon(Integer.parseInt(giaVonField.getText().trim()));
+            sanPham.setGiaLoi(Integer.parseInt(giaLoiField.getText().trim()));
+            sanPham.setAnhSanPhamURL(duongDanAnh != null ? duongDanAnh : "");
+            sanPham.setTrangThai(trangThaiCheckBox.isSelected());
 
             if (sanPhamBUS.suaSanPham(sanPham)) {
                 JOptionPane.showMessageDialog(this, "Cập nhật sản phẩm thành công!",
@@ -340,6 +360,16 @@ public class SanPham_Thongtinsanpham_Dialog extends JDialog {
             JOptionPane.showMessageDialog(this, "Lỗi khi cập nhật sản phẩm: " + e.getMessage(),
                     "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    private int layMaLoaiSanPhamTuTen(String tenLoaiSanPham) {
+        List<SanPhamDTO> danhSachLoai = sanPhamDAO.layDanhSachLoaiSanPham();
+        for (SanPhamDTO loai : danhSachLoai) {
+            if (loai.getTenLoaiSanPham().equals(tenLoaiSanPham)) {
+                return loai.getMaLoaiSanPham();
+            }
+        }
+        return -1;
     }
 
     private void huySua() {
@@ -372,8 +402,10 @@ public class SanPham_Thongtinsanpham_Dialog extends JDialog {
         loaiSanPhamComboBox.setEnabled(false);
         tenSanPhamField.setEditable(false);
         nhaSanXuatField.setEditable(false);
+        soLuongField.setEditable(false);
         giaVonField.setEditable(false);
         giaLoiField.setEditable(false);
+        trangThaiCheckBox.setEnabled(false);
 
         suaButton.setVisible(true);
         xoaButton.setVisible(true);
@@ -397,7 +429,8 @@ public class SanPham_Thongtinsanpham_Dialog extends JDialog {
                 sp.getAnhSanPhamURL(),
                 sp.getSoLuong(),
                 sp.getGiaVon(),
-                sp.getGiaLoi()
+                sp.getGiaLoi(),
+                sp.getTrangThai() ? "Hoạt động" : "Không hoạt động"
             });
         }
     }

@@ -20,7 +20,7 @@ import org.example.DTO.ChiTietPhieuNhapDTO;
 public class ChiTietPhieuNhapDAO {
 
     public List<ChiTietPhieuNhapDTO> layChiTietPhieuNhap(int id) {
-        List<ChiTietPhieuNhapDTO> c = new ArrayList<>();
+        List<ChiTietPhieuNhapDTO> c = null;
         String sql = "SELECT ct.MaChiTietPhieuNhap, ct.MaSanPham, sp.TenSanPham, ct.DonGia, ct.SoLuong "
                 + "FROM ChiTietPhieuNhap ct "
                 + "JOIN SanPham sp ON sp.MaSanPham = ct.MaSanPham "

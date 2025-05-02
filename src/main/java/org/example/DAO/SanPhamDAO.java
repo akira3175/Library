@@ -27,9 +27,8 @@ public class SanPhamDAO {
                 sanPham.setTrangThai(rs.getBoolean("TrangThai"));
                 sanPham.setsanphamcol(rs.getString("sanphamcol"));
                 sanPham.setSoLuong(rs.getInt("SoLuong"));
-                sanPham.setGiaVon(rs.getDouble("GiaVon"));
-                sanPham.setGiaLoi(rs.getDouble("GiaLoi"));
-
+                sanPham.setGiaVon(rs.getInt("GiaVon"));
+                sanPham.setGiaLoi(rs.getInt("GiaLoi"));
                 danhSachSanPham.add(sanPham);
             }
         } catch (SQLException e) {
@@ -58,8 +57,8 @@ public class SanPhamDAO {
                 sanPham.setTrangThai(rs.getBoolean("TrangThai"));
                 sanPham.setsanphamcol(rs.getString("sanphamcol"));
                 sanPham.setSoLuong(rs.getInt("SoLuong"));
-                sanPham.setGiaVon(rs.getDouble("GiaVon"));
-                sanPham.setGiaLoi(rs.getDouble("GiaLoi"));
+                sanPham.setGiaVon(rs.getInt("GiaVon"));
+                sanPham.setGiaLoi(rs.getInt("GiaLoi"));
 
                 danhSachSanPham.add(sanPham);
             }
@@ -89,8 +88,8 @@ public class SanPhamDAO {
                 sanPham.setTrangThai(rs.getBoolean("TrangThai"));
                 sanPham.setsanphamcol(rs.getString("sanphamcol"));
                 sanPham.setSoLuong(rs.getInt("SoLuong"));
-                sanPham.setGiaVon(rs.getDouble("GiaVon"));
-                sanPham.setGiaLoi(rs.getDouble("GiaLoi"));
+                sanPham.setGiaVon(rs.getInt("GiaVon"));
+                sanPham.setGiaLoi(rs.getInt("GiaLoi"));
 
                 danhSachSanPham.add(sanPham);
             }
@@ -119,9 +118,10 @@ public class SanPhamDAO {
                 sanPham.setTenSanPham(rs.getString("TenSanPham"));
                 sanPham.setNhaSanXuat(rs.getString("NhaSanXuat"));
                 sanPham.setSoLuong(rs.getInt("SoLuong"));
-                sanPham.setGiaVon(rs.getDouble("GiaVon"));
-                sanPham.setGiaLoi(rs.getDouble("GiaLoi"));
+                sanPham.setGiaVon(rs.getInt("GiaVon"));
+                sanPham.setGiaLoi(rs.getInt("GiaLoi"));
                 sanPham.setAnhSanPhamURL(rs.getString("AnhSanPhamURL"));
+                sanPham.setTrangThai(rs.getBoolean("TrangThai"));
             }
             rs.close();
             stmt.close();
@@ -156,8 +156,8 @@ public class SanPhamDAO {
                     sanPham.setTrangThai(rs.getBoolean("TrangThai"));
                     sanPham.setsanphamcol(rs.getString("sanphamcol"));
                     sanPham.setSoLuong(rs.getInt("SoLuong"));
-                    sanPham.setGiaVon(rs.getDouble("GiaVon"));
-                    sanPham.setGiaLoi(rs.getDouble("GiaLoi"));
+                    sanPham.setGiaVon(rs.getInt("GiaVon"));
+                    sanPham.setGiaLoi(rs.getInt("GiaLoi"));
 
                     danhSachSanPham.add(sanPham);
                 }
@@ -199,8 +199,8 @@ public class SanPhamDAO {
             stmt.setString(4, sanPham.getTenSanPham());
             stmt.setString(5, sanPham.getNhaSanXuat());
             stmt.setInt(6, sanPham.getSoLuong());
-            stmt.setDouble(7, sanPham.getGiaVon());
-            stmt.setDouble(8, sanPham.getGiaLoi());
+            stmt.setInt(7, sanPham.getGiaVon());
+            stmt.setInt(8, sanPham.getGiaLoi());
             stmt.setBoolean(9, sanPham.getSoLuong() > 0);
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
@@ -223,9 +223,9 @@ public class SanPhamDAO {
             stmt.setString(3, sanPham.getTenSanPham());
             stmt.setString(4, sanPham.getNhaSanXuat());
             stmt.setInt(5, sanPham.getSoLuong());
-            stmt.setDouble(6, sanPham.getGiaVon());
-            stmt.setDouble(7, sanPham.getGiaLoi());
-            stmt.setBoolean(8, sanPham.getSoLuong() > 0);
+            stmt.setInt(6, sanPham.getGiaVon());
+            stmt.setInt(7, sanPham.getGiaLoi());
+            stmt.setBoolean(8, sanPham.getTrangThai());
             stmt.setInt(9, sanPham.getMaSanPham());
 
             int rowsAffected = stmt.executeUpdate();

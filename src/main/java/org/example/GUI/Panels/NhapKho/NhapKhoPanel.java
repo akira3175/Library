@@ -29,14 +29,14 @@ public class NhapKhoPanel extends javax.swing.JPanel {
      */
     public NhapKhoPanel() {
         initComponents();
-        hienThiPhieuNhapLenTable(jTable1);
+        loadPhieuNhap();
         ctpnBUS = new ChiTietPhieuNhapBUS();
     }
 
-    public void hienThiPhieuNhapLenTable(JTable table) {
+    public void loadPhieuNhap() {
         List<PhieuNhapDTO> listpn = pnBUS.layTatCaPhieuNhap();
 
-        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
 
         model.setRowCount(0);
 
@@ -50,7 +50,7 @@ public class NhapKhoPanel extends javax.swing.JPanel {
             model.addRow(row);
         }
 
-        table.setModel(model);
+        jTable1.setModel(model);
     }
     
      public void hienThiChiTietPhieuNhap(JTable table, int id) {
@@ -187,6 +187,8 @@ public class NhapKhoPanel extends javax.swing.JPanel {
         // TODO add your handling code here:
         NhapHang NhapHangDiag = new NhapHang(null, true);
         NhapHangDiag.setVisible(true);
+        
+        loadPhieuNhap();
     }//GEN-LAST:event_jButton1MouseClicked
 
 

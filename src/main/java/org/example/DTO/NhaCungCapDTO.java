@@ -76,5 +76,8 @@ public class NhaCungCapDTO {
         this.trangThai = trangThai;
     }
     
-    
+    @Override
+    public String toString() {
+        return tenNhaCungCap;
+    }
 }

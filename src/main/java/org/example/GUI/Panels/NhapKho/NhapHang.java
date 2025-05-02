@@ -5,14 +5,21 @@
 package org.example.GUI.Panels.NhapKho;
 
 import java.text.DecimalFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import org.example.BUS.NguoiDungBUS;
 import org.example.BUS.NhaCungCapBUS;
+import org.example.BUS.PhieuNhapBUS;
 import org.example.BUS.SanPhamBUS;
+import org.example.DTO.NguoiDung;
 import org.example.DTO.NhaCungCapDTO;
+import org.example.DTO.PhieuNhapDTO;
 import org.example.DTO.SanPhamDTO;
 
 /**
@@ -54,11 +61,10 @@ public class NhapHang extends javax.swing.JDialog {
 
     public void loadNhaCungCap() {
         NhaCungCapBUS ncc = new NhaCungCapBUS();
-        List<NhaCungCapDTO> nccList = new ArrayList<>();
-        nccList = ncc.layTatCaNhaCungCap();
+        List<NhaCungCapDTO> nccList = ncc.layTatCaNhaCungCap();
 
         for (NhaCungCapDTO i : nccList) {
-            jComboBox1.addItem(i.getTenNhaCungCap());
+            jComboBox1.addItem(i);
         }
     }
 
@@ -135,7 +141,6 @@ public class NhapHang extends javax.swing.JDialog {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Nhập hàng");
-        setPreferredSize(new java.awt.Dimension(1000, 562));
         setResizable(false);
         setSize(new java.awt.Dimension(1000, 562));
 
@@ -231,6 +236,11 @@ public class NhapHang extends javax.swing.JDialog {
         jLabel2.setText("Tổng tiền:");
 
         jButton2.setText("Nhập hàng");
+        jButton2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton2MouseClicked(evt);
+            }
+        });
 
         jLabel3.setText("0đ");
 
@@ -368,6 +378,21 @@ public class NhapHang extends javax.swing.JDialog {
         diag.setVisible(true);
     }//GEN-LAST:event_jButton3MouseClicked
 
+    private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseClicked
+        // TODO add your handling code here:
+        PhieuNhapDTO pnDTO = new PhieuNhapDTO();
+        PhieuNhapBUS pnBUS = new PhieuNhapBUS();
+        
+        NhaCungCapDTO nccChon = (NhaCungCapDTO) jComboBox1.getSelectedItem();
+        NguoiDung ndHienTai = NguoiDungBUS.getNguoiDungHienTai();
+        
+        pnDTO.setMaNguoiDung(ndHienTai.getMaNguoiDung());
+        pnDTO.setMaNhaCungCap(nccChon.getMaNhaCungCap());
+        
+        String thongBao = pnBUS.themPhieuNhap(pnDTO, spDuocChonList);
+        JOptionPane.showMessageDialog(this, thongBao);
+    }//GEN-LAST:event_jButton2MouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -422,7 +447,7 @@ public class NhapHang extends javax.swing.JDialog {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
-    private javax.swing.JComboBox<String> jComboBox1;
+    private javax.swing.JComboBox<NhaCungCapDTO> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

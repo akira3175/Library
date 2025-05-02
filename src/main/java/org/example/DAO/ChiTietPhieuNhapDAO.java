@@ -12,6 +12,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import org.example.DTO.ChiTietPhieuNhapDTO;
+import org.example.DTO.SanPhamDTO;
 
 /**
  *
@@ -20,7 +21,7 @@ import org.example.DTO.ChiTietPhieuNhapDTO;
 public class ChiTietPhieuNhapDAO {
 
     public List<ChiTietPhieuNhapDTO> layChiTietPhieuNhap(int id) {
-        List<ChiTietPhieuNhapDTO> c = null;
+        List<ChiTietPhieuNhapDTO> c = new ArrayList<>();
         String sql = "SELECT ct.MaChiTietPhieuNhap, ct.MaSanPham, sp.TenSanPham, ct.DonGia, ct.SoLuong "
                 + "FROM ChiTietPhieuNhap ct "
                 + "JOIN SanPham sp ON sp.MaSanPham = ct.MaSanPham "
@@ -45,5 +46,11 @@ public class ChiTietPhieuNhapDAO {
             e.printStackTrace();
         }
         return c;
+    }
+    
+    public boolean themChiTietPhieuNhap(List<SanPhamDTO> listSP) {
+        
+        
+        return false;
     }
 }

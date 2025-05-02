@@ -5,6 +5,7 @@
 package org.example.DAO;
 
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.example.DTO.PhieuNhapDTO;
@@ -43,5 +44,23 @@ public class PhieuNhapDAO {
             logger.error("Lấy danh sách người dùng thất bại! Message: {}", e.getMessage(), e);
         }
         return p;
+    }
+
+    public boolean themPhieuNhap(PhieuNhapDTO pnDTO) {
+        String sql = "insert into PhieuNhap(MaNguoiDung, MaNhaCungCap, ThoiGianLap) "
+                + "values (?, ?, ?)";
+        LocalDateTime now = LocalDateTime.now();
+        
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, pnDTO.getMaNguoiDung());
+            stmt.setInt(2, pnDTO.getMaNhaCungCap());
+            stmt.setTimestamp(3, Timestamp.valueOf(now));
+
+            int rowInserted = stmt.executeUpdate();
+            return rowInserted > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

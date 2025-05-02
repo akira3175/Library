@@ -298,8 +298,8 @@ public class SanPham_Them_Dialog extends JDialog {
             sanPham.setTenSanPham(tenSanPhamField.getText().trim());
             sanPham.setNhaSanXuat(nhaSanXuatField.getText().trim());
             sanPham.setSoLuong(Integer.parseInt(soLuongField.getText().trim()));
-            sanPham.setGiaVon(giaVon);
-            sanPham.setGiaLoi(giaLoi);
+            sanPham.setGiaVon(Integer.parseInt(giaVonField.getText().trim()));
+            sanPham.setGiaLoi(Integer.parseInt(giaLoiField.getText().trim().toString()));
 
             if (sanPhamBUS.themSanPham(sanPham)) {
                 JOptionPane.showMessageDialog(this, "Thêm sản phẩm thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);

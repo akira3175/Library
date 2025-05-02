@@ -9,6 +9,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import org.example.DAO.ChiTietPhieuNhapDAO;
 import org.example.DTO.ChiTietPhieuNhapDTO;
+import org.example.DTO.SanPhamDTO;
 
 /**
  *
@@ -24,5 +25,12 @@ public class ChiTietPhieuNhapBUS {
 
     public List<ChiTietPhieuNhapDTO> layChiTietPhieuNhap(int id) {
         return ctpnDAO.layChiTietPhieuNhap(id);
+    }
+    
+    public String themChiTietPhieuNhap(List<SanPhamDTO> listSP) {
+        if (ctpnDAO.themChiTietPhieuNhap(listSP))
+            return "Thêm Chi Tiết Phiếu Nhập Không Thành Công!";
+        
+        return "Thêm Chi Tiết Phiếu Nhập Không Thành Công!";
     }
 }

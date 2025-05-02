@@ -12,6 +12,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import org.example.DTO.ChiTietPhieuNhapDTO;
+import org.example.DTO.SanPhamDTO;
 
 /**
  *
@@ -45,5 +46,11 @@ public class ChiTietPhieuNhapDAO {
             e.printStackTrace();
         }
         return c;
+    }
+    
+    public boolean themChiTietPhieuNhap(List<SanPhamDTO> listSP) {
+        
+        
+        return false;
     }
 }

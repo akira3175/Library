@@ -8,6 +8,21 @@ import java.util.List;
 
 public class SanPhamDAO {
 
+    public int layMaSanPhamTiepTheo() {
+        String sql = "SELECT MAX(MaSanPham) AS MaxMaSanPham FROM sanpham";
+        try (Connection conn = DatabaseConnection.getConnection(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
+            if (rs.next()) {
+                int maxMaSanPham = rs.getInt("MaxMaSanPham");
+                return maxMaSanPham + 1;
+            } else {
+                return 1;
+            }
+        } catch (SQLException e) {
+            System.out.println(" Lỗi khi lấy mã sản phẩm tiếp theo: " + e.getMessage());
+            return -1;
+        }
+    }
+
     public List<SanPhamDTO> layDanhSachTatCaSanPham() {
         List<SanPhamDTO> danhSachSanPham = new ArrayList<>();
         String sql = "SELECT sp.MaSanPham, lsp.TenLoaiSanPham, sp.AnhSanPhamURL, sp.TenSanPham, "
@@ -206,7 +221,7 @@ public class SanPhamDAO {
             return rowsAffected > 0;
 
         } catch (SQLException e) {
-            System.out.println("❌ Lỗi khi thêm sản phẩm: " + e.getMessage());
+            System.out.println(" Lỗi khi thêm sản phẩm: " + e.getMessage());
             return false;
         }
     }
@@ -232,7 +247,7 @@ public class SanPhamDAO {
             return rowsAffected > 0;
 
         } catch (SQLException e) {
-            System.out.println("❌ Lỗi khi sửa sản phẩm: " + e.getMessage());
+            System.out.println(" Lỗi khi sửa sản phẩm: " + e.getMessage());
             return false;
         }
     }
@@ -249,8 +264,84 @@ public class SanPhamDAO {
             return rowsAffected > 0;
 
         } catch (SQLException e) {
-            System.out.println("❌ Lỗi khi xóa sản phẩm: " + e.getMessage());
+            System.out.println(" Lỗi khi xóa sản phẩm: " + e.getMessage());
             return false;
         }
+    }
+
+    public List<SanPhamDTO> layDanhSachSanPhamLocNangCao(String tenLoaiSanPham, String minGiaVon, String maxGiaVon,
+            String minGiaLoi, String maxGiaLoi, String minSoLuong, String maxSoLuong, String trangThai) {
+        List<SanPhamDTO> danhSachSanPham = new ArrayList<>();
+        StringBuilder sql = new StringBuilder(
+                "SELECT sp.MaSanPham, lsp.TenLoaiSanPham, sp.AnhSanPhamURL, sp.TenSanPham, "
+                + "sp.NhaSanXuat, sp.SoLuong, sp.GiaVon, sp.GiaLoi, sp.TrangThai, sp.sanphamcol "
+                + "FROM sanpham sp "
+                + "LEFT JOIN loaisanpham lsp ON sp.MaLoaiSanPham = lsp.MaLoaiSanPham WHERE 1=1"
+        );
+
+        List<Object> params = new ArrayList<>();
+
+        if (!tenLoaiSanPham.equals("Tất cả")) {
+            sql.append(" AND lsp.TenLoaiSanPham = ?");
+            params.add(tenLoaiSanPham);
+        }
+
+        if (!minGiaVon.isEmpty()) {
+            sql.append(" AND sp.GiaVon >= ?");
+            params.add(Double.parseDouble(minGiaVon));
+        }
+        if (!maxGiaVon.isEmpty()) {
+            sql.append(" AND sp.GiaVon <= ?");
+            params.add(Double.parseDouble(maxGiaVon));
+        }
+
+        if (!minGiaLoi.isEmpty()) {
+            sql.append(" AND sp.GiaLoi >= ?");
+            params.add(Double.parseDouble(minGiaLoi));
+        }
+        if (!maxGiaLoi.isEmpty()) {
+            sql.append(" AND sp.GiaLoi <= ?");
+            params.add(Double.parseDouble(maxGiaLoi));
+        }
+
+        if (!minSoLuong.isEmpty()) {
+            sql.append(" AND sp.SoLuong >= ?");
+            params.add(Integer.parseInt(minSoLuong));
+        }
+        if (!maxSoLuong.isEmpty()) {
+            sql.append(" AND sp.SoLuong <= ?");
+            params.add(Integer.parseInt(maxSoLuong));
+        }
+
+        if (!trangThai.equals("Tất cả")) {
+            sql.append(" AND sp.TrangThai = ?");
+            params.add(trangThai.equals("Đang hoạt động") ? 1 : 0);
+        }
+
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                stmt.setObject(i + 1, params.get(i));
+            }
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    SanPhamDTO sanPham = new SanPhamDTO();
+                    sanPham.setMaSanPham(rs.getInt("MaSanPham"));
+                    sanPham.setTenLoaiSanPham(rs.getString("TenLoaiSanPham"));
+                    sanPham.setAnhSanPhamURL(rs.getString("AnhSanPhamURL"));
+                    sanPham.setTenSanPham(rs.getString("TenSanPham"));
+                    sanPham.setNhaSanXuat(rs.getString("NhaSanXuat"));
+                    sanPham.setTrangThai(rs.getBoolean("TrangThai"));
+                    sanPham.setsanphamcol(rs.getString("sanphamcol"));
+                    sanPham.setSoLuong(rs.getInt("SoLuong"));
+                    sanPham.setGiaVon(rs.getDouble("GiaVon"));
+                    sanPham.setGiaLoi(rs.getDouble("GiaLoi"));
+                    danhSachSanPham.add(sanPham);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return danhSachSanPham;
     }
 }

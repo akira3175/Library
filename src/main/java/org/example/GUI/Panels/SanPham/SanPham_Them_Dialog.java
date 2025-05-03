@@ -1,7 +1,6 @@
 package org.example.GUI.Panels.SanPham;
 
 import org.example.BUS.SanPhamBUS;
-import org.example.DAO.SanPhamDAO;
 import org.example.DTO.SanPhamDTO;
 import org.example.GUI.Components.StyledButton;
 import org.example.GUI.Constants.AppConstants;
@@ -14,7 +13,6 @@ import java.util.List;
 
 public class SanPham_Them_Dialog extends JDialog {
 
-    private JTextField maSanPhamField;
     private JComboBox<String> loaiSanPhamComboBox;
     private JLabel anhSanPhamLabel;
     private JTextField tenSanPhamField;
@@ -24,14 +22,12 @@ public class SanPham_Them_Dialog extends JDialog {
     private JTextField giaLoiField;
     private SanPhamBUS sanPhamBUS;
     private JTable tbSanPham;
-    private SanPhamDAO sanPhamDAO;
     private String duongDanAnh;
 
     public SanPham_Them_Dialog(Window owner, boolean modal, SanPhamBUS sanPhamBUS, JTable tbSanPham) {
         super(owner, "Thêm sản phẩm mới");
         this.sanPhamBUS = sanPhamBUS;
         this.tbSanPham = tbSanPham;
-        this.sanPhamDAO = new SanPhamDAO();
         initComponents();
         taiDuLieuLoaiSanPham();
         pack();
@@ -77,13 +73,12 @@ public class SanPham_Them_Dialog extends JDialog {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(5, 5, 5, 5);
 
-        addFormField(formPanel, "Mã sản phẩm:", taoMaSanPhamField(), gbc, 0);
-        addLoaiSanPhamField(formPanel, gbc, 1);
-        addFormField(formPanel, "Tên sản phẩm:", taoTenSanPhamField(), gbc, 2);
-        addFormField(formPanel, "Nhà sản xuất:", taoNhaSanXuatField(), gbc, 3);
-        addFormField(formPanel, "Số lượng:", taoSoLuongField(), gbc, 4);
-        addFormField(formPanel, "Giá vốn:", taoGiaVonField(), gbc, 5);
-        addFormField(formPanel, "Giá lời:", taoGiaLoiField(), gbc, 6);
+        addLoaiSanPhamField(formPanel, gbc, 0);
+        addFormField(formPanel, "Tên sản phẩm:", taoTenSanPhamField(), gbc, 1);
+        addFormField(formPanel, "Nhà sản xuất:", taoNhaSanXuatField(), gbc, 2);
+        addFormField(formPanel, "Số lượng:", taoSoLuongField(), gbc, 3);
+        addFormField(formPanel, "Giá vốn:", taoGiaVonField(), gbc, 4);
+        addFormField(formPanel, "Giá lời:", taoGiaLoiField(), gbc, 5);
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonPanel.setBorder(new EmptyBorder(10, 0, 0, 0));
@@ -122,12 +117,6 @@ public class SanPham_Them_Dialog extends JDialog {
         panel.add(field, gbc);
     }
 
-    private JTextField taoMaSanPhamField() {
-        maSanPhamField = new JTextField();
-        maSanPhamField.setFont(AppConstants.NORMAL_FONT);
-        return maSanPhamField;
-    }
-
     private void addLoaiSanPhamField(JPanel panel, GridBagConstraints gbc, int row) {
         JLabel label = new JLabel("Loại sản phẩm:");
         label.setFont(new Font(AppConstants.NORMAL_FONT.getFamily(), Font.BOLD, 13));
@@ -137,7 +126,7 @@ public class SanPham_Them_Dialog extends JDialog {
         loaiSanPhamComboBox.setFont(AppConstants.NORMAL_FONT);
 
         StyledButton themLoaiButton = new StyledButton("+", AppConstants.BLUE, 30, 30);
-        themLoaiButton.setFont(new Font("Arial",Font.BOLD,24));
+        themLoaiButton.setFont(new Font("Arial", Font.BOLD, 24));
         themLoaiButton.setHorizontalAlignment(SwingConstants.CENTER);
         themLoaiButton.setVerticalAlignment(SwingConstants.CENTER);
         themLoaiButton.addActionListener(e -> moLoaiSanPhamDialog());
@@ -225,7 +214,7 @@ public class SanPham_Them_Dialog extends JDialog {
     }
 
     private void taiDuLieuLoaiSanPham() {
-        List<SanPhamDTO> danhSachLoaiSanPham = sanPhamDAO.layDanhSachLoaiSanPham();
+        List<SanPhamDTO> danhSachLoaiSanPham = sanPhamBUS.layDanhSachLoaiSanPham();
         DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
         for (SanPhamDTO loai : danhSachLoaiSanPham) {
             String tenLoai = loai.getTenLoaiSanPham();
@@ -237,7 +226,7 @@ public class SanPham_Them_Dialog extends JDialog {
     }
 
     private int layMaLoaiSanPhamTuTen(String tenLoaiSanPham) {
-        List<SanPhamDTO> danhSachLoai = sanPhamDAO.layDanhSachLoaiSanPham();
+        List<SanPhamDTO> danhSachLoai = sanPhamBUS.layDanhSachLoaiSanPham();
         for (SanPhamDTO loai : danhSachLoai) {
             if (loai.getTenLoaiSanPham().equals(tenLoaiSanPham)) {
                 return loai.getMaLoaiSanPham();
@@ -248,23 +237,64 @@ public class SanPham_Them_Dialog extends JDialog {
 
     private void luuSanPham() {
         try {
-            if (maSanPhamField.getText().trim().isEmpty()
-                    || soLuongField.getText().trim().isEmpty()
-                    || giaVonField.getText().trim().isEmpty()
-                    || giaLoiField.getText().trim().isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ các trường số!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            StringBuilder errorMessage = new StringBuilder();
+
+            if (tenSanPhamField.getText().trim().isEmpty()) {
+                errorMessage.append("- Vui lòng nhập tên sản phẩm!\n");
+            }
+            if (nhaSanXuatField.getText().trim().isEmpty()) {
+                errorMessage.append("- Vui lòng nhập nhà sản xuất!\n");
+            }
+            if (duongDanAnh == null || duongDanAnh.trim().isEmpty()) {
+                errorMessage.append("- Vui lòng chọn ảnh sản phẩm!\n");
+            }
+            if (giaVonField.getText().trim().isEmpty()) {
+                errorMessage.append("- Vui lòng nhập giá vốn!\n");
+            }
+            if (giaLoiField.getText().trim().isEmpty()) {
+                errorMessage.append("- Vui lòng nhập giá lời!\n");
+            }
+
+            if (errorMessage.length() > 0) {
+                JOptionPane.showMessageDialog(this, "Vui lòng hoàn thành các thông tin sau:\n" + errorMessage.toString(),
+                        "Lỗi nhập liệu", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            double giaVon, giaLoi;
+            try {
+                giaVon = Double.parseDouble(giaVonField.getText().trim());
+                giaLoi = Double.parseDouble(giaLoiField.getText().trim());
+                if (giaVon < 0 || giaLoi < 0) {
+                    JOptionPane.showMessageDialog(this, "Giá vốn và giá lời phải là số không âm!",
+                            "Lỗi định dạng", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                if (giaLoi <= giaVon) {
+                    JOptionPane.showMessageDialog(this, "Giá lời phải lớn hơn giá vốn!",
+                            "Lỗi nhập liệu", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Giá vốn và giá lời phải là số hợp lệ!",
+                        "Lỗi định dạng", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
             SanPhamDTO sanPham = new SanPhamDTO();
-            sanPham.setMaSanPham(Integer.parseInt(maSanPhamField.getText().trim()));
+            int maSanPham = sanPhamBUS.laySanPhamTheoMaMax();
+            if (maSanPham == -1) {
+                JOptionPane.showMessageDialog(this, "Không thể tạo mã sản phẩm mới!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            sanPham.setMaSanPham(maSanPham);
             int maLoaiSanPham = layMaLoaiSanPhamTuTen(loaiSanPhamComboBox.getSelectedItem().toString());
             if (maLoaiSanPham == -1) {
                 JOptionPane.showMessageDialog(this, "Loại sản phẩm không hợp lệ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             sanPham.setMaLoaiSanPham(maLoaiSanPham);
-            sanPham.setAnhSanPhamURL(duongDanAnh != null ? duongDanAnh : "");
+            sanPham.setAnhSanPhamURL(duongDanAnh);
             sanPham.setTenSanPham(tenSanPhamField.getText().trim());
             sanPham.setNhaSanXuat(nhaSanXuatField.getText().trim());
             sanPham.setSoLuong(Integer.parseInt(soLuongField.getText().trim()));
@@ -278,8 +308,6 @@ public class SanPham_Them_Dialog extends JDialog {
             } else {
                 JOptionPane.showMessageDialog(this, "Thêm sản phẩm thất bại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Vui lòng nhập đúng định dạng số cho các trường số!", "Lỗi", JOptionPane.ERROR_MESSAGE);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Có lỗi xảy ra: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
         }

@@ -4,6 +4,7 @@
  */
 package org.example.DAO;
 
+import com.mysql.cj.protocol.Resultset;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -51,13 +52,19 @@ public class PhieuNhapDAO {
                 + "values (?, ?, ?)";
         LocalDateTime now = LocalDateTime.now();
         
-        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setInt(1, pnDTO.getMaNguoiDung());
             stmt.setInt(2, pnDTO.getMaNhaCungCap());
             stmt.setTimestamp(3, Timestamp.valueOf(now));
 
             int rowInserted = stmt.executeUpdate();
-            return rowInserted > 0;
+            if (rowInserted > 0) {
+                ResultSet rs = stmt.getGeneratedKeys();
+                if (rs.next()) {
+                    pnDTO.setMaPhieuNhap(rs.getInt(1));
+                }
+                return true;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

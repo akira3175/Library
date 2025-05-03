@@ -127,4 +127,8 @@ public class SanPhamBUS {
     public SanPhamDTO laySanPhamTheoMa(int maSanPham) {
         return sanPhamDAO.laySanPhamTheoMa(maSanPham);
     }
+    
+    public boolean nhapSanPham(List<SanPhamDTO> listSP) {
+        return sanPhamDAO.nhapSanPham(listSP);
+    }
 }

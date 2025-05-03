@@ -47,10 +47,24 @@ public class ChiTietPhieuNhapDAO {
         }
         return c;
     }
-    
-    public boolean themChiTietPhieuNhap(List<SanPhamDTO> listSP) {
-        
-        
+
+    public boolean themChiTietPhieuNhap(List<SanPhamDTO> listSP, int maPhieuNhap) {
+        String sql = "insert into ChiTietPhieuNhap(MaPhieuNhap, MaSanPham, DonGia, SoLuong) "
+                + "values (?, ?, ?, ?)";
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            int rowInserted = 0;
+            for (SanPhamDTO i : listSP) {
+                stmt.setInt(1, maPhieuNhap);
+                stmt.setInt(2, i.getMaSanPham());
+                stmt.setInt(3, i.getGiaVon());
+                stmt.setInt(4, i.getSoLuong());
+
+                rowInserted += stmt.executeUpdate();
+            }
+            return rowInserted > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return false;
     }
 }

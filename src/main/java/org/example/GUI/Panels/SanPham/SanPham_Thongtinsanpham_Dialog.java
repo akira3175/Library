@@ -8,10 +8,16 @@ import org.example.GUI.Constants.AppConstants;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
-import javax.swing.table.DefaultTableModel;
 
 public class SanPham_Thongtinsanpham_Dialog extends JDialog {
 
@@ -211,38 +217,74 @@ public class SanPham_Thongtinsanpham_Dialog extends JDialog {
     private JCheckBox taoTrangThaiCheckBox() {
         trangThaiCheckBox = new JCheckBox("Hoạt động");
         trangThaiCheckBox.setFont(AppConstants.NORMAL_FONT);
-        trangThaiCheckBox.setEnabled(false); 
+        trangThaiCheckBox.setEnabled(false);
         return trangThaiCheckBox;
     }
 
     private void chonAnh() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
+        // Thêm bộ lọc file để chỉ cho phép ảnh
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                "Image files (*.jpg, *.jpeg, *.png)", "jpg", "jpeg", "png");
+        fileChooser.setFileFilter(filter);
+
         int result = fileChooser.showOpenDialog(this);
         if (result == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
-            duongDanAnh = selectedFile.getAbsolutePath();
 
-            ImageIcon originalIcon = new ImageIcon(duongDanAnh);
-            Image img = originalIcon.getImage();
+            // Kiểm tra file tồn tại và hợp lệ
+            if (selectedFile != null && selectedFile.exists() && selectedFile.isFile()) {
+                try {
+                    // Kiểm tra định dạng file
+                    String fileName = selectedFile.getName().toLowerCase();
+                    if (!fileName.endsWith(".jpg") && !fileName.endsWith(".jpeg") && !fileName.endsWith(".png")) {
+                        JOptionPane.showMessageDialog(this,
+                                "Vui lòng chọn file ảnh định dạng JPG, JPEG hoặc PNG!",
+                                "Lỗi", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
 
-            int maxWidth = 240;
-            int maxHeight = 240;
-            int originalWidth = originalIcon.getIconWidth();
-            int originalHeight = originalIcon.getIconHeight();
+                    duongDanAnh = selectedFile.getAbsolutePath();
+                    ImageIcon originalIcon = new ImageIcon(duongDanAnh);
 
-            int newWidth, newHeight;
-            if ((float) originalWidth / originalHeight > 1f) {
-                newWidth = maxWidth;
-                newHeight = (int) (maxWidth * originalHeight / originalWidth);
+                    // Kiểm tra nếu ImageIcon không tải được ảnh
+                    if (originalIcon.getImage() == null) {
+                        JOptionPane.showMessageDialog(this,
+                                "Không thể tải ảnh. File có thể bị hỏng!",
+                                "Lỗi", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    Image img = originalIcon.getImage();
+                    int maxWidth = 240;
+                    int maxHeight = 240;
+                    int originalWidth = originalIcon.getIconWidth();
+                    int originalHeight = originalIcon.getIconHeight();
+
+                    int newWidth, newHeight;
+                    if ((float) originalWidth / originalHeight > 1f) {
+                        newWidth = maxWidth;
+                        newHeight = (int) (maxWidth * originalHeight / originalWidth);
+                    } else {
+                        newHeight = maxHeight;
+                        newWidth = (int) (maxHeight * originalWidth / originalHeight);
+                    }
+
+                    Image scaledImg = img.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+                    anhSanPhamLabel.setText("");
+                    anhSanPhamLabel.setIcon(new ImageIcon(scaledImg));
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(this,
+                            "Lỗi khi tải ảnh: " + e.getMessage(),
+                            "Lỗi", JOptionPane.ERROR_MESSAGE);
+                }
             } else {
-                newHeight = maxHeight;
-                newWidth = (int) (maxHeight * originalWidth / originalHeight);
+                JOptionPane.showMessageDialog(this,
+                        "File không tồn tại hoặc không hợp lệ!",
+                        "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
-
-            Image scaledImg = img.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
-            anhSanPhamLabel.setText("");
-            anhSanPhamLabel.setIcon(new ImageIcon(scaledImg));
         }
     }
 
@@ -271,9 +313,31 @@ public class SanPham_Thongtinsanpham_Dialog extends JDialog {
 
         if (sanPham.getAnhSanPhamURL() != null && !sanPham.getAnhSanPhamURL().isEmpty()) {
             try {
-                ImageIcon originalIcon = new ImageIcon(sanPham.getAnhSanPhamURL());
-                Image img = originalIcon.getImage();
+                // Thử tải ảnh từ tài nguyên bằng ClassLoader
+                URL imageUrl = getClass().getResource(sanPham.getAnhSanPhamURL());
+                ImageIcon originalIcon;
+                if (imageUrl != null) {
+                    originalIcon = new ImageIcon(imageUrl);
+                } else {
+                    // Nếu ClassLoader không tìm thấy, thử tải trực tiếp từ file
+                    String filePath = "src/main/resources" + sanPham.getAnhSanPhamURL();
+                    File imageFile = new File(filePath);
+                    if (imageFile.exists()) {
+                        originalIcon = new ImageIcon(filePath);
+                    } else {
+                        anhSanPhamLabel.setText("Ảnh không tồn tại");
+                        anhSanPhamLabel.setIcon(null);
+                        return;
+                    }
+                }
 
+                if (originalIcon.getImage() == null) {
+                    anhSanPhamLabel.setText("Lỗi tải ảnh");
+                    anhSanPhamLabel.setIcon(null);
+                    return;
+                }
+
+                Image img = originalIcon.getImage();
                 int maxWidth = 240;
                 int maxHeight = 240;
                 int originalWidth = originalIcon.getIconWidth();
@@ -319,6 +383,33 @@ public class SanPham_Thongtinsanpham_Dialog extends JDialog {
 
         thanhCongCuPanel.revalidate();
         thanhCongCuPanel.repaint();
+    }
+
+    private String luuAnhVaoThuMucTaiNguyen(File selectedFile, int maSanPham) {
+        try {
+            // Đường dẫn thư mục tài nguyên trong dự án
+            String resourceDir = "src/main/resources/images/Sanpham_img";
+            Path targetDir = Paths.get(resourceDir);
+
+            // Tạo thư mục nếu chưa tồn tại
+            if (!Files.exists(targetDir)) {
+                Files.createDirectories(targetDir);
+            }
+
+            // Tạo tên file duy nhất dựa trên mã sản phẩm và timestamp
+            String fileExtension = selectedFile.getName().substring(selectedFile.getName().lastIndexOf("."));
+            String newFileName = "sp_" + maSanPham + "_" + System.currentTimeMillis() + fileExtension;
+            Path targetPath = targetDir.resolve(newFileName);
+
+            // Sao chép file vào thư mục tài nguyên
+            Files.copy(selectedFile.toPath(), targetPath);
+
+            // Trả về đường dẫn tương đối để lưu vào cơ sở dữ liệu
+            return "/images/Sanpham_img/" + newFileName;
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Lỗi khi lưu ảnh: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
     }
 
     private void xacNhanSua() {
@@ -367,13 +458,28 @@ public class SanPham_Thongtinsanpham_Dialog extends JDialog {
                 return;
             }
 
+            // Kiểm tra nếu ảnh mới được chọn
+            String relativePath = sanPham.getAnhSanPhamURL();
+            if (duongDanAnh != null && !duongDanAnh.equals(sanPham.getAnhSanPhamURL())) {
+                File newImageFile = new File(duongDanAnh);
+                if (newImageFile.exists()) {
+                    relativePath = luuAnhVaoThuMucTaiNguyen(newImageFile, sanPham.getMaSanPham());
+                    if (relativePath == null) {
+                        return; // Lỗi đã được hiển thị trong luuAnhVaoThuMucTaiNguyen
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(this, "File ảnh không tồn tại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
+
             sanPham.setMaLoaiSanPham(layMaLoaiSanPhamTuTen((String) loaiSanPhamComboBox.getSelectedItem()));
             sanPham.setTenSanPham(tenSanPhamField.getText().trim());
             sanPham.setNhaSanXuat(nhaSanXuatField.getText().trim());
             sanPham.setSoLuong(Integer.parseInt(soLuongField.getText().trim()));
-            sanPham.setGiaVon(Double.parseDouble(giaVonField.getText().trim()));
-            sanPham.setGiaLoi(Double.parseDouble(giaLoiField.getText().trim()));
-            sanPham.setAnhSanPhamURL(duongDanAnh != null ? duongDanAnh : "");
+            sanPham.setGiaVon(giaVon);
+            sanPham.setGiaLoi(giaLoi);
+            sanPham.setAnhSanPhamURL(relativePath);
             sanPham.setTrangThai(trangThaiCheckBox.isSelected());
 
             if (sanPhamBUS.suaSanPham(sanPham)) {
@@ -382,6 +488,8 @@ public class SanPham_Thongtinsanpham_Dialog extends JDialog {
 
                 originalSanPham = new SanPhamDTO(sanPham);
                 updateTable();
+                tbSanPham.repaint(); // Đảm bảo bảng được vẽ lại
+                hienThiDuLieuSanPham(); // Làm mới ảnh trong dialog
                 exitEditMode();
             } else {
                 JOptionPane.showMessageDialog(this, "Cập nhật sản phẩm thất bại!",

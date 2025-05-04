@@ -215,16 +215,16 @@ public class MainFrame extends JFrame {
 
         // Add navigation buttons with icons
         if (danhSachTenQuyen.contains("Bán hàng")) {
-            addNavigationButton("sell", "Bán hàng", "book.png");
+            addNavigationButton("sell", "Bán hàng", "cart.png");
         }
         if (danhSachTenQuyen.contains("Quản lý sản phẩm")) {
-            addNavigationButton("products", "Sản phẩm", "book.png");
+            addNavigationButton("products", "Sản phẩm", "product.png");
         }
         if (danhSachTenQuyen.contains("Quản lý khuyến mãi")) {
-            addNavigationButton("promotions", "Khuyến mãi", "book.png");
+            addNavigationButton("promotions", "Khuyến mãi", "promo.png");
         }
         if (danhSachTenQuyen.contains("Quản lý khách hàng")) {
-            addNavigationButton("consumers", "Khách hàng", "book.png");
+            addNavigationButton("consumers", "Khách hàng", "customer.png");
         }
         if (danhSachTenQuyen.contains("Quản lý nhân sự")) {
             addNavigationButton("users", "Nhân sự", "user.png");

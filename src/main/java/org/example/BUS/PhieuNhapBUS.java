@@ -18,6 +18,7 @@ public class PhieuNhapBUS {
 
     private PhieuNhapDAO pnDAO = new PhieuNhapDAO();
     private ChiTietPhieuNhapBUS ctpnBUS = new ChiTietPhieuNhapBUS();
+    private SanPhamBUS spBUS = new SanPhamBUS();
 
     public List<PhieuNhapDTO> layTatCaPhieuNhap() {
         return pnDAO.layTatCaPhieuNhap();
@@ -27,13 +28,16 @@ public class PhieuNhapBUS {
         if (listSP == null || listSP.isEmpty()) {
             return "Vui Lòng Chọn Sản Phẩm!";
         }
-        
-        if (pnDAO.themPhieuNhap(pnDTO)) {
-            ctpnBUS.themChiTietPhieuNhap(listSP);
-                
-            
-            return "Tạo Phiếu Nhập Thành Công!";
+
+        if (!pnDAO.themPhieuNhap(pnDTO)) {
+            return "Tạo Phiếu Nhập Không Thành Công!";
         }
-        return "Tạo Phiếu Nhập Không Thành Công!";
+        if (!ctpnBUS.themChiTietPhieuNhap(listSP, pnDTO.getMaPhieuNhap())) {
+            return "Tạo Chi Tiết Phiếu Nhập Không Thành Công!";
+        }
+        if (!spBUS.nhapSanPham(listSP)) {
+            return "Nhập Sản Phẩm Không Thành Công!";
+        }
+        return "Tạo Phiếu Nhập Thành Công!";
     }
 }

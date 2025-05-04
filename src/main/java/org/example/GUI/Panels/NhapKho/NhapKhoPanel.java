@@ -106,6 +106,7 @@ public class NhapKhoPanel extends javax.swing.JPanel {
         jLabel2 = new javax.swing.JLabel();
 
         setBorder(javax.swing.BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        setToolTipText("");
 
         jLabel1.setFont(AppConstants.HEADER_FONT);
         jLabel1.setText("Nhập Hàng");

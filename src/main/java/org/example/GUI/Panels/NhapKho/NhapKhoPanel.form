@@ -7,6 +7,7 @@
         <EmptyBorder bottom="20" left="20" right="20" top="20"/>
       </Border>
     </Property>
+    <Property name="toolTipText" type="java.lang.String" value=""/>
   </Properties>
   <AuxValues>
     <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>

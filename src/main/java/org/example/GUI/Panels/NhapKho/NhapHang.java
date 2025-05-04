@@ -29,7 +29,7 @@ import org.example.DTO.SanPhamDTO;
  */
 public class NhapHang extends javax.swing.JDialog {
 
-    private List<SanPhamDTO> spDuocChonList = new ArrayList<>();
+    public List<SanPhamDTO> spDuocChonList = new ArrayList<>();
 
     SanPhamBUS spBUS = new SanPhamBUS();
 
@@ -42,6 +42,8 @@ public class NhapHang extends javax.swing.JDialog {
         loadSanPham();
         loadNhaCungCap();
     }
+
+    
 
     public void loadSanPham() {
         List<SanPhamDTO> spList = new ArrayList<>();
@@ -92,7 +94,7 @@ public class NhapHang extends javax.swing.JDialog {
         jTable2.setModel(model);
     }
 
-    public boolean kiemTraSoLuong(String input) {
+    public static boolean kiemTraSoLuong(String input) {
         return Pattern.matches("^[1-9]\\d*$", input);
     }
 
@@ -155,7 +157,6 @@ public class NhapHang extends javax.swing.JDialog {
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable2 = new javax.swing.JTable();
         jTable2.getTableHeader().setReorderingAllowed(false);
-        jButton4 = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -314,7 +315,7 @@ public class NhapHang extends javax.swing.JDialog {
                 {null, null, null, null}
             },
             new String [] {
-                "Mã Sản Phẩm", "Tên Sản Phẩm", "Đơn Giá", "Số Lượng"
+                "Mã Sản Phẩm", "Tên Sản Phẩm", "Giá Nhập", "Số Lượng"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -326,8 +327,12 @@ public class NhapHang extends javax.swing.JDialog {
             }
         });
         jScrollPane2.setViewportView(jTable2);
-
-        jButton4.setText("Sửa");
+        if (jTable2.getColumnModel().getColumnCount() > 0) {
+            jTable2.getColumnModel().getColumn(0).setResizable(false);
+            jTable2.getColumnModel().getColumn(1).setResizable(false);
+            jTable2.getColumnModel().getColumn(2).setResizable(false);
+            jTable2.getColumnModel().getColumn(3).setResizable(false);
+        }
 
         jButton5.setText("Xóa");
         jButton5.addActionListener(new java.awt.event.ActionListener() {
@@ -349,9 +354,7 @@ public class NhapHang extends javax.swing.JDialog {
                         .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButton5)
-                        .addGap(18, 18, 18)
-                        .addComponent(jButton4)
-                        .addGap(18, 18, 18)
+                        .addGap(108, 108, 108)
                         .addComponent(jButton2))
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 489, Short.MAX_VALUE)
                     .addGroup(jPanel2Layout.createSequentialGroup()
@@ -380,7 +383,6 @@ public class NhapHang extends javax.swing.JDialog {
                     .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel3)
                     .addComponent(jButton2)
-                    .addComponent(jButton4)
                     .addComponent(jButton5))
                 .addContainerGap())
         );
@@ -468,6 +470,7 @@ public class NhapHang extends javax.swing.JDialog {
 
         String thongBao = pnBUS.themPhieuNhap(pnDTO, spDuocChonList);
         JOptionPane.showMessageDialog(this, thongBao);
+        loadSanPham();
     }//GEN-LAST:event_jButton2MouseClicked
 
     private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
@@ -506,7 +509,7 @@ public class NhapHang extends javax.swing.JDialog {
                 iterator.remove();
             }
         }
-        
+
         loadSanPhamDuocChon();
     }//GEN-LAST:event_jButton5ActionPerformed
 
@@ -564,7 +567,6 @@ public class NhapHang extends javax.swing.JDialog {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JComboBox<NhaCungCapDTO> jComboBox1;
     private javax.swing.JLabel jLabel1;

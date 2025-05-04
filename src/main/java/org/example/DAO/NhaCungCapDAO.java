@@ -74,7 +74,21 @@ public class NhaCungCapDAO {
 
             int rowsInserted = stmt.executeUpdate();
             return rowsInserted > 0;
-        } catch (Exception e) {
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean suaNhaCungCap(NhaCungCapDTO ncc) {
+        String sql = "insert into NhaCungCap(TenNhaCungCap, DiaChi, SoDienThoai, Fax, TrangThai) "
+                + "values (?, ?, ?, ?)";
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, ncc.getTenNhaCungCap());
+            stmt.setString(2, ncc.getDiaChi());
+            stmt.setInt(3, ncc.getFax());
+            stmt.setInt(4, ncc.getSoDienThoai());
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;

@@ -82,6 +82,10 @@ public class SanPhamBUS {
             });
         }
     }
+    
+    public List<SanPhamDTO> layDanhSachSanPhamTimKiem(String input) {
+        return sanPhamDAO.layDanhSachTimKiem(input);
+    }
 
     public void xuatDanhSachSanPhamRaExcel(JTable table) {
         List<SanPhamDTO> danhSachSanPham = layDanhSachTatCaSanPham();

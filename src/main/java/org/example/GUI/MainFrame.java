@@ -13,6 +13,7 @@ import org.example.GUI.Panels.NhanSu.NhanSuPanel;
 import org.example.GUI.Panels.SanPham.SanPhamPanel;
 import org.example.GUI.Panels.ThongKe.ThongKePanel;
 import org.example.GUI.Panels.KhuyenMai.KhuyenMaiPanel;
+import org.example.GUI.Panels.BanHang.BanHangPanel;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -24,8 +25,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.example.GUI.Panels.BanHang.BanHangPanel;
-
 
 public class MainFrame extends JFrame {
     private JPanel sidebar, contentPanel, headerPanel;
@@ -35,7 +34,8 @@ public class MainFrame extends JFrame {
     private NguoiDung nguoiDungHienTai;
     private QuyenBUS quyenBUS;
     private VaiTroBUS vaiTroBUS;
-
+    private SanPhamPanel sanPham;
+    private ThongKePanel thongKePanel; // Added to store ThongKePanel instance
 
     public MainFrame() {
         setTitle("Quản lý bán hàng");
@@ -48,6 +48,9 @@ public class MainFrame extends JFrame {
         nguoiDungHienTai = NguoiDungBUS.getNguoiDungHienTai();
         quyenBUS = new QuyenBUS();
         vaiTroBUS = new VaiTroBUS();
+        sanPham = new SanPhamPanel();
+        thongKePanel = new ThongKePanel(); // Initialize ThongKePanel
+        System.out.println("MainFrame using SanPhamPanel instance: " + sanPham);
 
         initializeHeader();
         initializeSidebar();
@@ -80,13 +83,6 @@ public class MainFrame extends JFrame {
             Image img = logoIcon.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);
             JLabel logoLabel = new JLabel(new ImageIcon(img));
             logoPanel.add(logoLabel);
-
-            // Add app name next to logo
-//            JLabel appNameLabel = new JLabel("Quản lý Thư viện");
-//            appNameLabel.setFont(AppConstants.TITLE_FONT);
-//            appNameLabel.setForeground(AppConstants.PRIMARY_COLOR);
-//            logoPanel.add(Box.createHorizontalStrut(10)); // Add some space between logo and text
-//            logoPanel.add(appNameLabel);
         } catch (Exception e) {
             System.out.println("Could not load logo: " + e.getMessage());
             // Fallback to text if logo can't be loaded
@@ -129,7 +125,7 @@ public class MainFrame extends JFrame {
         Set<String> danhSachTenQuyen = danhSachQuyen.stream()
                                             .filter(Quyen::isChecked)
                                             .map(Quyen::getTenQuyen)
-                                            .collect(Collectors.toSet());;
+                                            .collect(Collectors.toSet());
 
         // Add navigation buttons with icons
         if (danhSachTenQuyen.contains("Bán hàng")) {
@@ -231,7 +227,7 @@ public class MainFrame extends JFrame {
         buttonPanel.setOpaque(false);
         buttonPanel.setMaximumSize(new Dimension(280, 60));
         buttonPanel.add(button, BorderLayout.CENTER);
-
+        
         // Add some vertical spacing between buttons
         sidebar.add(buttonPanel);
         sidebar.add(Box.createVerticalStrut(8));
@@ -245,12 +241,12 @@ public class MainFrame extends JFrame {
 
         // Add panels
         contentPanel.add(new BanHangPanel(), "sell");
-        contentPanel.add(new SanPhamPanel(), "products");
+        contentPanel.add(sanPham, "products"); // Use the sanPham instance
         contentPanel.add(new KhuyenMaiPanel(), "promotions");
         contentPanel.add(new KhachHangPanel(), "consumers");
         contentPanel.add(new NhanSuPanel(), "users");
         contentPanel.add(new NhapKhoPanel(), "import");
-        contentPanel.add(new ThongKePanel(), "statistics");
+        contentPanel.add(thongKePanel, "statistics"); // Use the thongKePanel instance
 
         setupActionListeners();
     }
@@ -276,6 +272,11 @@ public class MainFrame extends JFrame {
                     cardLayout.show(contentPanel, key);
                     activeButtonKey = key;
                     updateActiveButton(key);
+                    if ("products".equals(key)) {
+                        sanPham.XuatSanPhamTable();
+                    } else if ("statistics".equals(key)) {
+                        thongKePanel.refreshData(); 
+                    }
                 });
             }
         });
@@ -287,7 +288,7 @@ public class MainFrame extends JFrame {
             if (key.equals(activeKey)) {
                 // Active button styling
                 button.setBackground(new Color(55, 65, 81));
-
+                
                 // Add a left border indicator for active button
                 button.setBorder(BorderFactory.createCompoundBorder(
                         BorderFactory.createMatteBorder(0, 4, 0, 0, new Color(129, 140, 248)), // Left indicator
@@ -317,4 +318,3 @@ public class MainFrame extends JFrame {
         });
     }
 }
-

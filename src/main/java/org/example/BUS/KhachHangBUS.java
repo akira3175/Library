@@ -70,4 +70,8 @@ public class KhachHangBUS {
     public KhachHangDTO layKhachHangTheoMa(int maKhachHang) {
         return khachHangDAO.layKhachHangTheoMa(maKhachHang);
     }
+    
+    public List<KhachHangDTO> layDanhSachTatCaKhachHang(){
+        return khachHangDAO.layDanhSachTatCaKhachHang();
+    }
 }

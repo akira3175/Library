@@ -1,6 +1,7 @@
 package org.example.GUI.Panels.ThongKe;
 
 import org.example.BUS.SanPhamBUS;
+import org.example.BUS.KhachHangBUS;
 import org.example.DTO.SanPhamDTO;
 import org.example.GUI.Components.StatisticCard;
 import org.example.GUI.Constants.AppConstants;
@@ -17,11 +18,13 @@ import java.util.List;
 
 public class ThongKePanel extends JPanel {
     private final SanPhamBUS sanPhamBUS;
+    private final KhachHangBUS khachHangBUS; // Added for customer data
     private JPanel statsPanel;
     private JPanel chartsPanel;
 
     public ThongKePanel() {
         sanPhamBUS = new SanPhamBUS();
+        khachHangBUS = new KhachHangBUS(); // Initialize KhachHangBUS
         setLayout(new BorderLayout(20, 20));
         setBackground(AppConstants.BACKGROUND_COLOR);
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
@@ -83,8 +86,11 @@ public class ThongKePanel extends JPanel {
                 .sum();
         statsPanel.add(new StatisticCard("Tổng sản phẩm", String.format("%,d", totalQuantity), "+12.5%", true));
 
+        // Tổng khách hàng (đếm số khách hàng từ KhachHangBUS)
+        int totalCustomers = khachHangBUS.layDanhSachTatCaKhachHang().size();
+        statsPanel.add(new StatisticCard("Khách hàng", String.format("%,d", totalCustomers), "+5.2%", true));
+
         // Giữ nguyên các thẻ giả lập
-        statsPanel.add(new StatisticCard("Khách hàng", "856", "+5.2%", true));
         statsPanel.add(new StatisticCard("Nhân viên", "145", "-2.3%", false));
         statsPanel.add(new StatisticCard("Doanh thu tháng", "23 000 000", "+1.5%", true));
 

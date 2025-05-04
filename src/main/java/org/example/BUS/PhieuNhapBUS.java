@@ -40,4 +40,8 @@ public class PhieuNhapBUS {
         }
         return "Tạo Phiếu Nhập Thành Công!";
     }
+    
+    public List<PhieuNhapDTO> timKiemPhieuNhap(String input) {
+        return pnDAO.timKiemPhieuNhap(input);
+    }
 }

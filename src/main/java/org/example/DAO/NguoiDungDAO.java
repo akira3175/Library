@@ -4,7 +4,6 @@ import org.example.DTO.NguoiDung;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,6 +82,35 @@ public class NguoiDungDAO {
         return null;
     }
 
+    public NguoiDung layNguoiDungTheoTenDangNhap(String tenDangNhap) {
+        String sql = "SELECT * FROM NguoiDung WHERE TenDangNhap = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, tenDangNhap);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new NguoiDung(rs.getInt("MaNguoiDung"), 
+                                    rs.getInt("MaVaiTro"), 
+                                    rs.getString("AvatarURL"), 
+                                    rs.getString("HoTen"), 
+                                    rs.getDate("NgaySinh"), 
+                                    rs.getString("GioiTinh"), 
+                                    rs.getString("DiaChi"), 
+                                    rs.getString("Email"), 
+                                    rs.getString("SoDienThoai"), 
+                                    rs.getBoolean("ConHoatDong"), 
+                                    rs.getString("TenDangNhap"),                                         rs.getDate("NgayVaoLam"), 
+                                    rs.getString("MatKhau"));
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Lỗi SQL khi lấy người dùng: {}", e.getMessage(), e);
+            throw new RuntimeException("Lỗi hệ thống khi lấy người dùng", e);
+        }
+        return null;
+    }
+
     public List<NguoiDung> layDanhSachTatCaNguoiDung() {
         List<NguoiDung> danhSachNguoiDung = new ArrayList<>();
         String sql = "SELECT * FROM NguoiDung";
@@ -117,7 +145,7 @@ public class NguoiDungDAO {
         return danhSachNguoiDung;
     }
 
-    public Optional<NguoiDung> themNguoiDung(NguoiDung nguoiDung) {
+    public NguoiDung themNguoiDung(NguoiDung nguoiDung) {
         String sql = "INSERT INTO NguoiDung (MaVaiTro, AvatarURL, HoTen, NgaySinh, GioiTinh, DiaChi, Email, ConHoatDong, MatKhau, TenDangNhap, SoDienThoai, NgayVaoLam) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
@@ -157,21 +185,21 @@ public class NguoiDungDAO {
                         int generatedId = rs.getInt(1);
                         nguoiDung.setMaNguoiDung(generatedId); // Cập nhật lại đối tượng
                         logger.info("Thêm người dùng thành công với ID: {}", generatedId);
-                        return Optional.of(nguoiDung);
+                        return nguoiDung;
                     }
                 }
             }
 
             logger.warn("Thêm người dùng không thành công (affectedRows = 0).");
-            return Optional.empty();
+            return null;
 
         } catch (SQLException e) {
             logger.error("Lỗi khi thêm người dùng: {}", e.getMessage(), e);
-            return Optional.empty();
+            return null;
         }
     }
 
-    public Optional<NguoiDung> suaNguoiDung(NguoiDung nguoiDung) {
+    public NguoiDung suaNguoiDung(NguoiDung nguoiDung) {
         String sql = "UPDATE NguoiDung SET " +
                 "MaVaiTro = ?, AvatarURL = ?, HoTen = ?, NgaySinh = ?, GioiTinh = ?, " +
                 "DiaChi = ?, Email = ?, ConHoatDong = ?, MatKhau = ?, TenDangNhap = ?, " +
@@ -211,15 +239,15 @@ public class NguoiDungDAO {
 
             if (affectedRows > 0) {
                 logger.info("Cập nhật người dùng thành công với ID: {}", nguoiDung.getMaNguoiDung());
-                return Optional.of(nguoiDung);
+                return nguoiDung;
             } else {
                 logger.warn("Không tìm thấy người dùng để cập nhật: ID = {}", nguoiDung.getMaNguoiDung());
-                return Optional.empty();
+                return null;
             }
 
         } catch (SQLException e) {
             logger.error("Lỗi khi cập nhật người dùng: {}", e.getMessage(), e);
-            return Optional.empty();
+            return null;
         }
     }
 

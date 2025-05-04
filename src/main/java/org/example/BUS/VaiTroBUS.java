@@ -1,18 +1,24 @@
 package org.example.BUS;
 
+import org.example.BUS.QuyenBUS;
 import org.example.DAO.VaiTroDAO;
+import org.example.DAO.QuyenDAO;
+import org.example.DAO.NguoiDungDAO;
 import org.example.DTO.VaiTro;
 import org.example.DTO.Quyen;
-import org.example.DAO.QuyenDAO;
+import org.example.DTO.NguoiDung;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.swing.JOptionPane;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Date;
 
 public class VaiTroBUS {
     private VaiTroDAO vaiTroDAO = new VaiTroDAO();
+    private QuyenBUS quyenBUS = new QuyenBUS();
     private QuyenDAO quyenDAO = new QuyenDAO();
+    private NguoiDungDAO nguoiDungDAO = new NguoiDungDAO();
     private static final Logger logger = LoggerFactory.getLogger(VaiTro.class);
 
     public VaiTro themHoacSuaVaiTro(VaiTro vaiTro) {
@@ -29,6 +35,12 @@ public class VaiTroBUS {
     }
 
     public VaiTro suaVaiTro(VaiTro vaiTro) {
+        if (vaiTro.getTenVaiTro().equals("Quản trị viên")) {
+            logger.warn("Không thể sửa vai trò Quản trị viên!");
+            JOptionPane.showMessageDialog(null, "Không thể sửa vai trò Quản trị viên!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+
         return vaiTroDAO.suaVaiTro(vaiTro)
                 .orElseThrow(() -> new RuntimeException("Sửa vai trò thất bại!"));
     }
@@ -89,5 +101,58 @@ public class VaiTroBUS {
 
     public boolean coTenVaiTro(String tenVaiTro) {
         return vaiTroDAO.coTenVaiTro(tenVaiTro);
+    }
+
+    public List<VaiTro> khoiTaoVaiTro() {
+        List<VaiTro> danhSachVaiTro = new ArrayList<>();
+        if (!coTenVaiTro("Quản trị viên")) {
+            danhSachVaiTro.add(new VaiTro(0, "Quản trị viên", "Quản trị viên toàn quyền trên hệ thống"));
+        }
+        if (!coTenVaiTro("Quản lý")) {
+            danhSachVaiTro.add(new VaiTro(1, "Quản lý", "Quản lý nhân sự, hệ thống"));
+        }
+
+        for (VaiTro vaiTro : danhSachVaiTro) {
+            themVaiTro(vaiTro);
+        }
+
+        logger.info("Khởi tạo vai trò thành công");
+        danhSachVaiTro = vaiTroDAO.layDanhSachTatCaVaiTro();
+
+        boolean thanhCong = khoiTaoQuyenCuaQuanTriVien();
+        if (!thanhCong) {
+            logger.error("Khởi tạo quyền cho Quản trị viên thất bại");
+        } else {
+            logger.info("Khởi tạo quyền cho Quản trị viên thành công");
+        }
+
+        return danhSachVaiTro;
+    }
+
+    public boolean khoiTaoQuyenCuaQuanTriVien() {
+        boolean thanhCong = true;
+        VaiTro vaiTro = vaiTroDAO.layVaiTroTheoTen("Quản trị viên");
+        List<Quyen> danhSachQuyen = quyenDAO.layDanhSachQuyenTheoVaiTro(vaiTro.getMaVaiTro());
+        thanhCong = quyenBUS.capNhatQuyenVaoVaiTro(vaiTro.getMaVaiTro(), danhSachQuyen);
+        return thanhCong;
+    }
+
+    public boolean ganVaiTroChoQuanTriVien() {
+        NguoiDung nguoiDung = nguoiDungDAO.layNguoiDungTheoTenDangNhap("admin");
+        if (nguoiDung == null) {
+            nguoiDung = new NguoiDung();
+            nguoiDung.setTenDangNhap("admin");
+            nguoiDung.setMatKhau("0000");
+            nguoiDung.setHoTen("Quản trị viên");
+            nguoiDung.setNgaySinh(new Date());
+            nguoiDung.setGioiTinh("Nam");
+            nguoiDung.setDiaChi("123 Nguyễn Văn Cừ, Hồ Chí Minh");
+            nguoiDung.setEmail("admin@gmail.com");
+            nguoiDung.setSoDienThoai("0909090909");
+            nguoiDung.setNgayVaoLam(new Date());
+            nguoiDungDAO.themNguoiDung(nguoiDung);
+        }
+        nguoiDung.setMaVaiTro(vaiTroDAO.layVaiTroTheoTen("Quản trị viên").getMaVaiTro());
+        return nguoiDungDAO.suaNguoiDung(nguoiDung) != null;
     }
 }

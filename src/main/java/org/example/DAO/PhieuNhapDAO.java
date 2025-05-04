@@ -4,10 +4,12 @@
  */
 package org.example.DAO;
 
+import com.mysql.cj.protocol.Resultset;
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import org.example.DTO.PhieuNhap;
+import org.example.DTO.PhieuNhapDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,28 +18,56 @@ import org.slf4j.LoggerFactory;
  * @author MTeumb
  */
 public class PhieuNhapDAO {
+
     private static final Logger logger = LoggerFactory.getLogger(NguoiDungDAO.class);
-    
-    public List<PhieuNhap> layTatCaPhieuNhap () {
-        List<PhieuNhap> p = new ArrayList<>();
-        String sql = "SELECT * FROM PhieuNhap";
-        
-        try (Connection conn = DatabaseConnection.getConnection();
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(sql)) {
-            
+
+    public List<PhieuNhapDTO> layTatCaPhieuNhap() {
+        List<PhieuNhapDTO> p = new ArrayList<>();
+        String sql = "SELECT pn.MaPhieuNhap, pn.MaNguoiDung, nd.HoTen, pn.MaNhaCungCap, ncc.TenNhaCungCap, pn.ThoiGianLap, pn.TrangThai "
+                + "FROM PhieuNhap pn "
+                + "JOIN NhaCungCap ncc ON pn.MaNhaCungCap = ncc.MaNhaCungCap "
+                + "JOIN NguoiDung nd ON pn.MaNguoiDung = nd.MaNguoiDung ";
+
+        try (Connection conn = DatabaseConnection.getConnection(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
+
             while (rs.next()) {
-                PhieuNhap phieuNhap = new PhieuNhap();
-                phieuNhap.setMaPhieuNhap(rs.getInt(1));
-                phieuNhap.setMaNguoiDung(rs.getInt(2));
-                phieuNhap.setMaNhaCungCap(rs.getInt(3));
-                phieuNhap.setThoiGianLap(rs.getDate(4));
-                phieuNhap.setTrangThai(rs.getInt(5));
+                PhieuNhapDTO phieuNhap = new PhieuNhapDTO();
+                phieuNhap.setMaPhieuNhap(rs.getInt("MaPhieuNhap"));
+                phieuNhap.setMaNguoiDung(rs.getInt("MaNguoiDung"));
+                phieuNhap.setHoTenNguoiDung(rs.getString("HoTen"));
+                phieuNhap.setMaNhaCungCap(rs.getInt("MaNhaCungCap"));
+                phieuNhap.setTenNhaCungCap(rs.getString("TenNhaCungCap"));
+                phieuNhap.setThoiGianLap(rs.getDate("ThoiGianLap"));
+                phieuNhap.setTrangThai(rs.getInt("TrangThai"));
                 p.add(phieuNhap);
             }
         } catch (SQLException e) {
             logger.error("Lấy danh sách người dùng thất bại! Message: {}", e.getMessage(), e);
         }
         return p;
+    }
+
+    public boolean themPhieuNhap(PhieuNhapDTO pnDTO) {
+        String sql = "insert into PhieuNhap(MaNguoiDung, MaNhaCungCap, ThoiGianLap) "
+                + "values (?, ?, ?)";
+        LocalDateTime now = LocalDateTime.now();
+        
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setInt(1, pnDTO.getMaNguoiDung());
+            stmt.setInt(2, pnDTO.getMaNhaCungCap());
+            stmt.setTimestamp(3, Timestamp.valueOf(now));
+
+            int rowInserted = stmt.executeUpdate();
+            if (rowInserted > 0) {
+                ResultSet rs = stmt.getGeneratedKeys();
+                if (rs.next()) {
+                    pnDTO.setMaPhieuNhap(rs.getInt(1));
+                }
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

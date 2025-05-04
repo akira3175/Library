@@ -68,18 +68,35 @@ public class QuyenBUS {
 
     public List<Quyen> khoiTaoQuyen() {
         List<Quyen> danhSachQuyen = new ArrayList<>();
-        danhSachQuyen.add(new Quyen(1, "Bán hàng"));
-        danhSachQuyen.add(new Quyen(2, "Quản lý khuyến mãi"));
-        danhSachQuyen.add(new Quyen(3, "Quản lý khách hàng"));
-        danhSachQuyen.add(new Quyen(4, "Quản lý nhân sự"));
-        danhSachQuyen.add(new Quyen(5, "Quản lý kho"));
-        danhSachQuyen.add(new Quyen(6, "Quản lý sản phẩm"));
-        danhSachQuyen.add(new Quyen(7, "Thống kê"));
-        
-
-        for (Quyen quyen : danhSachQuyen) {
-            themQuyen(quyen);
+        if (!coTenQuyen("Bán hàng")) {
+            danhSachQuyen.add(new Quyen(1, "Bán hàng"));
         }
+        if (!coTenQuyen("Quản lý khuyến mãi")) {
+            danhSachQuyen.add(new Quyen(2, "Quản lý khuyến mãi"));
+        }
+        if (!coTenQuyen("Quản lý khách hàng")) {
+            danhSachQuyen.add(new Quyen(3, "Quản lý khách hàng"));
+        }
+        if (!coTenQuyen("Quản lý nhân sự")) {
+            danhSachQuyen.add(new Quyen(4, "Quản lý nhân sự"));
+        }
+        if (!coTenQuyen("Quản lý kho")) {
+            danhSachQuyen.add(new Quyen(5, "Quản lý kho"));
+        }
+        if (!coTenQuyen("Quản lý sản phẩm")) {
+            danhSachQuyen.add(new Quyen(6, "Quản lý sản phẩm"));
+        }
+        if (!coTenQuyen("Thống kê")) {
+            danhSachQuyen.add(new Quyen(7, "Thống kê"));
+        }
+        
+        if (!danhSachQuyen.isEmpty()) {
+            for (Quyen quyen : danhSachQuyen) {
+                themQuyen(quyen);
+            }
+        }
+
+        logger.info("Khởi tạo quyền thành công");
         danhSachQuyen = quyenDAO.layDanhSachQuyen();
         return danhSachQuyen;
     }

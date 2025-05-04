@@ -476,7 +476,7 @@ public class SanPham_Thongtinsanpham_Dialog extends JDialog {
             sanPham.setMaLoaiSanPham(layMaLoaiSanPhamTuTen((String) loaiSanPhamComboBox.getSelectedItem()));
             sanPham.setTenSanPham(tenSanPhamField.getText().trim());
             sanPham.setNhaSanXuat(nhaSanXuatField.getText().trim());
-            sanPham.setSoLuong(Integer.parseInt(soLuongField.getText().trim()));
+            sanPham.setSoLuong(soLuong);
             sanPham.setGiaVon(giaVon);
             sanPham.setGiaLoi(giaLoi);
             sanPham.setAnhSanPhamURL(relativePath);

@@ -26,7 +26,7 @@ public class KhachHangDAO {
                 danhSachKhachHang.add(khachHang);
             }
         } catch (SQLException e) {
-            System.out.println("Lỗi SQL khi lấy danh sách khách hàng: " + e.getMessage());
+            throw new RuntimeException("Lỗi SQL khi lấy danh sách khách hàng: " + e.getMessage(), e);
         }
         return danhSachKhachHang;
     }
@@ -49,7 +49,7 @@ public class KhachHangDAO {
                 danhSachKhachHang.add(khachHang);
             }
         } catch (SQLException e) {
-            System.out.println("Lỗi SQL khi lấy danh sách khách hàng hoạt động: " + e.getMessage());
+            throw new RuntimeException("Lỗi SQL khi lấy danh sách khách hàng hoạt động: " + e.getMessage(), e);
         }
         return danhSachKhachHang;
     }
@@ -72,7 +72,7 @@ public class KhachHangDAO {
                 danhSachKhachHang.add(khachHang);
             }
         } catch (SQLException e) {
-            System.out.println("Lỗi SQL khi lấy danh sách khách hàng không hoạt động: " + e.getMessage());
+            throw new RuntimeException("Lỗi SQL khi lấy danh sách khách hàng không hoạt động: " + e.getMessage(), e);
         }
         return danhSachKhachHang;
     }
@@ -83,20 +83,37 @@ public class KhachHangDAO {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, maKhachHang);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                KhachHangDTO khachHang = new KhachHangDTO();
-                khachHang.setMaKhachHang(rs.getInt("MaKhachHang"));
-                khachHang.setHoTen(rs.getString("HoTen"));
-                khachHang.setSoDienThoai(rs.getString("SoDienThoai"));
-                khachHang.setDiaChi(rs.getString("DiaChi"));
-                khachHang.setTrangThai(rs.getBoolean("TrangThai"));
-                return khachHang;
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    KhachHangDTO khachHang = new KhachHangDTO();
+                    khachHang.setMaKhachHang(rs.getInt("MaKhachHang"));
+                    khachHang.setHoTen(rs.getString("HoTen"));
+                    khachHang.setSoDienThoai(rs.getString("SoDienThoai"));
+                    khachHang.setDiaChi(rs.getString("DiaChi"));
+                    khachHang.setTrangThai(rs.getBoolean("TrangThai"));
+                    return khachHang;
+                }
             }
         } catch (SQLException e) {
-            System.out.println("Lỗi SQL khi lấy khách hàng theo mã: " + e.getMessage());
+            throw new RuntimeException("Lỗi SQL khi lấy khách hàng theo mã: " + e.getMessage(), e);
         }
         return null;
+    }
+
+    public int layMaKhachHangTiepTheo() {
+        String sql = "SELECT MAX(MaKhachHang) AS MaxMaKhachHang FROM khachhang";
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            if (rs.next()) {
+                int maxMaKhachHang = rs.getInt("MaxMaKhachHang");
+                return maxMaKhachHang + 1;
+            } else {
+                return 1;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Lỗi SQL khi lấy mã khách hàng tiếp theo: " + e.getMessage(), e);
+        }
     }
 
     public List<KhachHangDTO> layDanhSachTimKiem(String tuKhoa) {
@@ -112,26 +129,39 @@ public class KhachHangDAO {
             stmt.setString(2, tuKhoaTimKiem);
             stmt.setString(3, tuKhoaTimKiem);
 
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                KhachHangDTO khachHang = new KhachHangDTO();
-                khachHang.setMaKhachHang(rs.getInt("MaKhachHang"));
-                khachHang.setHoTen(rs.getString("HoTen"));
-                khachHang.setSoDienThoai(rs.getString("SoDienThoai"));
-                khachHang.setDiaChi(rs.getString("DiaChi"));
-                khachHang.setTrangThai(rs.getBoolean("TrangThai"));
-                danhSachKhachHang.add(khachHang);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    KhachHangDTO khachHang = new KhachHangDTO();
+                    khachHang.setMaKhachHang(rs.getInt("MaKhachHang"));
+                    khachHang.setHoTen(rs.getString("HoTen"));
+                    khachHang.setSoDienThoai(rs.getString("SoDienThoai"));
+                    khachHang.setDiaChi(rs.getString("DiaChi"));
+                    khachHang.setTrangThai(rs.getBoolean("TrangThai"));
+                    danhSachKhachHang.add(khachHang);
+                }
             }
         } catch (SQLException e) {
-            System.out.println("Lỗi SQL khi tìm kiếm khách hàng: " + e.getMessage());
+            throw new RuntimeException("Lỗi SQL khi tìm kiếm khách hàng: " + e.getMessage(), e);
         }
         return danhSachKhachHang;
     }
 
     public boolean themKhachHang(KhachHangDTO khachHang) {
+        String checkSql = "SELECT COUNT(*) FROM khachhang WHERE SoDienThoai = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
+            checkStmt.setString(1, khachHang.getSoDienThoai());
+            try (ResultSet rs = checkStmt.executeQuery()) {
+                if (rs.next() && rs.getInt(1) > 0) {
+                    throw new SQLException("Số điện thoại đã tồn tại!");
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Lỗi khi kiểm tra số điện thoại: " + e.getMessage(), e);
+        }
+
         String sql = "INSERT INTO khachhang (MaKhachHang, HoTen, SoDienThoai, DiaChi, TrangThai) " +
                      "VALUES (?, ?, ?, ?, ?)";
-
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -144,15 +174,27 @@ public class KhachHangDAO {
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
         } catch (SQLException e) {
-            System.out.println("Lỗi SQL khi thêm khách hàng: " + e.getMessage());
-            return false;
+            throw new RuntimeException("Lỗi SQL khi thêm khách hàng: " + e.getMessage(), e);
         }
     }
 
     public boolean suaKhachHang(KhachHangDTO khachHang) {
+        String checkSql = "SELECT COUNT(*) FROM khachhang WHERE SoDienThoai = ? AND MaKhachHang != ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
+            checkStmt.setString(1, khachHang.getSoDienThoai());
+            checkStmt.setInt(2, khachHang.getMaKhachHang());
+            try (ResultSet rs = checkStmt.executeQuery()) {
+                if (rs.next() && rs.getInt(1) > 0) {
+                    throw new SQLException("Số điện thoại đã được sử dụng bởi khách hàng khác!");
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Lỗi khi kiểm tra số điện thoại: " + e.getMessage(), e);
+        }
+
         String sql = "UPDATE khachhang SET HoTen = ?, SoDienThoai = ?, DiaChi = ?, TrangThai = ? " +
                      "WHERE MaKhachHang = ?";
-
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -165,14 +207,12 @@ public class KhachHangDAO {
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
         } catch (SQLException e) {
-            System.out.println("Lỗi SQL khi sửa khách hàng: " + e.getMessage());
-            return false;
+            throw new RuntimeException("Lỗi SQL khi sửa khách hàng: " + e.getMessage(), e);
         }
     }
 
     public boolean xoaKhachHang(int maKhachHang) {
         String sql = "UPDATE khachhang SET TrangThai = ? WHERE MaKhachHang = ?";
-
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -182,8 +222,7 @@ public class KhachHangDAO {
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
         } catch (SQLException e) {
-            System.out.println("Lỗi SQL khi xóa khách hàng: " + e.getMessage());
-            return false;
+            throw new RuntimeException("Lỗi SQL khi xóa khách hàng: " + e.getMessage(), e);
         }
     }
 }

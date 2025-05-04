@@ -4,6 +4,7 @@ import org.example.BUS.SanPhamBUS;
 import org.example.DTO.SanPhamDTO;
 import org.example.GUI.Components.StyledButton;
 import org.example.GUI.Constants.AppConstants;
+import org.example.Utils.ExcelUtils;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -11,6 +12,10 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import java.io.File;
+import java.util.List;
+import java.io.FileNotFoundException;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class SanPhamPanel extends JPanel {
 
@@ -19,7 +24,7 @@ public class SanPhamPanel extends JPanel {
     private JTextField searchField;
     private JPanel danhSachPanel;
     private JComboBox<String> statusFilterComboBox;
-    private JButton exportExcelButton;
+    private JButton excelButton;
 
     public SanPhamPanel() {
         setLayout(new BorderLayout(20, 20));
@@ -91,7 +96,7 @@ public class SanPhamPanel extends JPanel {
         statusFilterComboBox = new JComboBox<>(filterOptions);
         statusFilterComboBox.setPreferredSize(new Dimension(150, 35));
         statusFilterComboBox.setFont(AppConstants.NORMAL_FONT);
-        statusFilterComboBox.setSelectedItem("Tất cả"); // Đặt bộ lọc mặc định
+        statusFilterComboBox.setSelectedItem("Tất cả");
         statusFilterComboBox.addActionListener(e -> XuatSanPhamTable());
 
         StyledButton filterButton = new StyledButton("Lọc nâng cao", new Color(100, 149, 237), 130, 35);
@@ -101,14 +106,24 @@ public class SanPhamPanel extends JPanel {
             dialog.setVisible(true);
         });
 
-        StyledButton exportExcelButton = new StyledButton("Xuất Excel", new Color(0, 238, 0), 100, 35);
-        exportExcelButton.addActionListener(e -> {
+        excelButton = new StyledButton("Excel", new Color(0, 238, 0), 100, 35);
+        JPopupMenu excelMenu = new JPopupMenu();
+        JMenuItem exportItem = new JMenuItem("Xuất Excel");
+        JMenuItem importItem = new JMenuItem("Nhập Excel");
+        excelMenu.add(exportItem);
+        excelMenu.add(importItem);
+
+        exportItem.addActionListener(e -> {
             String selectedFilter = (String) statusFilterComboBox.getSelectedItem();
             sanPhamBUS.xuatDanhSachSanPhamRaExcel(tbSanPham, selectedFilter);
         });
 
+        importItem.addActionListener(e -> importExcel());
+
+        excelButton.addActionListener(e -> excelMenu.show(excelButton, excelButton.getWidth() / 2, excelButton.getHeight()));
+
         bottomRowPanel.add(statusFilterComboBox);
-        bottomRowPanel.add(exportExcelButton);
+        bottomRowPanel.add(excelButton);
         bottomRowPanel.add(filterButton);
 
         actionPanel.add(topRowPanel);
@@ -255,6 +270,41 @@ public class SanPhamPanel extends JPanel {
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this,
                         "Lỗi hệ thống khai xóa sản phẩm: " + e.getMessage(),
+                        "Lỗi", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private void importExcel() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Chọn tệp Excel để nhập");
+        fileChooser.setFileFilter(new FileNameExtensionFilter("Excel Files (*.xlsx)", "xlsx"));
+        fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+
+        int userSelection = fileChooser.showOpenDialog(this);
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            File fileToImport = fileChooser.getSelectedFile();
+            try {
+                List<SanPhamDTO> danhSachSanPham = new ExcelUtils().nhapDanhSachSanPhamTuExcel(fileToImport);
+                if (danhSachSanPham == null) {
+                    throw new Exception("Danh sách sản phẩm trả về là null");
+                }
+                System.out.println("Số lượng sản phẩm nhập: " + danhSachSanPham.size());
+                if (sanPhamBUS.nhapSanPham(danhSachSanPham)) {
+                    JOptionPane.showMessageDialog(this, "Nhập dữ liệu từ Excel thành công!",
+                            "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                    XuatSanPhamTable();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Nhập dữ liệu thất bại!",
+                            "Lỗi", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (FileNotFoundException e) {
+                JOptionPane.showMessageDialog(this,
+                        "Không thể truy cập file: " + fileToImport.getName() + ". File đang được sử dụng bởi tiến trình khác. Vui lòng đóng file và thử lại!",
+                        "Lỗi", JOptionPane.ERROR_MESSAGE);
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Lỗi khi nhập tệp Excel: " + e.getMessage(),
                         "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
         }

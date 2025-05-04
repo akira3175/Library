@@ -132,9 +132,8 @@ public class NguoiDungBUS {
     }
 
     public int soLuongNguoiDungConHoatDong() {
-        return nguoiDungDAO.layDanhSachTatCaNguoiDung().stream()
+        return (int) nguoiDungDAO.layDanhSachTatCaNguoiDung().stream()
             .filter(NguoiDung::isConHoatDong)
-            .mapToInt(NguoiDung::getMaNguoiDung)
-            .sum();
+            .count();
     }
 }

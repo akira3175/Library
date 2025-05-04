@@ -29,9 +29,9 @@ public class StatisticCard extends JPanel {
         valueLabel.setForeground(AppConstants.TEXT_COLOR);
 
         // Change percentage
-        changeLabel = new JLabel(change);
-        changeLabel.setFont(AppConstants.NORMAL_FONT);
-        changeLabel.setForeground(isPositive ? AppConstants.SECONDARY_COLOR : Color.RED);
+        // changeLabel = new JLabel(change);
+        // changeLabel.setFont(AppConstants.NORMAL_FONT);
+        // changeLabel.setForeground(isPositive ? AppConstants.SECONDARY_COLOR : Color.RED);
 
         // Layout
         JPanel topPanel = new JPanel(new BorderLayout());
@@ -41,7 +41,7 @@ public class StatisticCard extends JPanel {
         JPanel bottomPanel = new JPanel(new BorderLayout(10, 0));
         bottomPanel.setOpaque(false);
         bottomPanel.add(valueLabel, BorderLayout.WEST);
-        bottomPanel.add(changeLabel, BorderLayout.EAST);
+//        bottomPanel.add(changeLabel, BorderLayout.EAST);
 
         add(topPanel, BorderLayout.NORTH);
         add(bottomPanel, BorderLayout.CENTER);

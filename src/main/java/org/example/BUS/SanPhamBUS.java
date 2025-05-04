@@ -162,7 +162,7 @@ public class SanPhamBUS {
 
     public int laySanPhamTheoMaMax() {
         return sanPhamDAO.layMaSanPhamTiepTheo();
-    }
+}
 
     public List<SanPhamDTO> layDanhSachLoaiSanPham() {
         return sanPhamDAO.layDanhSachLoaiSanPham();

@@ -83,7 +83,7 @@ public class SanPhamPanel extends JPanel {
             dialog.setVisible(true);
         });
 
-        StyledButton exportExcelButton = new StyledButton("Xuất Excel", new Color(255, 165, 0), 100, 35);
+        StyledButton exportExcelButton = new StyledButton("Xuất Excel", new Color(0, 238, 0), 100, 35);
         exportExcelButton.addActionListener(e -> {
             String selectedFilter = (String) statusFilterComboBox.getSelectedItem();
             sanPhamBUS.xuatDanhSachSanPhamRaExcel(tbSanPham, selectedFilter);

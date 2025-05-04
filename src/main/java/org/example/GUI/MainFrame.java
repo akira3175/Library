@@ -14,6 +14,7 @@ import org.example.GUI.Panels.SanPham.SanPhamPanel;
 import org.example.GUI.Panels.ThongKe.ThongKePanel;
 import org.example.GUI.Panels.KhuyenMai.KhuyenMaiPanel;
 import org.example.GUI.Panels.BanHang.BanHangPanel;
+import org.example.GUI.Panels.NhanSu.DoiMatKhauDialog;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -95,9 +96,94 @@ public class MainFrame extends JFrame {
         // User profile panel
         JPanel profilePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         profilePanel.setOpaque(false);
+
+        // Create a panel for user info and dropdown
+        JPanel userPanel = new JPanel(new BorderLayout(5, 0));
+        userPanel.setOpaque(false);
+
+        // User greeting label
         JLabel userLabel = new JLabel("Xin chào " + nguoiDungHienTai.getHoTen());
         userLabel.setFont(AppConstants.NORMAL_FONT);
-        profilePanel.add(userLabel);
+
+        // User icon/avatar
+        JLabel userIconLabel = new JLabel();
+        try {
+            ImageIcon userIcon = new ImageIcon(getClass().getResource("/icons/user.png"));
+            Image img = userIcon.getImage().getScaledInstance(24, 24, Image.SCALE_SMOOTH);
+            userIconLabel.setIcon(new ImageIcon(img));
+        } catch (Exception e) {
+            // Fallback to text icon if image can't be loaded
+            userIconLabel.setText("👤");
+            userIconLabel.setFont(new Font(AppConstants.NORMAL_FONT.getFamily(), Font.PLAIN, 16));
+        }
+
+        // Create a dropdown arrow icon
+        JLabel dropdownArrow = new JLabel("▼");
+        dropdownArrow.setFont(new Font(AppConstants.NORMAL_FONT.getFamily(), Font.PLAIN, 10));
+        dropdownArrow.setForeground(new Color(107, 114, 128));
+
+        // Add components to user panel
+        userPanel.add(userIconLabel, BorderLayout.WEST);
+        userPanel.add(userLabel, BorderLayout.CENTER);
+        userPanel.add(dropdownArrow, BorderLayout.EAST);
+
+        // Create a popup menu for user actions
+        JPopupMenu userMenu = new JPopupMenu();
+
+        // Add menu items
+        JMenuItem changePasswordItem = new JMenuItem("Đổi mật khẩu");
+        changePasswordItem.setFont(AppConstants.NORMAL_FONT);
+        changePasswordItem.addActionListener(e -> showChangePasswordDialog());
+
+        JMenuItem logoutItem = new JMenuItem("Đăng xuất");
+        logoutItem.setFont(AppConstants.NORMAL_FONT);
+        logoutItem.addActionListener(e -> {
+            int confirm = JOptionPane.showConfirmDialog(
+                    this,
+                    "Bạn có chắc chắn muốn đăng xuất?",
+                    "Xác nhận đăng xuất",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE
+            );
+            if (confirm == JOptionPane.YES_OPTION) {
+                new LoginForm().setVisible(true);
+                dispose();
+            }
+        });
+
+        userMenu.add(changePasswordItem);
+        userMenu.addSeparator();
+        userMenu.add(logoutItem);
+
+        // Make the user panel clickable to show the menu
+        userPanel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        userPanel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                userMenu.show(userPanel, 0, userPanel.getHeight());
+            }
+
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                userPanel.setBorder(BorderFactory.createCompoundBorder(
+                        BorderFactory.createMatteBorder(0, 0, 1, 0, AppConstants.PRIMARY_COLOR),
+                        BorderFactory.createEmptyBorder(0, 0, 1, 0)
+                ));
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                userPanel.setBorder(null);
+            }
+        });
+
+        // Add a direct button for changing password
+        JButton changePasswordButton = new JButton("Đổi mật khẩu");
+        changePasswordButton.setFont(AppConstants.NORMAL_FONT);
+        changePasswordButton.setFocusPainted(false);
+        changePasswordButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        changePasswordButton.addActionListener(e -> showChangePasswordDialog());
+
+        // Add components to profile panel
+        profilePanel.add(Box.createHorizontalStrut(15));
+        profilePanel.add(userPanel);
 
         headerPanel.add(logoPanel, BorderLayout.WEST);
         headerPanel.add(profilePanel, BorderLayout.EAST);
@@ -305,6 +391,20 @@ public class MainFrame extends JFrame {
     public void showPanel(String panelName) {
         cardLayout.show(contentPanel, panelName);
         updateActiveButton(panelName);
+    }
+
+    private void showChangePasswordDialog() {
+        DoiMatKhauDialog dialog = new DoiMatKhauDialog(this);
+        dialog.setVisible(true);
+        
+        if (dialog.isConfirmed()) {
+            JOptionPane.showMessageDialog(
+                this,
+                "Mật khẩu đã được thay đổi thành công. Vui lòng sử dụng mật khẩu mới trong lần đăng nhập tiếp theo.",
+                "Đổi mật khẩu thành công",
+                JOptionPane.INFORMATION_MESSAGE
+            );
+        }
     }
 
     public static void main(String[] args) {

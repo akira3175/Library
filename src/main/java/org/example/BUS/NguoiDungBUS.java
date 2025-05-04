@@ -106,4 +106,28 @@ public class NguoiDungBUS {
     private String gereratePassword() {
         return "0000";
     }
+
+    public String datLaiMatKhau(String matKhauCu, String matKhauMoi, String nhapLaiMatKhau) {
+        if (!matKhauMoi.equals(nhapLaiMatKhau)) {
+            logger.warn("Mật khẩu không khớp!");
+            return "Mật khẩu không khớp!";
+        }
+
+        if (matKhauCu.equals(matKhauMoi)) {
+            logger.warn("Mật khẩu mới không được trùng với mật khẩu cũ!");
+            return "Mật khẩu mới không được trùng với mật khẩu cũ!";
+        }
+        
+        NguoiDung nguoiDung = nguoiDungDAO.layThongTinNguoiDungTheoID(nguoiDungHienTai.getMaNguoiDung());
+
+        if (!nguoiDung.getMatKhau().equals(matKhauCu)) {
+            logger.warn("Mật khẩu cũ không đúng!");
+            return "Mật khẩu cũ không đúng!";
+        }
+
+        nguoiDung.setMatKhau(matKhauMoi);
+        nguoiDungDAO.suaNguoiDung(nguoiDung);
+
+        return "Đổi mật khẩu thành công!";
+    }
 }

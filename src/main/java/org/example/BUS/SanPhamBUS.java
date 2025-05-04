@@ -63,6 +63,24 @@ public class SanPhamBUS {
             });
         }
     }
+    
+    public void hienThiSanPhamLenTableBanHang(JTable table) {
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        model.setRowCount(0);
+        List<SanPhamDTO> danhSachSanPham;
+        
+        danhSachSanPham = layDanhSachTatCaSanPhamHoatDong();
+        
+        for (SanPhamDTO sanPham : danhSachSanPham) {
+            model.addRow(new Object[]{
+                sanPham.getMaSanPham(),
+                sanPham.getTenLoaiSanPham(),
+                sanPham.getTenSanPham(),
+                sanPham.getSoLuong(),
+                sanPham.getGiaLoi(),
+            });
+        }
+    }
 
     public void HienThiSanPhamTimKiem(JTable table, String tuKhoa) {
         List<SanPhamDTO> danhSachSanPham = sanPhamDAO.layDanhSachTimKiem(tuKhoa);
@@ -166,7 +184,7 @@ public class SanPhamBUS {
 
     public int laySanPhamTheoMaMax() {
         return sanPhamDAO.layMaSanPhamTiepTheo();
-    }
+}
 
     public List<SanPhamDTO> layDanhSachLoaiSanPham() {
         return sanPhamDAO.layDanhSachLoaiSanPham();
@@ -175,5 +193,10 @@ public class SanPhamBUS {
     public List<SanPhamDTO> xuatDanhSachSanPhamLocNangCaoRaExcel(String tenLoaiSanPham, String minGiaVon, String maxGiaVon,
             String minGiaLoi, String maxGiaLoi, String minSoLuong, String maxSoLuong, String trangThai) {
         return sanPhamDAO.layDanhSachSanPhamLocNangCao(tenLoaiSanPham, minGiaVon, maxGiaVon, minGiaLoi, maxGiaLoi, minSoLuong, maxSoLuong, trangThai);
+    }
+
+    public String getAnhSanPhamURL(int maSanPham) {
+        SanPhamDTO sanPham = sanPhamDAO.laySanPhamTheoMa(maSanPham);
+        return sanPham != null ? sanPham.getAnhSanPhamURL() : null;
     }
 }

@@ -216,7 +216,7 @@ public class SanPhamDAO {
             stmt.setInt(6, sanPham.getSoLuong());
             stmt.setInt(7, sanPham.getGiaVon());
             stmt.setInt(8, sanPham.getGiaLoi());
-            stmt.setBoolean(9, sanPham.getSoLuong() > 0);
+            stmt.setBoolean(9, true);
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
 

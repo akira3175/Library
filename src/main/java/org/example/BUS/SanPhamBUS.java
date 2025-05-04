@@ -24,14 +24,15 @@ public class SanPhamBUS {
         model.setRowCount(0);
 
         for (SanPhamDTO sanPham : danhSachSanPham) {
+            int giaLoiHienThi = sanPham.getGiaVon() > 0 ? sanPham.getGiaVon() + sanPham.getGiaLoi() : 0;
             model.addRow(new Object[]{
                 sanPham.getMaSanPham(),
                 sanPham.getTenLoaiSanPham(),
-                sanPham.getAnhSanPhamURL(),
                 sanPham.getTenSanPham(),
+                sanPham.getAnhSanPhamURL(),
                 sanPham.getSoLuong(),
                 sanPham.getGiaVon(),
-                sanPham.getGiaLoi(),
+                giaLoiHienThi,
                 sanPham.getTrangThai() ? "Hoạt động" : "Không hoạt động"
             });
         }
@@ -51,6 +52,7 @@ public class SanPhamBUS {
         }
 
         for (SanPhamDTO sanPham : danhSachSanPham) {
+            int giaLoiHienThi = sanPham.getGiaVon() > 0 ? sanPham.getGiaVon() + sanPham.getGiaLoi() : 0;
             model.addRow(new Object[]{
                 sanPham.getMaSanPham(),
                 sanPham.getTenLoaiSanPham(),
@@ -58,26 +60,25 @@ public class SanPhamBUS {
                 sanPham.getAnhSanPhamURL(),
                 sanPham.getSoLuong(),
                 sanPham.getGiaVon(),
-                sanPham.getGiaLoi(),
+                giaLoiHienThi,
                 sanPham.getTrangThai() ? "Hoạt động" : "Không hoạt động"
             });
         }
     }
-    
+
     public void hienThiSanPhamLenTableBanHang(JTable table) {
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         model.setRowCount(0);
-        List<SanPhamDTO> danhSachSanPham;
-        
-        danhSachSanPham = layDanhSachTatCaSanPhamHoatDong();
-        
+        List<SanPhamDTO> danhSachSanPham = layDanhSachTatCaSanPhamHoatDong();
+
         for (SanPhamDTO sanPham : danhSachSanPham) {
+            int giaLoiHienThi = sanPham.getGiaVon() > 0 ? sanPham.getGiaVon() + sanPham.getGiaLoi() : 0;
             model.addRow(new Object[]{
                 sanPham.getMaSanPham(),
                 sanPham.getTenLoaiSanPham(),
                 sanPham.getTenSanPham(),
                 sanPham.getSoLuong(),
-                sanPham.getGiaLoi(),
+                giaLoiHienThi
             });
         }
     }
@@ -88,6 +89,7 @@ public class SanPhamBUS {
         model.setRowCount(0);
 
         for (SanPhamDTO sanPham : danhSachSanPham) {
+            int giaLoiHienThi = sanPham.getGiaVon() > 0 ? sanPham.getGiaVon() + sanPham.getGiaLoi() : 0;
             model.addRow(new Object[]{
                 sanPham.getMaSanPham(),
                 sanPham.getTenLoaiSanPham(),
@@ -95,12 +97,12 @@ public class SanPhamBUS {
                 sanPham.getAnhSanPhamURL(),
                 sanPham.getSoLuong(),
                 sanPham.getGiaVon(),
-                sanPham.getGiaLoi(),
+                giaLoiHienThi,
                 sanPham.getTrangThai() ? "Hoạt động" : "Không hoạt động"
             });
         }
     }
-    
+
     public List<SanPhamDTO> layDanhSachSanPhamTimKiem(String input) {
         return sanPhamDAO.layDanhSachTimKiem(input);
     }
@@ -130,6 +132,7 @@ public class SanPhamBUS {
         model.setRowCount(0);
 
         for (SanPhamDTO sanPham : danhSachSanPham) {
+            int giaLoiHienThi = sanPham.getGiaVon() > 0 ? sanPham.getGiaVon() + sanPham.getGiaLoi() : 0;
             model.addRow(new Object[]{
                 sanPham.getMaSanPham(),
                 sanPham.getTenLoaiSanPham(),
@@ -137,7 +140,7 @@ public class SanPhamBUS {
                 sanPham.getAnhSanPhamURL(),
                 sanPham.getSoLuong(),
                 sanPham.getGiaVon(),
-                sanPham.getGiaLoi(),
+                giaLoiHienThi,
                 sanPham.getTrangThai() ? "Hoạt động" : "Không hoạt động"
             });
         }
@@ -184,7 +187,7 @@ public class SanPhamBUS {
 
     public int laySanPhamTheoMaMax() {
         return sanPhamDAO.layMaSanPhamTiepTheo();
-}
+    }
 
     public List<SanPhamDTO> layDanhSachLoaiSanPham() {
         return sanPhamDAO.layDanhSachLoaiSanPham();

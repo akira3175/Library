@@ -43,7 +43,9 @@ public class SanPhamDAO {
                 sanPham.setsanphamcol(rs.getString("sanphamcol"));
                 sanPham.setSoLuong(rs.getInt("SoLuong"));
                 sanPham.setGiaVon(rs.getInt("GiaVon"));
-                sanPham.setGiaLoi(rs.getInt("GiaLoi"));
+                int giaVon = rs.getInt("GiaVon");
+                int giaLoi = rs.getInt("GiaLoi");
+                sanPham.setGiaLoi(giaVon > 0 ? giaVon + giaLoi : 0);
                 danhSachSanPham.add(sanPham);
             }
         } catch (SQLException e) {
@@ -73,8 +75,9 @@ public class SanPhamDAO {
                 sanPham.setsanphamcol(rs.getString("sanphamcol"));
                 sanPham.setSoLuong(rs.getInt("SoLuong"));
                 sanPham.setGiaVon(rs.getInt("GiaVon"));
-                sanPham.setGiaLoi(rs.getInt("GiaLoi"));
-
+                int giaVon = rs.getInt("GiaVon");
+                int giaLoi = rs.getInt("GiaLoi");
+                sanPham.setGiaLoi(giaVon > 0 ? giaVon + giaLoi : 0);
                 danhSachSanPham.add(sanPham);
             }
         } catch (SQLException e) {
@@ -104,8 +107,9 @@ public class SanPhamDAO {
                 sanPham.setsanphamcol(rs.getString("sanphamcol"));
                 sanPham.setSoLuong(rs.getInt("SoLuong"));
                 sanPham.setGiaVon(rs.getInt("GiaVon"));
-                sanPham.setGiaLoi(rs.getInt("GiaLoi"));
-
+                int giaVon = rs.getInt("GiaVon");
+                int giaLoi = rs.getInt("GiaLoi");
+                sanPham.setGiaLoi(giaVon > 0 ? giaVon + giaLoi : 0);
                 danhSachSanPham.add(sanPham);
             }
         } catch (SQLException e) {
@@ -172,8 +176,9 @@ public class SanPhamDAO {
                     sanPham.setsanphamcol(rs.getString("sanphamcol"));
                     sanPham.setSoLuong(rs.getInt("SoLuong"));
                     sanPham.setGiaVon(rs.getInt("GiaVon"));
-                    sanPham.setGiaLoi(rs.getInt("GiaLoi"));
-
+                    int giaVon = rs.getInt("GiaVon");
+                    int giaLoi = rs.getInt("GiaLoi");
+                    sanPham.setGiaLoi(giaVon > 0 ? giaVon + giaLoi : 0);
                     danhSachSanPham.add(sanPham);
                 }
             }
@@ -290,7 +295,7 @@ public class SanPhamDAO {
                     updateStmt.setInt(3, i.getMaSanPham());
                     totalAffected += updateStmt.executeUpdate();
                 } else {
-                    
+
                     insertStmt.setInt(1, i.getMaSanPham());
                     insertStmt.setString(2, i.getTenLoaiSanPham());
                     insertStmt.setString(3, i.getTenSanPham());
@@ -336,11 +341,11 @@ public class SanPhamDAO {
         }
 
         if (!minGiaLoi.isEmpty()) {
-            sql.append(" AND sp.GiaLoi >= ?");
+            sql.append(" AND (sp.GiaVon + sp.GiaLoi) >= ?");
             params.add(Double.parseDouble(minGiaLoi));
         }
         if (!maxGiaLoi.isEmpty()) {
-            sql.append(" AND sp.GiaLoi <= ?");
+            sql.append(" AND (sp.GiaVon + sp.GiaLoi) <= ?");
             params.add(Double.parseDouble(maxGiaLoi));
         }
 
@@ -375,7 +380,9 @@ public class SanPhamDAO {
                     sanPham.setsanphamcol(rs.getString("sanphamcol"));
                     sanPham.setSoLuong(rs.getInt("SoLuong"));
                     sanPham.setGiaVon(rs.getInt("GiaVon"));
-                    sanPham.setGiaLoi(rs.getInt("GiaLoi"));
+                    int giaVon = rs.getInt("GiaVon");
+                    int giaLoi = rs.getInt("GiaLoi");
+                    sanPham.setGiaLoi(giaVon > 0 ? giaVon + giaLoi : 0);
                     danhSachSanPham.add(sanPham);
                 }
             }

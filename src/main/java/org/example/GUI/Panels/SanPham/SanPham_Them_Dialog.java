@@ -187,7 +187,7 @@ public class SanPham_Them_Dialog extends JDialog {
     private void chonAnh() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        
+
         // Thêm bộ lọc file để chỉ cho phép ảnh
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
                 "Image files (*.jpg, *.jpeg, *.png)", "jpg", "jpeg", "png");
@@ -196,26 +196,26 @@ public class SanPham_Them_Dialog extends JDialog {
         int result = fileChooser.showOpenDialog(this);
         if (result == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
-            
+
             // Kiểm tra file tồn tại và hợp lệ
             if (selectedFile != null && selectedFile.exists() && selectedFile.isFile()) {
                 try {
                     // Kiểm tra định dạng file
                     String fileName = selectedFile.getName().toLowerCase();
                     if (!fileName.endsWith(".jpg") && !fileName.endsWith(".jpeg") && !fileName.endsWith(".png")) {
-                        JOptionPane.showMessageDialog(this, 
-                                "Vui lòng chọn file ảnh định dạng JPG, JPEG hoặc PNG!", 
+                        JOptionPane.showMessageDialog(this,
+                                "Vui lòng chọn file ảnh định dạng JPG, JPEG hoặc PNG!",
                                 "Lỗi", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
 
                     duongDanAnh = selectedFile.getAbsolutePath();
                     ImageIcon originalIcon = new ImageIcon(duongDanAnh);
-                    
+
                     // Kiểm tra nếu ImageIcon không tải được ảnh
                     if (originalIcon.getImage() == null) {
-                        JOptionPane.showMessageDialog(this, 
-                                "Không thể tải ảnh. File có thể bị hỏng!", 
+                        JOptionPane.showMessageDialog(this,
+                                "Không thể tải ảnh. File có thể bị hỏng!",
                                 "Lỗi", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
@@ -239,13 +239,13 @@ public class SanPham_Them_Dialog extends JDialog {
                     anhSanPhamLabel.setText("");
                     anhSanPhamLabel.setIcon(new ImageIcon(scaledImg));
                 } catch (Exception e) {
-                    JOptionPane.showMessageDialog(this, 
-                            "Lỗi khi tải ảnh: " + e.getMessage(), 
+                    JOptionPane.showMessageDialog(this,
+                            "Lỗi khi tải ảnh: " + e.getMessage(),
                             "Lỗi", JOptionPane.ERROR_MESSAGE);
                 }
             } else {
-                JOptionPane.showMessageDialog(this, 
-                        "File không tồn tại hoặc không hợp lệ!", 
+                JOptionPane.showMessageDialog(this,
+                        "File không tồn tại hoặc không hợp lệ!",
                         "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
         }
@@ -283,7 +283,7 @@ public class SanPham_Them_Dialog extends JDialog {
             // Đường dẫn thư mục tài nguyên trong dự án
             String resourceDir = "src/main/resources/images/Sanpham_img";
             Path targetDir = Paths.get(resourceDir);
-            
+
             // Tạo thư mục nếu chưa tồn tại
             if (!Files.exists(targetDir)) {
                 Files.createDirectories(targetDir);
@@ -340,11 +340,7 @@ public class SanPham_Them_Dialog extends JDialog {
                             "Lỗi định dạng", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                if (giaLoi <= giaVon) {
-                    JOptionPane.showMessageDialog(this, "Giá lời phải lớn hơn giá vốn!",
-                            "Lỗi nhập liệu", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
+                
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(this, "Giá vốn và giá lời phải là số hợp lệ!",
                         "Lỗi định dạng", JOptionPane.ERROR_MESSAGE);
@@ -365,7 +361,6 @@ public class SanPham_Them_Dialog extends JDialog {
             }
             sanPham.setMaLoaiSanPham(maLoaiSanPham);
 
-            // Lưu ảnh vào thư mục tài nguyên và lấy đường dẫn tương đối
             String relativePath = luuAnhVaoThuMucTaiNguyen(new File(duongDanAnh), maSanPham);
             if (relativePath == null) {
                 return;
@@ -375,12 +370,12 @@ public class SanPham_Them_Dialog extends JDialog {
             sanPham.setTenSanPham(tenSanPhamField.getText().trim());
             sanPham.setNhaSanXuat(nhaSanXuatField.getText().trim());
             sanPham.setSoLuong(Integer.parseInt(soLuongField.getText().trim()));
-            sanPham.setGiaVon(Integer.parseInt(giaVonField.getText().trim()));
-            sanPham.setGiaLoi(Integer.parseInt(giaLoiField.getText().trim().toString()));
+            sanPham.setGiaVon((int) giaVon);
+            sanPham.setGiaLoi((int) giaLoi);
 
             if (sanPhamBUS.themSanPham(sanPham)) {
                 JOptionPane.showMessageDialog(this, "Thêm sản phẩm thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-                sanPhamBUS.hienThiSanPhamLenTable(tbSanPham); // Làm mới bảng
+                sanPhamBUS.hienThiSanPhamLenTable(tbSanPham);
                 tbSanPham.repaint();
                 dispose();
             } else {

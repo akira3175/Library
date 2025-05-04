@@ -447,11 +447,7 @@ public class SanPham_Thongtinsanpham_Dialog extends JDialog {
                             "Lỗi định dạng", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                if (giaLoi <= giaVon) {
-                    JOptionPane.showMessageDialog(this, "Giá lời phải lớn hơn giá vốn!",
-                            "Lỗi nhập liệu", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
+
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(this, "Số lượng, giá vốn và giá lời phải là số nguyên hợp lệ!",
                         "Lỗi định dạng", JOptionPane.ERROR_MESSAGE);
@@ -561,14 +557,14 @@ public class SanPham_Thongtinsanpham_Dialog extends JDialog {
         List<SanPhamDTO> danhSachSanPham = sanPhamBUS.layDanhSachTatCaSanPham();
         for (SanPhamDTO sp : danhSachSanPham) {
             model.addRow(new Object[]{
-                    sp.getMaSanPham(),
-                    sp.getTenLoaiSanPham(),
-                    sp.getTenSanPham(),
-                    sp.getAnhSanPhamURL(),
-                    sp.getSoLuong(),
-                    sp.getGiaVon(),
-                    sp.getGiaLoi(),
-                    sp.getTrangThai() ? "Hoạt động" : "Không hoạt động"
+                sp.getMaSanPham(),
+                sp.getTenLoaiSanPham(),
+                sp.getTenSanPham(),
+                sp.getAnhSanPhamURL(),
+                sp.getSoLuong(),
+                sp.getGiaVon(),
+                sp.getGiaLoi(),
+                sp.getTrangThai() ? "Hoạt động" : "Không hoạt động"
             });
         }
     }

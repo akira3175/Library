@@ -27,6 +27,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -92,9 +93,28 @@ public class BanHangPanel extends JPanel {
         banHangTabPanel.setBackground(AppConstants.BACKGROUND_COLOR);
         banHangTabPanel.setBorder(BorderFactory.createEmptyBorder());
 
-        banHangTabPanel.add(createHeaderPanel(), BorderLayout.NORTH);
-        banHangTabPanel.add(createMainPanel(), BorderLayout.CENTER);
-        banHangTabPanel.add(createBottomPanel(), BorderLayout.SOUTH);
+        // Create a split pane for better organization
+        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+        splitPane.setDividerLocation(350);
+        splitPane.setDividerSize(5);
+        splitPane.setBorder(null);
+        splitPane.setOpaque(false);
+
+        // Top panel contains header and product table
+        JPanel topPanel = new JPanel(new BorderLayout(0, 10));
+        topPanel.setOpaque(false);
+        topPanel.add(createHeaderPanel(), BorderLayout.NORTH);
+        topPanel.add(createMainPanel(), BorderLayout.CENTER);
+
+        // Bottom panel contains product image and cart
+        JPanel bottomPanel = new JPanel(new BorderLayout(10, 0));
+        bottomPanel.setOpaque(false);
+        bottomPanel.add(createBottomPanel(), BorderLayout.CENTER);
+
+        splitPane.setTopComponent(topPanel);
+        splitPane.setBottomComponent(bottomPanel);
+
+        banHangTabPanel.add(splitPane, BorderLayout.CENTER);
         return banHangTabPanel;
     }
 
@@ -171,27 +191,36 @@ public class BanHangPanel extends JPanel {
     private JPanel createHeaderPanel() {
         JPanel headerPanel = new JPanel(new BorderLayout(20, 0));
         headerPanel.setOpaque(false);
+        headerPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
 
         JLabel titleLabel = new JLabel("Bán hàng");
         titleLabel.setFont(AppConstants.HEADER_FONT);
         titleLabel.setForeground(AppConstants.TEXT_COLOR);
 
-        JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        actionPanel.setOpaque(false);
+        JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        searchPanel.setOpaque(false);
+
+        JLabel searchLabel = new JLabel("Tìm kiếm:");
+        searchLabel.setFont(AppConstants.NORMAL_FONT);
 
         searchField = new JTextField(20);
         searchField.putClientProperty("JTextField.placeholderText", "Tìm kiếm sản phẩm...");
         searchField.setPreferredSize(new Dimension(200, 35));
+        searchField.addActionListener(e -> searchProducts());
 
-        JButton searchButton = new JButton("Tìm");
-        searchButton.setPreferredSize(new Dimension(80, 35));
+        StyledButton searchButton = new StyledButton("Tìm", new Color(59, 130, 246), 80, 35);
         searchButton.addActionListener(e -> searchProducts());
 
-        actionPanel.add(searchField);
-        actionPanel.add(searchButton);
+        StyledButton refreshButton = new StyledButton("Làm mới", new Color(107, 114, 128), 100, 35);
+        refreshButton.addActionListener(e -> loadProductTable());
+
+        searchPanel.add(searchLabel);
+        searchPanel.add(searchField);
+        searchPanel.add(searchButton);
+        searchPanel.add(refreshButton);
 
         headerPanel.add(titleLabel, BorderLayout.WEST);
-        headerPanel.add(actionPanel, BorderLayout.EAST);
+        headerPanel.add(searchPanel, BorderLayout.EAST);
 
         return headerPanel;
     }
@@ -203,6 +232,15 @@ public class BanHangPanel extends JPanel {
                 BorderFactory.createLineBorder(new Color(229, 231, 235), 1),
                 BorderFactory.createEmptyBorder(15, 15, 15, 15)
         ));
+
+        // Add a title for the product table
+        JPanel titlePanel = new JPanel(new BorderLayout());
+        titlePanel.setOpaque(false);
+        titlePanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
+
+        JLabel tableTitle = new JLabel("Danh sách sản phẩm");
+        tableTitle.setFont(new Font(AppConstants.NORMAL_FONT.getFamily(), Font.BOLD, 14));
+        titlePanel.add(tableTitle, BorderLayout.WEST);
 
         String[] columns = {"Mã SP", "Loại SP", "Tên SP", "Số lượng", "Giá bán"};
         DefaultTableModel model = new DefaultTableModel(columns, 0) {
@@ -226,8 +264,12 @@ public class BanHangPanel extends JPanel {
         };
         productTable = new JTable(model);
         productTable.setRowHeight(40);
-        productTable.getTableHeader().setFont(AppConstants.NORMAL_FONT);
+        productTable.getTableHeader().setFont(new Font(AppConstants.NORMAL_FONT.getFamily(), Font.BOLD, 13));
         productTable.setFont(new Font(AppConstants.NORMAL_FONT.getFamily(), Font.PLAIN, 13));
+        productTable.setSelectionBackground(new Color(243, 244, 246));
+        productTable.setSelectionForeground(new Color(17, 24, 39));
+        productTable.setShowVerticalLines(false);
+        productTable.setGridColor(new Color(229, 231, 235));
 
         DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer();
         leftRenderer.setHorizontalAlignment(SwingConstants.LEFT);
@@ -236,11 +278,11 @@ public class BanHangPanel extends JPanel {
         }
         productTable.getTableHeader().setDefaultRenderer(leftRenderer);
 
-        productTable.getColumnModel().getColumn(0).setPreferredWidth(100);
+        productTable.getColumnModel().getColumn(0).setPreferredWidth(80);
         productTable.getColumnModel().getColumn(1).setPreferredWidth(150);
-        productTable.getColumnModel().getColumn(2).setPreferredWidth(200);
-        productTable.getColumnModel().getColumn(3).setPreferredWidth(100);
-        productTable.getColumnModel().getColumn(4).setPreferredWidth(150);
+        productTable.getColumnModel().getColumn(2).setPreferredWidth(250);
+        productTable.getColumnModel().getColumn(3).setPreferredWidth(80);
+        productTable.getColumnModel().getColumn(4).setPreferredWidth(120);
 
         productTable.addMouseListener(new MouseAdapter() {
             @Override
@@ -258,23 +300,43 @@ public class BanHangPanel extends JPanel {
 
         JScrollPane scrollPane = new JScrollPane(productTable);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        scrollPane.getViewport().setBackground(Color.WHITE);
 
+        JPanel instructionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        instructionPanel.setOpaque(false);
+        JLabel instructionLabel = new JLabel("Nhấp đúp để thêm sản phẩm vào giỏ hàng");
+        instructionLabel.setFont(new Font(AppConstants.NORMAL_FONT.getFamily(), Font.ITALIC, 12));
+        instructionLabel.setForeground(new Color(107, 114, 128));
+        instructionPanel.add(instructionLabel);
+
+        contentPanel.add(titlePanel, BorderLayout.NORTH);
         contentPanel.add(scrollPane, BorderLayout.CENTER);
+        contentPanel.add(instructionPanel, BorderLayout.SOUTH);
 
         return contentPanel;
     }
 
     private JPanel createBottomPanel() {
-        JPanel bottomPanel = new JPanel(new BorderLayout(10, 10));
+        JPanel bottomPanel = new JPanel(new BorderLayout(15, 0));
         bottomPanel.setOpaque(false);
 
+        // Product image panel
         imagePanel = new JPanel(new BorderLayout());
         imagePanel.setOpaque(false);
         imagePanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(Color.BLACK, 1),
-                BorderFactory.createEmptyBorder(0, 0, 0, 10)
+                BorderFactory.createLineBorder(new Color(229, 231, 235), 1),
+                BorderFactory.createEmptyBorder(10, 10, 10, 10)
         ));
         imagePanel.setPreferredSize(new Dimension(200, 300));
+
+        JLabel imageTitle = new JLabel("Hình ảnh sản phẩm", SwingConstants.CENTER);
+        imageTitle.setFont(new Font(AppConstants.NORMAL_FONT.getFamily(), Font.BOLD, 14));
+        imagePanel.add(imageTitle, BorderLayout.NORTH);
+
+        JLabel placeholderImage = new JLabel("Chọn sản phẩm để xem hình ảnh", SwingConstants.CENTER);
+        placeholderImage.setVerticalAlignment(SwingConstants.CENTER);
+        placeholderImage.setForeground(new Color(107, 114, 128));
+        imagePanel.add(placeholderImage, BorderLayout.CENTER);
 
         JPanel cartPanel = createCartPanel();
 
@@ -291,10 +353,17 @@ public class BanHangPanel extends JPanel {
                 BorderFactory.createLineBorder(new Color(229, 231, 235), 1),
                 BorderFactory.createEmptyBorder(15, 15, 15, 15)
         ));
-        // Set minimum width to 694 and preferred height to 200
         cartPanel.setMinimumSize(new Dimension(694, 0));
         cartPanel.setPreferredSize(new Dimension(694, 300));
 
+        // Cart title panel
+        JPanel cartTitlePanel = new JPanel(new BorderLayout());
+        cartTitlePanel.setOpaque(false);
+        JLabel cartTitle = new JLabel("Giỏ hàng");
+        cartTitle.setFont(new Font(AppConstants.NORMAL_FONT.getFamily(), Font.BOLD, 14));
+        cartTitlePanel.add(cartTitle, BorderLayout.WEST);
+
+        // Cart table
         String[] cartColumns = {"Mã SP", "Tên SP", "Số lượng", "Đơn giá", "Thành tiền", "Xóa"};
         DefaultTableModel cartModel = new DefaultTableModel(cartColumns, 0) {
             @Override
@@ -320,9 +389,13 @@ public class BanHangPanel extends JPanel {
             }
         };
         cartTable = new JTable(cartModel);
-        cartTable.setRowHeight(30); // Reduced from 40 to make table more compact
-        cartTable.getTableHeader().setFont(AppConstants.NORMAL_FONT);
+        cartTable.setRowHeight(30);
+        cartTable.getTableHeader().setFont(new Font(AppConstants.NORMAL_FONT.getFamily(), Font.BOLD, 13));
         cartTable.setFont(new Font(AppConstants.NORMAL_FONT.getFamily(), Font.PLAIN, 13));
+        cartTable.setSelectionBackground(new Color(243, 244, 246));
+        cartTable.setSelectionForeground(new Color(17, 24, 39));
+        cartTable.setShowVerticalLines(false);
+        cartTable.setGridColor(new Color(229, 231, 235));
 
         DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer();
         leftRenderer.setHorizontalAlignment(SwingConstants.LEFT);
@@ -331,11 +404,11 @@ public class BanHangPanel extends JPanel {
         }
         cartTable.getTableHeader().setDefaultRenderer(leftRenderer);
 
-        cartTable.getColumnModel().getColumn(0).setPreferredWidth(100);
+        cartTable.getColumnModel().getColumn(0).setPreferredWidth(80);
         cartTable.getColumnModel().getColumn(1).setPreferredWidth(200);
-        cartTable.getColumnModel().getColumn(2).setPreferredWidth(100);
-        cartTable.getColumnModel().getColumn(3).setPreferredWidth(150);
-        cartTable.getColumnModel().getColumn(4).setPreferredWidth(150);
+        cartTable.getColumnModel().getColumn(2).setPreferredWidth(80);
+        cartTable.getColumnModel().getColumn(3).setPreferredWidth(120);
+        cartTable.getColumnModel().getColumn(4).setPreferredWidth(120);
         cartTable.getColumnModel().getColumn(5).setPreferredWidth(80);
 
         cartTable.getColumnModel().getColumn(5).setCellRenderer(new ButtonRenderer());
@@ -343,41 +416,74 @@ public class BanHangPanel extends JPanel {
 
         JScrollPane cartScrollPane = new JScrollPane(cartTable);
         cartScrollPane.setBorder(BorderFactory.createEmptyBorder());
-        // Set preferred size for scroll pane to limit table height (e.g., 3 rows + header)
         cartScrollPane.setPreferredSize(new Dimension(0, cartTable.getRowHeight() * 3 + cartTable.getTableHeader().getPreferredSize().height));
+        cartScrollPane.getViewport().setBackground(Color.WHITE);
 
-        JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        actionPanel.setOpaque(false);
+        // Customer and promotion panel
+        JPanel customerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
+        customerPanel.setOpaque(false);
 
-        StyledButton selectCustomerButton = new StyledButton("Chọn khách hàng", AppConstants.PRIMARY_COLOR, 150, 30); // Reduced height
+        StyledButton selectCustomerButton = new StyledButton("Chọn khách hàng", new Color(59, 130, 246), 150, 30);
         selectCustomerButton.addActionListener(e -> selectCustomer());
 
-        customerLabel = new JLabel("");
+        customerLabel = new JLabel("Chưa chọn khách hàng");
         customerLabel.setFont(AppConstants.NORMAL_FONT);
-        customerLabel.setPreferredSize(new Dimension(200, 30)); // Reduced height
+        customerLabel.setPreferredSize(new Dimension(200, 30));
+
+        JLabel promoLabel = new JLabel("Khuyến mãi:");
+        promoLabel.setFont(AppConstants.NORMAL_FONT);
 
         promotionComboBox = new JComboBox<>();
-        promotionComboBox.setPreferredSize(new Dimension(150, 30)); // Reduced height
+        promotionComboBox.setPreferredSize(new Dimension(200, 30));
         promotionComboBox.addActionListener(e -> updateTotal());
 
-        totalLabel = new JLabel("Tổng tiền: 0 VNĐ");
-        totalLabel.setFont(AppConstants.NORMAL_FONT);
+        customerPanel.add(selectCustomerButton);
+        customerPanel.add(customerLabel);
+        customerPanel.add(promoLabel);
+        customerPanel.add(promotionComboBox);
 
-        actionPanel.add(selectCustomerButton);
-        actionPanel.add(customerLabel);
-        actionPanel.add(new JLabel("Khuyến mãi:"));
-        actionPanel.add(promotionComboBox);
-
-        JPanel checkoutPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        // Checkout panel
+        JPanel checkoutPanel = new JPanel(new BorderLayout());
         checkoutPanel.setOpaque(false);
-        StyledButton checkoutButton = new StyledButton("Thanh toán", AppConstants.PRIMARY_COLOR, 150, 30); // Reduced height
-        checkoutButton.addActionListener(e -> checkout());
-        checkoutPanel.add(totalLabel);
-        checkoutPanel.add(checkoutButton);
+        checkoutPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
 
-        cartPanel.add(actionPanel, BorderLayout.NORTH);
+        JPanel totalPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        totalPanel.setOpaque(false);
+
+        totalLabel = new JLabel("Tổng tiền: 0 VNĐ");
+        totalLabel.setFont(new Font(AppConstants.NORMAL_FONT.getFamily(), Font.BOLD, 16));
+        totalLabel.setForeground(new Color(220, 38, 38));
+        totalPanel.add(totalLabel);
+
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        buttonPanel.setOpaque(false);
+
+        StyledButton clearCartButton = new StyledButton("Xóa giỏ hàng", new Color(239, 68, 68), 120, 35);
+        clearCartButton.addActionListener(e -> {
+            banHangBUS.resetCart();
+            updateCartTable();
+            updateTotal();
+        });
+
+        StyledButton checkoutButton = new StyledButton("Thanh toán", AppConstants.PRIMARY_COLOR, 150, 35);
+        checkoutButton.addActionListener(e -> checkout());
+
+        buttonPanel.add(clearCartButton);
+        buttonPanel.add(checkoutButton);
+
+        checkoutPanel.add(totalPanel, BorderLayout.WEST);
+        checkoutPanel.add(buttonPanel, BorderLayout.EAST);
+
+        // Add all components to cart panel
+        cartPanel.add(cartTitlePanel, BorderLayout.NORTH);
         cartPanel.add(cartScrollPane, BorderLayout.CENTER);
-        cartPanel.add(checkoutPanel, BorderLayout.SOUTH);
+
+        JPanel bottomCartPanel = new JPanel(new BorderLayout());
+        bottomCartPanel.setOpaque(false);
+        bottomCartPanel.add(customerPanel, BorderLayout.NORTH);
+        bottomCartPanel.add(checkoutPanel, BorderLayout.SOUTH);
+
+        cartPanel.add(bottomCartPanel, BorderLayout.SOUTH);
 
         return cartPanel;
     }
@@ -415,13 +521,13 @@ public class BanHangPanel extends JPanel {
             for (HoaDon hd : hoaDons) {
                 KhachHangDTO khachHang = khachHangBUS.layKhachHangTheoMa(hd.getMaKhachHang());
                 model.addRow(new Object[]{
-                    hd.getMaHoaDon(),
-                    NguoiDungBUS.getNguoiDungHienTai().getHoTen(),
-                    khachHang != null ? khachHang.getHoTen() : "Khách kê",
-                    sdf.format(hd.getNgayLap()),
-                    String.format("%,d", hd.getTienGiam()),
-                    String.format("%,d", hd.getThanhTien()),
-                    hd.isTrangThai() ? "Hoạt động" : "Hủy"
+                        hd.getMaHoaDon(),
+                        NguoiDungBUS.getNguoiDungHienTai().getHoTen(),
+                        khachHang != null ? khachHang.getHoTen() : "Khách kê",
+                        sdf.format(hd.getNgayLap()),
+                        String.format("%,d", hd.getTienGiam()),
+                        String.format("%,d", hd.getThanhTien()),
+                        hd.isTrangThai() ? "Hoạt động" : "Hủy"
                 });
             }
 
@@ -459,7 +565,10 @@ public class BanHangPanel extends JPanel {
         String imageUrl = sanPhamBUS.getAnhSanPhamURL(maSanPham);
         imagePanel.removeAll();
 
-        imagePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+        // Add title
+        JLabel titleLabel = new JLabel(tenSanPham, SwingConstants.CENTER);
+        titleLabel.setFont(new Font(AppConstants.NORMAL_FONT.getFamily(), Font.BOLD, 14));
+        imagePanel.add(titleLabel, BorderLayout.NORTH);
 
         if (imageUrl != null && !imageUrl.isEmpty()) {
             try {
@@ -482,8 +591,8 @@ public class BanHangPanel extends JPanel {
                 }
 
                 Image img = originalIcon.getImage();
-                int maxWidth = 200;
-                int maxHeight = 300;
+                int maxWidth = 180;
+                int maxHeight = 220;
                 int originalWidth = originalIcon.getIconWidth();
                 int originalHeight = originalIcon.getIconHeight();
 
@@ -500,22 +609,39 @@ public class BanHangPanel extends JPanel {
                 JLabel imageLabel = new JLabel(new ImageIcon(scaledImg));
                 imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
                 imageLabel.setVerticalAlignment(SwingConstants.CENTER);
-                imagePanel.add(imageLabel, BorderLayout.CENTER);
+
+                JPanel centerPanel = new JPanel(new BorderLayout());
+                centerPanel.setOpaque(false);
+                centerPanel.add(imageLabel, BorderLayout.CENTER);
+                imagePanel.add(centerPanel, BorderLayout.CENTER);
+
                 logger.info("Hiển thị hình ảnh cho sản phẩm {}: {}", maSanPham, imageUrl);
             } catch (Exception e) {
                 logger.warn("Không thể tải hình ảnh cho sản phẩm {}: {}", maSanPham, e.getMessage());
-                JLabel placeholder = new JLabel("No Image", SwingConstants.CENTER);
+                JLabel placeholder = new JLabel("Không có hình ảnh", SwingConstants.CENTER);
                 placeholder.setHorizontalAlignment(SwingConstants.CENTER);
                 placeholder.setVerticalAlignment(SwingConstants.CENTER);
+                placeholder.setFont(new Font(AppConstants.NORMAL_FONT.getFamily(), Font.ITALIC, 14));
+                placeholder.setForeground(new Color(107, 114, 128));
                 imagePanel.add(placeholder, BorderLayout.CENTER);
             }
         } else {
             logger.warn("Không có URL hình ảnh cho sản phẩm {}", maSanPham);
-            JLabel placeholder = new JLabel("No Image", SwingConstants.CENTER);
+            JLabel placeholder = new JLabel("Không có hình ảnh", SwingConstants.CENTER);
             placeholder.setHorizontalAlignment(SwingConstants.CENTER);
             placeholder.setVerticalAlignment(SwingConstants.CENTER);
+            placeholder.setFont(new Font(AppConstants.NORMAL_FONT.getFamily(), Font.ITALIC, 14));
+            placeholder.setForeground(new Color(107, 114, 128));
             imagePanel.add(placeholder, BorderLayout.CENTER);
         }
+
+        // Add a button to add to cart
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        buttonPanel.setOpaque(false);
+        StyledButton addToCartButton = new StyledButton("Thêm vào giỏ", AppConstants.PRIMARY_COLOR, 120, 30);
+        addToCartButton.addActionListener(e -> addProductToCart(row));
+        buttonPanel.add(addToCartButton);
+        imagePanel.add(buttonPanel, BorderLayout.SOUTH);
 
         imagePanel.revalidate();
         imagePanel.repaint();
@@ -556,12 +682,12 @@ public class BanHangPanel extends JPanel {
 
         for (GioHang item : banHangBUS.getCart()) {
             model.addRow(new Object[]{
-                item.getSanPham().getMaSanPham(),
-                item.getSanPham().getTenSanPham(),
-                item.getSoLuong(),
-                String.format("%,d", (int) item.getSanPham().getGiaLoi()),
-                String.format("%,d", (int) (item.getSanPham().getGiaLoi() * item.getSoLuong())),
-                "Xóa"
+                    item.getSanPham().getMaSanPham(),
+                    item.getSanPham().getTenSanPham(),
+                    item.getSoLuong(),
+                    String.format("%,d", (int) item.getSanPham().getGiaLoi() + item.getSanPham().getGiaVon()),
+                    String.format("%,d", (int) (item.getSanPham().getGiaLoi() + item.getSanPham().getGiaVon() * item.getSoLuong())),
+                    "Xóa"
             });
         }
 
@@ -650,7 +776,7 @@ public class BanHangPanel extends JPanel {
     private void updateTotal() {
         int total = 0;
         for (GioHang item : banHangBUS.getCart()) {
-            total += (int) (item.getSanPham().getGiaLoi() * item.getSoLuong());
+            total += (int) ((item.getSanPham().getGiaLoi() + item.getSanPham().getGiaVon()) * item.getSoLuong());
         }
         KhuyenMai selectedPromo = (KhuyenMai) promotionComboBox.getSelectedItem();
         int discount = (selectedPromo != null && selectedPromo.getMaKhuyenMai() > 0 && total >= selectedPromo.getDieuKienHoaDon()) ? selectedPromo.getSoTienKhuyenMai() : 0;
@@ -659,11 +785,11 @@ public class BanHangPanel extends JPanel {
 
     private void checkout() {
         if (banHangBUS.getCart().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Giỏ hàng trống!");
+            JOptionPane.showMessageDialog(this, "Giỏ hàng trống!", "Thông báo", JOptionPane.WARNING_MESSAGE);
             return;
         }
         if (selectedCustomers.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn ít nhất một khách hàng!");
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn ít nhất một khách hàng!", "Thông báo", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
@@ -671,47 +797,24 @@ public class BanHangPanel extends JPanel {
             KhuyenMai selectedPromo = (KhuyenMai) promotionComboBox.getSelectedItem();
             KhachHangDTO khachHangDTO = selectedCustomers.get(0);
 
-            HoaDon tempHoaDon = new HoaDon();
-            tempHoaDon.setMaNguoiDung(NguoiDungBUS.getNguoiDungHienTai().getMaNguoiDung());
-            tempHoaDon.setMaKhachHang(khachHangDTO.getMaKhachHang());
-            tempHoaDon.setNgayLap(new Date());
-            tempHoaDon.setMaHoaDon(0);
+            // Create the invoice immediately
+            HoaDon savedHoaDon = banHangBUS.taoHoaDon(khachHangDTO, selectedPromo);
 
-            int thanhTien = 0;
-            List<ChiTietHoaDon> chiTietHoaDons = new ArrayList<>();
-            for (GioHang item : banHangBUS.getCart()) {
-                ChiTietHoaDon chiTiet = new ChiTietHoaDon();
-                chiTiet.setMaSanPham(item.getSanPham().getMaSanPham());
-                chiTiet.setSoLuong(item.getSoLuong());
-                chiTiet.setDonGia((int) item.getSanPham().getGiaLoi());
-                chiTietHoaDons.add(chiTiet);
-                thanhTien += chiTiet.getDonGia() * chiTiet.getSoLuong();
-            }
-
-            int tienGiam = 0;
-            if (selectedPromo != null && selectedPromo.getMaKhuyenMai() > 0) {
-                if (thanhTien >= selectedPromo.getDieuKienHoaDon()) {
-                    tempHoaDon.setMaKhuyenMai(selectedPromo.getMaKhuyenMai());
-                    tienGiam = selectedPromo.getSoTienKhuyenMai();
-                }
-            }
-            tempHoaDon.setTienGiam(tienGiam);
-            tempHoaDon.setThanhTien(thanhTien - tienGiam);
-            tempHoaDon.setChiTietHoaDons(chiTietHoaDons);
-
-            HoaDonDialog dialog = new HoaDonDialog(null, tempHoaDon, banHangBUS, true, khachHangDTO, selectedPromo);
+            // Show the invoice details dialog
+            HoaDonDialog dialog = new HoaDonDialog(null, savedHoaDon, banHangBUS, false, khachHangDTO, selectedPromo);
             dialog.setVisible(true);
 
-            if (dialog.isConfirmed()) {
-                loadProductTable();
-                updateCartTable();
-                updateTotal();
-                resetCartUI();
-                loadHoaDonTable();
-            }
+            // Reset the cart and UI
+            resetCartUI();
+            loadHoaDonTable();
+
+            JOptionPane.showMessageDialog(this, "Thanh toán thành công! Mã hóa đơn: " + savedHoaDon.getMaHoaDon(),
+                    "Thành công", JOptionPane.INFORMATION_MESSAGE);
+
+            logger.info("Tạo hóa đơn thành công: {}", savedHoaDon.getMaHoaDon());
         } catch (RuntimeException e) {
-            logger.error("Lỗi khi chuẩn bị hóa đơn: {}", e.getMessage(), e);
-            JOptionPane.showMessageDialog(this, e.getMessage());
+            logger.error("Lỗi khi thanh toán: {}", e.getMessage(), e);
+            JOptionPane.showMessageDialog(this, "Lỗi khi thanh toán: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -728,11 +831,10 @@ public class BanHangPanel extends JPanel {
     }
 
     class ButtonRenderer extends DefaultTableCellRenderer {
-
         private StyledButton button;
 
         public ButtonRenderer() {
-            button = new StyledButton("Xóa", new Color(239, 68, 68), 80, 30);
+            button = new StyledButton("Xóa", new Color(239, 68, 68), 70, 25);
             button.setFont(new Font(AppConstants.NORMAL_FONT.getFamily(), Font.PLAIN, 12));
         }
 
@@ -743,7 +845,6 @@ public class BanHangPanel extends JPanel {
     }
 
     class ButtonEditor extends DefaultCellEditor {
-
         private StyledButton button;
         private String label;
         private boolean isPushed;
@@ -751,7 +852,7 @@ public class BanHangPanel extends JPanel {
 
         public ButtonEditor(JCheckBox checkBox) {
             super(checkBox);
-            button = new StyledButton("Xóa", new Color(239, 68, 68), 80, 30);
+            button = new StyledButton("Xóa", new Color(239, 68, 68), 70, 25);
             button.setFont(new Font(AppConstants.NORMAL_FONT.getFamily(), Font.PLAIN, 12));
             button.addActionListener(e -> {
                 isPushed = true;

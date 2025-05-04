@@ -72,7 +72,7 @@ public class SanPhamBUS {
         List<SanPhamDTO> danhSachSanPham = layDanhSachTatCaSanPhamHoatDong();
 
         for (SanPhamDTO sanPham : danhSachSanPham) {
-            int giaLoiHienThi = sanPham.getGiaVon() > 0 ? sanPham.getGiaVon() + sanPham.getGiaLoi() : 0;
+            int giaLoiHienThi = sanPham.getGiaVon() > 0 ? sanPham.getGiaLoi() : 0;
             model.addRow(new Object[]{
                 sanPham.getMaSanPham(),
                 sanPham.getTenLoaiSanPham(),

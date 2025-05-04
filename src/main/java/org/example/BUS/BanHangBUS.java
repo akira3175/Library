@@ -1,10 +1,10 @@
 package org.example.BUS;
 
-//import com.itextpdf.kernel.pdf.PdfDocument;
-//import com.itextpdf.kernel.pdf.PdfWriter;
-//import com.itextpdf.layout.Document;
-//import com.itextpdf.layout.element.Paragraph;
-//import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.Document;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
 import org.example.DAO.BanHangDAO;
 import org.example.DTO.ChiTietHoaDon;
 import org.example.DTO.HoaDon;
@@ -20,8 +20,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import javax.swing.text.Document;
-import org.apache.poi.wp.usermodel.Paragraph;
 
 public class BanHangBUS {
     private static final Logger logger = LoggerFactory.getLogger(BanHangBUS.class);
@@ -89,7 +87,7 @@ public class BanHangBUS {
             ChiTietHoaDon chiTiet = new ChiTietHoaDon();
             chiTiet.setMaSanPham(item.getSanPham().getMaSanPham());
             chiTiet.setSoLuong(item.getSoLuong());
-            chiTiet.setDonGia((int) item.getSanPham().getGiaLoi());
+            chiTiet.setDonGia((int) item.getSanPham().getGiaLoi() + item.getSanPham().getGiaVon());
             chiTietHoaDons.add(chiTiet);
             thanhTien += chiTiet.getDonGia() * chiTiet.getSoLuong();
 
@@ -133,49 +131,49 @@ public class BanHangBUS {
         }
     }
 
-//    public void exportHoaDonToPDF(HoaDon hoaDon, String filePath) {
-//        try {
-//            PdfWriter writer = new PdfWriter(new File(filePath));
-//            PdfDocument pdf = new PdfDocument(writer);
-//            Document document = new Document(pdf) {};
-//
-//            document.add(new Paragraph("HÓA ĐƠN BÁN HÀNG")
-//                    .setBold().setFontSize(20));
-//            document.add(new Paragraph("Mã hóa đơn: " + hoaDon.getMaHoaDon()));
-//            document.add(new Paragraph("Ngày lập: " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(hoaDon.getNgayLap())));
-//            document.add(new Paragraph("Nhân viên: " + NguoiDungBUS.getNguoiDungHienTai().getHoTen()));
-//            document.add(new Paragraph("Khách hàng: Khách hàng ID " + hoaDon.getMaKhachHang()));
-//
-//            float[] columnWidths = {50, 200, 50, 100, 100};
-//            Table table = new Table(columnWidths);
-//            table.addCell("STT");
-//            table.addCell("Tên sản phẩm");
-//            table.addCell("Số lượng");
-//            table.addCell("Đơn giá");
-//            table.addCell("Thành tiền");
-//
-//            int stt = 1;
-//            for (ChiTietHoaDon chiTiet : hoaDon.getChiTietHoaDons()) {
-//                SanPhamDTO sanPham = sanPhamBUS.laySanPhamTheoMa(chiTiet.getMaSanPham());
-//                table.addCell(String.valueOf(stt++));
-//                table.addCell(sanPham.getTenSanPham());
-//                table.addCell(String.valueOf(chiTiet.getSoLuong()));
-//                table.addCell(String.format("%,d", chiTiet.getDonGia()));
-//                table.addCell(String.format("%,d", chiTiet.getDonGia() * chiTiet.getSoLuong()));
-//            }
-//
-//            document.add(table);
-//            document.add(new Paragraph("Tổng tiền: " + String.format("%,d", hoaDon.getThanhTien() + hoaDon.getTienGiam())));
-//            document.add(new Paragraph("Giảm giá: " + String.format("%,d", hoaDon.getTienGiam())));
-//            document.add(new Paragraph("Thành tiền: " + String.format("%,d", hoaDon.getThanhTien())));
-//
-//            document.close();
-//            logger.info("Xuất hóa đơn {} ra PDF thành công: {}", hoaDon.getMaHoaDon(), filePath);
-//        } catch (Exception e) {
-//            logger.error("Lỗi khi xuất PDF: {}", e.getMessage(), e);
-//            throw new RuntimeException("Xuất PDF thất bại!");
-//        }
-//    }
+    public void exportHoaDonToPDF(HoaDon hoaDon, String filePath) {
+        try {
+            PdfWriter writer = new PdfWriter(new File(filePath));
+            PdfDocument pdf = new PdfDocument(writer);
+            Document document = new Document(pdf);
+
+            document.add(new Paragraph("HOA DON BAN HANG")
+                    .setBold().setFontSize(20));
+            document.add(new Paragraph("Ma hoa don: " + hoaDon.getMaHoaDon()));
+            document.add(new Paragraph("Ngay lap: " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(hoaDon.getNgayLap())));
+            document.add(new Paragraph("Nhan vien: " + NguoiDungBUS.getNguoiDungHienTai().getHoTen()));
+            document.add(new Paragraph("Khach hang: Khach hhng ID " + hoaDon.getMaKhachHang()));
+
+            float[] columnWidths = {50, 200, 50, 100, 100};
+            Table table = new Table(columnWidths);
+            table.addCell("STT");
+            table.addCell("Ten san pham");
+            table.addCell("So luong");
+            table.addCell("Don gia");
+            table.addCell("Thanh tien");
+
+            int stt = 1;
+            for (ChiTietHoaDon chiTiet : hoaDon.getChiTietHoaDons()) {
+                SanPhamDTO sanPham = sanPhamBUS.laySanPhamTheoMa(chiTiet.getMaSanPham());
+                table.addCell(String.valueOf(stt++));
+                table.addCell(sanPham.getTenSanPham());
+                table.addCell(String.valueOf(chiTiet.getSoLuong()));
+                table.addCell(String.format("%,d", chiTiet.getDonGia()));
+                table.addCell(String.format("%,d", chiTiet.getDonGia() * chiTiet.getSoLuong()));
+            }
+
+            document.add(table);
+            document.add(new Paragraph("Tong tien: " + String.format("%,d", hoaDon.getThanhTien() + hoaDon.getTienGiam())));
+            document.add(new Paragraph("Giam gia: " + String.format("%,d", hoaDon.getTienGiam())));
+            document.add(new Paragraph("Thanh tien: " + String.format("%,d", hoaDon.getThanhTien())));
+
+            document.close();
+            logger.info("Xuất hóa đơn {} ra PDF thành công: {}", hoaDon.getMaHoaDon(), filePath);
+        } catch (Exception e) {
+            logger.error("Lỗi khi xuất PDF: {}", e.getMessage(), e);
+            throw new RuntimeException("Xuất PDF thất bại!");
+        }
+    }
 
     public SanPhamDTO laySanPhamTheoMa(int maSanPham) {
         return sanPhamBUS.laySanPhamTheoMa(maSanPham);

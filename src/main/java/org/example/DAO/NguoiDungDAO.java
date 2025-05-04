@@ -100,7 +100,8 @@ public class NguoiDungDAO {
                                     rs.getString("Email"), 
                                     rs.getString("SoDienThoai"), 
                                     rs.getBoolean("ConHoatDong"), 
-                                    rs.getString("TenDangNhap"),                                         rs.getDate("NgayVaoLam"), 
+                                    rs.getString("TenDangNhap"),                                         
+                                    rs.getDate("NgayVaoLam"), 
                                     rs.getString("MatKhau"));
                 }
             }

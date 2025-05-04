@@ -130,4 +130,11 @@ public class NguoiDungBUS {
 
         return "Đổi mật khẩu thành công!";
     }
+
+    public int soLuongNguoiDungConHoatDong() {
+        return nguoiDungDAO.layDanhSachTatCaNguoiDung().stream()
+            .filter(NguoiDung::isConHoatDong)
+            .mapToInt(NguoiDung::getMaNguoiDung)
+            .sum();
+    }
 }

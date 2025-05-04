@@ -8,8 +8,6 @@ import org.example.GUI.Constants.AppConstants;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class DoiMatKhauDialog extends JDialog {
     private JPasswordField matKhauCuField;
@@ -17,8 +15,8 @@ public class DoiMatKhauDialog extends JDialog {
     private JPasswordField xacNhanMatKhauField;
     private JCheckBox hienThiMatKhauCheckBox;
     private boolean isConfirmed = false;
-    private NguoiDungBUS nguoiDungBUS;
-    private NguoiDung nguoiDungHienTai;
+    private final NguoiDungBUS nguoiDungBUS;
+    private final NguoiDung nguoiDungHienTai;
 
     public DoiMatKhauDialog(Window owner) {
         super(owner, "Đổi mật khẩu");
@@ -37,7 +35,6 @@ public class DoiMatKhauDialog extends JDialog {
         mainPanel.setLayout(new BorderLayout(0, 0));
         mainPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
 
-        // Form panel
         JPanel formPanel = new JPanel();
         formPanel.setLayout(new GridBagLayout());
         formPanel.setBorder(new EmptyBorder(0, 0, 10, 0));
@@ -46,7 +43,6 @@ public class DoiMatKhauDialog extends JDialog {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(5, 5, 5, 5);
 
-        // User info panel
         JPanel userInfoPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         userInfoPanel.setOpaque(false);
 
@@ -69,8 +65,6 @@ public class DoiMatKhauDialog extends JDialog {
         gbc.gridy = 0;
         gbc.gridwidth = 2;
         formPanel.add(userInfoPanel, gbc);
-
-        // Separator
         JSeparator separator = new JSeparator();
         gbc.gridx = 0;
         gbc.gridy = 1;
@@ -79,22 +73,17 @@ public class DoiMatKhauDialog extends JDialog {
         formPanel.add(separator, gbc);
         gbc.insets = new Insets(5, 5, 5, 5);
 
-        // Current password
         addFormField(formPanel, "Mật khẩu hiện tại:", createMatKhauCuField(), gbc, 2);
 
-        // New password
         addFormField(formPanel, "Mật khẩu mới:", createMatKhauMoiField(), gbc, 3);
 
-        // Confirm password
         addFormField(formPanel, "Xác nhận mật khẩu mới:", createXacNhanMatKhauField(), gbc, 4);
 
-        // Show password checkbox
         gbc.gridx = 0;
         gbc.gridy = 5;
         gbc.gridwidth = 2;
         formPanel.add(createShowPasswordCheckbox(), gbc);
 
-        // Button panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonPanel.setBorder(new EmptyBorder(10, 0, 0, 0));
 
@@ -153,14 +142,11 @@ public class DoiMatKhauDialog extends JDialog {
     private JCheckBox createShowPasswordCheckbox() {
         hienThiMatKhauCheckBox = new JCheckBox("Hiển thị mật khẩu");
         hienThiMatKhauCheckBox.setFont(new Font(AppConstants.NORMAL_FONT.getFamily(), Font.PLAIN, 12));
-        hienThiMatKhauCheckBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                boolean show = hienThiMatKhauCheckBox.isSelected();
-                matKhauCuField.setEchoChar(show ? (char) 0 : '•');
-                matKhauMoiField.setEchoChar(show ? (char) 0 : '•');
-                xacNhanMatKhauField.setEchoChar(show ? (char) 0 : '•');
-            }
+        hienThiMatKhauCheckBox.addActionListener(e -> {
+            boolean show = hienThiMatKhauCheckBox.isSelected();
+            matKhauCuField.setEchoChar(show ? (char) 0 : '•');
+            matKhauMoiField.setEchoChar(show ? (char) 0 : '•');
+            xacNhanMatKhauField.setEchoChar(show ? (char) 0 : '•');
         });
         return hienThiMatKhauCheckBox;
     }
@@ -170,7 +156,6 @@ public class DoiMatKhauDialog extends JDialog {
         String matKhauMoi = new String(matKhauMoiField.getPassword());
         String xacNhanMatKhau = new String(xacNhanMatKhauField.getPassword());
 
-        // Validate inputs
         if (matKhauCu.isEmpty() || matKhauMoi.isEmpty() || xacNhanMatKhau.isEmpty()) {
             JOptionPane.showMessageDialog(this,
                     "Vui lòng điền đầy đủ thông tin",
@@ -179,7 +164,6 @@ public class DoiMatKhauDialog extends JDialog {
             return;
         }
 
-        // Check if new password and confirmation match
         if (!matKhauMoi.equals(xacNhanMatKhau)) {
             JOptionPane.showMessageDialog(this,
                     "Mật khẩu mới và xác nhận mật khẩu không khớp",
@@ -188,7 +172,6 @@ public class DoiMatKhauDialog extends JDialog {
             return;
         }
 
-        // Call BUS to change password
         String ketQua = nguoiDungBUS.datLaiMatKhau(matKhauCu, matKhauMoi, xacNhanMatKhau);
 
         if (ketQua.equals("Đổi mật khẩu thành công!")) {

@@ -43,8 +43,6 @@ public class NhapHang extends javax.swing.JDialog {
         loadNhaCungCap();
     }
 
-    
-
     public void loadSanPham() {
         List<SanPhamDTO> spList = new ArrayList<>();
         spList = spBUS.layDanhSachTatCaSanPham();
@@ -123,7 +121,16 @@ public class NhapHang extends javax.swing.JDialog {
         }
 
         jTable1.setModel(model);
+    }
 
+    public void xoaSanPhamTheoMa(int maCanXoa) {
+        Iterator<SanPhamDTO> iterator = spDuocChonList.iterator();
+        while (iterator.hasNext()) {
+            SanPhamDTO sp = iterator.next();
+            if (sp.getMaSanPham() == maCanXoa) {
+                iterator.remove();
+            }
+        }
     }
 
     /**
@@ -470,7 +477,9 @@ public class NhapHang extends javax.swing.JDialog {
 
         String thongBao = pnBUS.themPhieuNhap(pnDTO, spDuocChonList);
         JOptionPane.showMessageDialog(this, thongBao);
+        spDuocChonList.clear();
         loadSanPham();
+        loadSanPhamDuocChon();
     }//GEN-LAST:event_jButton2MouseClicked
 
     private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
@@ -494,23 +503,15 @@ public class NhapHang extends javax.swing.JDialog {
     }//GEN-LAST:event_jTextField2KeyReleased
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        // TODO add your handling code here:
         int selectedRow = jTable2.getSelectedRow();
-        if (selectedRow == -1) {
-            return;
+        if (selectedRow != -1) {
+            int maSP = (int) jTable2.getValueAt(selectedRow, 0);
+            xoaSanPhamTheoMa(maSP);
+            loadSanPhamDuocChon();
+        } else {
+            JOptionPane.showMessageDialog(this, "Vui Lòng Chọn Sản Phẩm Cần Xóa!");
         }
 
-        int maCanXoa = (int) jTable2.getValueAt(selectedRow, 0);
-
-        Iterator<SanPhamDTO> iterator = spDuocChonList.iterator();
-        while (iterator.hasNext()) {
-            SanPhamDTO sp = iterator.next();
-            if (sp.getMaSanPham() == maCanXoa) {
-                iterator.remove();
-            }
-        }
-
-        loadSanPhamDuocChon();
     }//GEN-LAST:event_jButton5ActionPerformed
 
     /**

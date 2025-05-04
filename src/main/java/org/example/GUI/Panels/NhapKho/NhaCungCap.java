@@ -4,7 +4,10 @@
  */
 package org.example.GUI.Panels.NhapKho;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 import org.example.BUS.NhaCungCapBUS;
 import org.example.DTO.NhaCungCapDTO;
 
@@ -17,10 +20,55 @@ public class NhaCungCap extends javax.swing.JDialog {
     /**
      * Creates new form NhaCungCap
      */
+    NhaCungCapBUS nccBUS = new NhaCungCapBUS();
+
     public NhaCungCap(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        loadNhaCungCap();
 
+    }
+
+    public void loadNhaCungCap() {
+        List<NhaCungCapDTO> listNCC = nccBUS.layTatCaNhaCungCap();
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        model.setRowCount(0);
+
+        for (NhaCungCapDTO i : listNCC) {
+            if (i.getTrangThai() == 1) {
+                Object[] row = new Object[]{
+                    i.getMaNhaCungCap(),
+                    i.getTenNhaCungCap(),
+                    i.getDiaChi(),
+                    i.getSoDienThoai(),
+                    i.getFax()
+                };
+                model.addRow(row);
+            }
+        }
+        jTable1.setModel(model);
+    }
+
+    public void loadKetQuaTimKiem(String input) {
+        List<NhaCungCapDTO> listNCC = nccBUS.timKiemNCC(input);
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        model.setRowCount(0);
+
+        for (NhaCungCapDTO i : listNCC) {
+            if (i.getMaNhaCungCap() != 0) {
+                Object[] row = new Object[]{
+                    i.getMaNhaCungCap(),
+                    i.getTenNhaCungCap(),
+                    i.getDiaChi(),
+                    i.getSoDienThoai(),
+                    i.getFax()
+                };
+                model.addRow(row);
+            } else {
+                return;
+            }
+        }
+        jTable1.setModel(model);
     }
 
     /**
@@ -47,7 +95,7 @@ public class NhaCungCap extends javax.swing.JDialog {
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         jTextField5 = new javax.swing.JTextField();
-        jButton4 = new javax.swing.JButton();
+        jLabel5 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -80,36 +128,51 @@ public class NhaCungCap extends javax.swing.JDialog {
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "Tên Nhà Cung Cấp", "Địa Chỉ", "Số Điện Thoại", "Fax"
+                "Mã Nhà Cung Cấp", "Tên Nhà Cung Cấp", "Địa Chỉ", "Số Điện Thoại", "Fax"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false
+                false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
             }
         });
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTable1MouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTable1);
-        if (jTable1.getColumnModel().getColumnCount() > 0) {
-            jTable1.getColumnModel().getColumn(0).setResizable(false);
-            jTable1.getColumnModel().getColumn(1).setResizable(false);
-            jTable1.getColumnModel().getColumn(2).setResizable(false);
-            jTable1.getColumnModel().getColumn(3).setResizable(false);
-        }
 
         jButton2.setText("Sửa");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jButton3.setText("Xóa");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
-        jButton4.setText("Tìm Kiếm");
+        jTextField5.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jTextField5KeyReleased(evt);
+            }
+        });
+
+        jLabel5.setText("Tìm Kiếm");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -132,10 +195,10 @@ public class NhaCungCap extends javax.swing.JDialog {
                             .addComponent(jTextField4, javax.swing.GroupLayout.DEFAULT_SIZE, 556, Short.MAX_VALUE)
                             .addComponent(jTextField2)))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton4)
-                        .addGap(18, 18, 18)
+                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jTextField5)
-                        .addGap(18, 18, 18)
+                        .addGap(52, 52, 52)
                         .addComponent(jButton3)
                         .addGap(18, 18, 18)
                         .addComponent(jButton2)
@@ -170,7 +233,7 @@ public class NhaCungCap extends javax.swing.JDialog {
                     .addComponent(jButton2)
                     .addComponent(jButton3)
                     .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton4))
+                    .addComponent(jLabel5))
                 .addContainerGap())
         );
 
@@ -193,25 +256,84 @@ public class NhaCungCap extends javax.swing.JDialog {
         NhaCungCapDTO nccDTO = new NhaCungCapDTO();
         NhaCungCapBUS nccBUS = new NhaCungCapBUS();
 
-        String fax = jTextField3.getText();
-        String sdt = jTextField4.getText();
-        if (fax.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Fax Không Được Rỗng!");
-            return;
-        }
-        if (sdt.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Sdt Không Được Rỗng!");
-            return;
-        }
-        
         nccDTO.setTenNhaCungCap(jTextField1.getText());
-        nccDTO.setDiaChi(jTextField1.getText());
-        nccDTO.setFax(Integer.parseInt(fax));
-        nccDTO.setSoDienThoai(Integer.parseInt(sdt));
+        nccDTO.setDiaChi(jTextField2.getText());
+        nccDTO.setSoDienThoai(jTextField3.getText());
+        nccDTO.setFax(jTextField4.getText());
 
         String message = nccBUS.themNhaCungCap(nccDTO);
         JOptionPane.showMessageDialog(this, message);
+        loadNhaCungCap();
     }//GEN-LAST:event_jButton1MouseClicked
+
+    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
+        // TODO add your handling code here:
+        int selectedRow = jTable1.getSelectedRow();
+
+        String ten = String.valueOf(jTable1.getValueAt(selectedRow, 1));
+        String diaChi = String.valueOf(jTable1.getValueAt(selectedRow, 2));
+        String sdt = String.valueOf(jTable1.getValueAt(selectedRow, 3));
+        String fax = String.valueOf(jTable1.getValueAt(selectedRow, 4));
+
+        jTextField1.setText(ten);
+        jTextField2.setText(diaChi);
+        jTextField3.setText(sdt);
+        jTextField4.setText(fax);
+    }//GEN-LAST:event_jTable1MouseClicked
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+        int selectedRow = jTable1.getSelectedRow();
+        if (selectedRow != -1) {
+            int maNCC = (int) jTable1.getValueAt(selectedRow, 0);
+            String ten = jTextField1.getText();
+            String diaChi = jTextField2.getText();
+            String sdt = jTextField3.getText();
+            String fax = jTextField4.getText();
+
+            NhaCungCapDTO ncc = new NhaCungCapDTO();
+            ncc.setMaNhaCungCap(maNCC);
+            ncc.setTenNhaCungCap(ten);
+            ncc.setDiaChi(diaChi);
+            ncc.setSoDienThoai(sdt);
+            ncc.setFax(fax);
+
+            String message = nccBUS.suaNhaCungCap(ncc);
+            JOptionPane.showMessageDialog(this, message);
+            loadNhaCungCap();
+        } else {
+            JOptionPane.showMessageDialog(this, "Vui Lòng Chọn Nhà Cung Cấp Cần Sửa!");
+        }
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // TODO add your handling code here:
+        int selectedRow = jTable1.getSelectedRow();
+        if (selectedRow != -1) {
+            int maNCC = (int) jTable1.getValueAt(selectedRow, 0);
+
+            String message = nccBUS.xoaNhaCungCap(maNCC);
+            JOptionPane.showMessageDialog(this, message);
+            loadNhaCungCap();
+            jTextField1.setText("");
+            jTextField2.setText("");
+            jTextField3.setText("");
+            jTextField4.setText("");
+        } else {
+            JOptionPane.showMessageDialog(this, "Vui Lòng Chọn Nhà Cung Cấp Cần Xóa!");
+        }
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jTextField5KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField5KeyReleased
+        // TODO add your handling code here:
+        String tukhoa = jTextField5.getText();
+
+        if (tukhoa.isEmpty()) {
+            loadNhaCungCap();
+        } else {
+            loadKetQuaTimKiem(tukhoa);
+        }
+    }//GEN-LAST:event_jTextField5KeyReleased
 
     /**
      * @param args the command line arguments
@@ -259,11 +381,11 @@ public class NhaCungCap extends javax.swing.JDialog {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     private javax.swing.JTextField jTextField1;

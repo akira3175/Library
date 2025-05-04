@@ -30,8 +30,8 @@ public class NhaCungCapDAO {
                 i.setMaNhaCungCap(rs.getInt("MaNhaCungCap"));
                 i.setTenNhaCungCap(rs.getString("TenNhaCungCap"));
                 i.setDiaChi(rs.getString("DiaChi"));
-                i.setSoDienThoai(rs.getInt("SoDienThoai"));
-                i.setFax(rs.getInt("Fax"));
+                i.setSoDienThoai(rs.getString("SoDienThoai"));
+                i.setFax(rs.getString("Fax"));
                 i.setTrangThai(rs.getInt("TrangThai"));
                 ncc.add(i);
             }
@@ -52,8 +52,8 @@ public class NhaCungCapDAO {
                 i.setMaNhaCungCap(maNhaCungCap);
                 i.setTenNhaCungCap(rs.getString("TenNhaCungCap"));
                 i.setDiaChi(rs.getString("DiaChi"));
-                i.setSoDienThoai(rs.getInt("SoDienThoai"));
-                i.setFax(rs.getInt("Fax"));
+                i.setSoDienThoai(rs.getString("SoDienThoai"));
+                i.setFax(rs.getString("Fax"));
                 i.setTrangThai(rs.getInt("TrangThai"));
             }
         } catch (Exception e) {
@@ -68,8 +68,8 @@ public class NhaCungCapDAO {
         try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, ncc.getTenNhaCungCap());
             stmt.setString(2, ncc.getDiaChi());
-            stmt.setInt(3, ncc.getSoDienThoai());
-            stmt.setInt(4, ncc.getFax());
+            stmt.setString(3, ncc.getSoDienThoai());
+            stmt.setString(4, ncc.getFax());
             stmt.setInt(5, 1);
 
             int rowsInserted = stmt.executeUpdate();
@@ -81,16 +81,65 @@ public class NhaCungCapDAO {
     }
 
     public boolean suaNhaCungCap(NhaCungCapDTO ncc) {
-        String sql = "insert into NhaCungCap(TenNhaCungCap, DiaChi, SoDienThoai, Fax, TrangThai) "
-                + "values (?, ?, ?, ?)";
+        String sql = "update NhaCungCap set TenNhaCungCap = ?, DiaChi = ?, SoDienThoai = ?, Fax = ? "
+                + "where MaNhaCungCap = ?";
         try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, ncc.getTenNhaCungCap());
             stmt.setString(2, ncc.getDiaChi());
-            stmt.setInt(3, ncc.getFax());
-            stmt.setInt(4, ncc.getSoDienThoai());
+            stmt.setString(3, ncc.getSoDienThoai());
+            stmt.setString(4, ncc.getFax());
+            stmt.setInt(5, ncc.getMaNhaCungCap());
+
+            int rowsInserted = stmt.executeUpdate();
+            return rowsInserted > 0;
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public boolean xoaNhaCungCap(int maNCC) {
+        String sql = "update NhaCungCap set TrangThai = ? "
+                + "where MaNhaCungCap = ?";
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, 0);
+            stmt.setInt(2, maNCC);
+
+            int rowsInserted = stmt.executeUpdate();
+            return rowsInserted > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public List<NhaCungCapDTO> timKiemNCC(String input) {
+        List<NhaCungCapDTO> listNCC = new ArrayList<>();
+        String tukhoa = "%" + input + "%";
+        String sql = "select * from NhaCungCap "
+                + "where MaNhaCungCap like ? or TenNhaCungCap like ? ";
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, tukhoa);
+            stmt.setString(2, tukhoa);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    NhaCungCapDTO ncc = new NhaCungCapDTO();
+                    ncc.setMaNhaCungCap(rs.getInt("MaNhaCungCap"));
+                    ncc.setTenNhaCungCap(rs.getString("TenNhaCungcap"));
+                    ncc.setDiaChi(rs.getString("DiaChi"));
+                    ncc.setSoDienThoai(rs.getString("SoDienThoai"));
+                    ncc.setFax(rs.getString("Fax"));
+                    ncc.setTrangThai(rs.getInt("TrangThai"));
+
+                    listNCC.add(ncc);
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return listNCC;
     }
 }

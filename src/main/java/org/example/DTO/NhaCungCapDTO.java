@@ -13,13 +13,13 @@ public class NhaCungCapDTO {
     private int maNhaCungCap;
     private String tenNhaCungCap;
     private String diaChi;
-    private int soDienThoai;
-    private int Fax;
+    private String soDienThoai;
+    private String Fax;
     private int trangThai;
 
     public NhaCungCapDTO() {}
 
-    public NhaCungCapDTO(int maNhaCungCap, String tenNhaCungCap, String diaChi, int soDienThoai, int Fax, int trangThai) {
+    public NhaCungCapDTO(int maNhaCungCap, String tenNhaCungCap, String diaChi, String soDienThoai, String Fax, int trangThai) {
         this.maNhaCungCap = maNhaCungCap;
         this.tenNhaCungCap = tenNhaCungCap;
         this.diaChi = diaChi;
@@ -52,19 +52,19 @@ public class NhaCungCapDTO {
         this.diaChi = diaChi;
     }
 
-    public int getSoDienThoai() {
+    public String getSoDienThoai() {
         return soDienThoai;
     }
 
-    public void setSoDienThoai(int soDienThoai) {
+    public void setSoDienThoai(String soDienThoai) {
         this.soDienThoai = soDienThoai;
     }
 
-    public int getFax() {
+    public String getFax() {
         return Fax;
     }
 
-    public void setFax(int Fax) {
+    public void setFax(String Fax) {
         this.Fax = Fax;
     }
 

@@ -269,7 +269,6 @@ public class SanPhamDAO {
         }
     }
 
-<<<<<<< HEAD
     public boolean nhapSanPham(List<SanPhamDTO> listSP) {
         String sql = "update SanPham set SoLuong = ?, GiaVon = ? where MaSanPham = ?";
         SanPhamDTO spCu = new SanPhamDTO();
@@ -294,7 +293,6 @@ public class SanPhamDAO {
         return false;
     }
 
-=======
     public List<SanPhamDTO> layDanhSachSanPhamLocNangCao(String tenLoaiSanPham, String minGiaVon, String maxGiaVon,
             String minGiaLoi, String maxGiaLoi, String minSoLuong, String maxSoLuong, String trangThai) {
         List<SanPhamDTO> danhSachSanPham = new ArrayList<>();
@@ -360,8 +358,8 @@ public class SanPhamDAO {
                     sanPham.setTrangThai(rs.getBoolean("TrangThai"));
                     sanPham.setsanphamcol(rs.getString("sanphamcol"));
                     sanPham.setSoLuong(rs.getInt("SoLuong"));
-                    sanPham.setGiaVon(rs.getDouble("GiaVon"));
-                    sanPham.setGiaLoi(rs.getDouble("GiaLoi"));
+                    sanPham.setGiaVon(rs.getInt("GiaVon"));
+                    sanPham.setGiaLoi(rs.getInt("GiaLoi"));
                     danhSachSanPham.add(sanPham);
                 }
             }
@@ -370,5 +368,4 @@ public class SanPhamDAO {
         }
         return danhSachSanPham;
     }
->>>>>>> e34e8acdebc6fdc4466c15dfa70ef0db0eae7487
 }

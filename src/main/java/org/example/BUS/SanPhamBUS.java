@@ -120,13 +120,13 @@ public class SanPhamBUS {
             });
         }
     }
-    
-    public void xuatDanhSachSanPhamLocNangCaoRaExcel(JTable table, String tenLoaiSanPham, String minGiaVon, String maxGiaVon, 
-                                                 String minGiaLoi, String maxGiaLoi, String minSoLuong, String maxSoLuong, String trangThai) {
-    List<SanPhamDTO> danhSachSanPham = sanPhamDAO.layDanhSachSanPhamLocNangCao(tenLoaiSanPham, minGiaVon, maxGiaVon, 
-                                                                               minGiaLoi, maxGiaLoi, minSoLuong, maxSoLuong, trangThai);
-    excelUtils.xuatDanhSachSanPhamRaExcel(danhSachSanPham, table);
-}
+
+    public void xuatDanhSachSanPhamLocNangCaoRaExcel(JTable table, String tenLoaiSanPham, String minGiaVon, String maxGiaVon,
+            String minGiaLoi, String maxGiaLoi, String minSoLuong, String maxSoLuong, String trangThai) {
+        List<SanPhamDTO> danhSachSanPham = sanPhamDAO.layDanhSachSanPhamLocNangCao(tenLoaiSanPham, minGiaVon, maxGiaVon,
+                minGiaLoi, maxGiaLoi, minSoLuong, maxSoLuong, trangThai);
+        excelUtils.xuatDanhSachSanPhamRaExcel(danhSachSanPham, table);
+    }
 
     public boolean themSanPham(SanPhamDTO sanPham) {
         return sanPhamDAO.themSanPham(sanPham);
@@ -155,11 +155,10 @@ public class SanPhamBUS {
     public SanPhamDTO laySanPhamTheoMa(int maSanPham) {
         return sanPhamDAO.laySanPhamTheoMa(maSanPham);
     }
-<<<<<<< HEAD
-    
+
     public boolean nhapSanPham(List<SanPhamDTO> listSP) {
         return sanPhamDAO.nhapSanPham(listSP);
-=======
+    }
 
     public int laySanPhamTheoMaMax() {
         return sanPhamDAO.layMaSanPhamTiepTheo();
@@ -168,10 +167,9 @@ public class SanPhamBUS {
     public List<SanPhamDTO> layDanhSachLoaiSanPham() {
         return sanPhamDAO.layDanhSachLoaiSanPham();
     }
-    
+
     public List<SanPhamDTO> xuatDanhSachSanPhamLocNangCaoRaExcel(String tenLoaiSanPham, String minGiaVon, String maxGiaVon,
-            String minGiaLoi, String maxGiaLoi, String minSoLuong, String maxSoLuong, String trangThai){
+            String minGiaLoi, String maxGiaLoi, String minSoLuong, String maxSoLuong, String trangThai) {
         return sanPhamDAO.layDanhSachSanPhamLocNangCao(tenLoaiSanPham, minGiaVon, maxGiaVon, minGiaLoi, maxGiaLoi, minSoLuong, maxSoLuong, trangThai);
->>>>>>> e34e8acdebc6fdc4466c15dfa70ef0db0eae7487
     }
 }

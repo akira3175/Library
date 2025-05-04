@@ -155,7 +155,7 @@ public class SanPhamPanel extends JPanel {
         return contentPanel;
     }
 
-    private void XuatSanPhamTable() {
+    public void XuatSanPhamTable() {
         String selectedFilter = (String) statusFilterComboBox.getSelectedItem();
         sanPhamBUS.hienThiSanPhamLenTable(tbSanPham, selectedFilter);
     }

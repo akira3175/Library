@@ -51,7 +51,7 @@ public class PhieuNhapDAO {
         String sql = "insert into PhieuNhap(MaNguoiDung, MaNhaCungCap, ThoiGianLap) "
                 + "values (?, ?, ?)";
         LocalDateTime now = LocalDateTime.now();
-        
+
         try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setInt(1, pnDTO.getMaNguoiDung());
             stmt.setInt(2, pnDTO.getMaNhaCungCap());
@@ -69,5 +69,35 @@ public class PhieuNhapDAO {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public List<PhieuNhapDTO> timKiemPhieuNhap(String input) {
+        PhieuNhapDTO pn = new PhieuNhapDTO();
+        List<PhieuNhapDTO> listPN = new ArrayList<>();
+        String tukhoa = "%" + input + "%";
+        String sql = "SELECT pn.MaPhieuNhap, pn.MaNguoiDung, nd.HoTen, pn.MaNhaCungCap, ncc.TenNhaCungCap, pn.ThoiGianLap, pn.TrangThai "
+                + "FROM PhieuNhap pn "
+                + "JOIN NhaCungCap ncc ON pn.MaNhaCungCap = ncc.MaNhaCungCap "
+                + "JOIN NguoiDung nd ON pn.MaNguoiDung = nd.MaNguoiDung "
+                + "where nd.HoTen like ? or ncc.TenNhaCungCap like ? ";
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, tukhoa);
+            stmt.setString(2, tukhoa);
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    pn.setMaPhieuNhap(rs.getInt("MaPhieuNhap"));
+                    pn.setHoTenNguoiDung(rs.getString("HoTen"));
+                    pn.setTenNhaCungCap(rs.getString("TenNhaCungCap"));
+                    pn.setThoiGianLap(rs.getDate("ThoiGianLap"));
+                    pn.setTrangThai(rs.getInt("TrangThai"));
+                    listPN.add(pn);
+                }
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return listPN;
     }
 }

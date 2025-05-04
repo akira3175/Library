@@ -277,12 +277,20 @@ public class SanPhamDAO {
             for (SanPhamDTO i : listSP) {
                 SanPhamDTO spCu = laySanPhamTheoMa(i.getMaSanPham());
                 if (spCu != null) {
-                    int GiaMoi = (spCu.getGiaVon() * spCu.getSoLuong() + i.getGiaVon() * i.getSoLuong()) / (spCu.getSoLuong() + i.getSoLuong());
-                    updateStmt.setInt(1, i.getSoLuong() + spCu.getSoLuong());
+
+                    int tongSoLuong = spCu.getSoLuong() + i.getSoLuong();
+                    int GiaMoi;
+                    if (tongSoLuong == 0) {
+                        GiaMoi = spCu.getGiaVon();
+                    } else {
+                        GiaMoi = (spCu.getGiaVon() * spCu.getSoLuong() + i.getGiaVon() * i.getSoLuong()) / tongSoLuong;
+                    }
+                    updateStmt.setInt(1, tongSoLuong);
                     updateStmt.setInt(2, GiaMoi);
                     updateStmt.setInt(3, i.getMaSanPham());
                     totalAffected += updateStmt.executeUpdate();
                 } else {
+                    
                     insertStmt.setInt(1, i.getMaSanPham());
                     insertStmt.setString(2, i.getTenLoaiSanPham());
                     insertStmt.setString(3, i.getTenSanPham());

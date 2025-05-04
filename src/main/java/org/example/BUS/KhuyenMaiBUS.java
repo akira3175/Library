@@ -6,6 +6,7 @@ import org.example.DAO.KhuyenMaiDAO;
 import org.example.DTO.KhuyenMai;
 
 public class KhuyenMaiBUS {
+
     private KhuyenMaiDAO khuyenMaiDAO = new KhuyenMaiDAO();
 
     public List<KhuyenMai> layDanhSachKhuyenMai() {
@@ -23,11 +24,24 @@ public class KhuyenMaiBUS {
         return ketQua;
     }
 
+    public boolean kiemTraTenKhuyenMaiTonTai(String tenKhuyenMai) {
+        List<KhuyenMai> danhSachKhuyenMai = khuyenMaiDAO.layDanhSachTatCaKhuyenMai();
+        for (KhuyenMai km : danhSachKhuyenMai) {
+            if (km.getTenKhuyenMai().equalsIgnoreCase(tenKhuyenMai)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public List<KhuyenMai> layDanhSachKhuyenMaiHoatDong() {
         return khuyenMaiDAO.layDanhSachKhuyenMaiHoatDong();
     }
 
     public KhuyenMai themKhuyenMai(KhuyenMai khuyenMai) {
+        if (kiemTraTenKhuyenMaiTonTai(khuyenMai.getTenKhuyenMai())) {
+            return null;
+        }
         return khuyenMaiDAO.themKhuyenMai(khuyenMai);
     }
 

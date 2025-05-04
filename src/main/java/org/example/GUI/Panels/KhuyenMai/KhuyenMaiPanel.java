@@ -18,8 +18,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class KhuyenMaiPanel extends JPanel {
     private JTable khuyenMaiTable;
@@ -27,9 +29,11 @@ public class KhuyenMaiPanel extends JPanel {
     private KhuyenMaiBUS khuyenMaiBUS;
     private List<KhuyenMai> danhSachKhuyenMai;
     private SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+    private ExcelUtils excelUtils;
 
     public KhuyenMaiPanel() {
         khuyenMaiBUS = new KhuyenMaiBUS();
+        excelUtils = new ExcelUtils();
         setLayout(new BorderLayout(0, 20));
         setBackground(AppConstants.BACKGROUND_COLOR);
         setBorder(new EmptyBorder(20, 20, 20, 20));
@@ -66,8 +70,8 @@ public class KhuyenMaiPanel extends JPanel {
         StyledButton refreshButton = new StyledButton("Làm mới", new Color(107, 114, 128), 120, 35);
         refreshButton.addActionListener(e -> loadKhuyenMaiData());
 
-        StyledButton exportButton = new StyledButton("Xuất Excel", new Color(16, 185, 129), 120, 35);
-        exportButton.addActionListener(e -> exportToExcel());
+        StyledButton excelButton = new StyledButton("Excel", new Color(16, 185, 129), 120, 35);
+        excelButton.addActionListener(e -> showExcelMenu(excelButton));
 
         StyledButton addButton = new StyledButton("Thêm khuyến mãi", AppConstants.PRIMARY_COLOR, 150, 35);
         addButton.addActionListener(e -> showAddKhuyenMaiDialog());
@@ -75,13 +79,28 @@ public class KhuyenMaiPanel extends JPanel {
         actionPanel.add(searchField);
         actionPanel.add(searchButton);
         actionPanel.add(refreshButton);
-        actionPanel.add(exportButton);
+        actionPanel.add(excelButton);
         actionPanel.add(addButton);
 
         headerPanel.add(titleLabel, BorderLayout.WEST);
         headerPanel.add(actionPanel, BorderLayout.EAST);
 
         return headerPanel;
+    }
+
+    private void showExcelMenu(JButton source) {
+        JPopupMenu excelMenu = new JPopupMenu();
+        
+        JMenuItem exportItem = new JMenuItem("Xuất Excel");
+        exportItem.addActionListener(e -> exportToExcel());
+        
+        JMenuItem importItem = new JMenuItem("Import Excel");
+        importItem.addActionListener(e -> importFromExcel());
+        
+        excelMenu.add(exportItem);
+        excelMenu.add(importItem);
+        
+        excelMenu.show(source, 0, source.getHeight());
     }
 
     private JPanel createContentPanel() {
@@ -292,13 +311,61 @@ public class KhuyenMaiPanel extends JPanel {
     }
 
     private void exportToExcel() {
-        // This is a placeholder for the Excel export functionality
-        // In a real implementation, you would use the ExcelUtils class to export the data
-        JOptionPane.showMessageDialog(
-                this,
-                "Chức năng xuất Excel đang được phát triển.",
-                "Thông báo",
-                JOptionPane.INFORMATION_MESSAGE
-        );
+        excelUtils.xuatDanhSachKhuyenMaiRaExcel(danhSachKhuyenMai, khuyenMaiTable);
+    }
+
+    private void importFromExcel() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Chọn tệp Excel để import");
+        fileChooser.setFileFilter(new FileNameExtensionFilter("Excel Files (*.xlsx)", "xlsx"));
+        
+        try {
+            fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+        } catch (Exception e) {
+            System.err.println("Lỗi khi thiết lập thư mục mặc định: " + e.getMessage());
+            fileChooser.setCurrentDirectory(null);
+        }
+
+        int userSelection = fileChooser.showOpenDialog(this);
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            File fileToImport = fileChooser.getSelectedFile();
+            try {
+                List<KhuyenMai> importedKhuyenMai = excelUtils.nhapDanhSachKhuyenMaiTuExcel(fileToImport);
+                int successCount = 0;
+                int duplicateCount = 0;
+                
+                // Save imported promotions to database
+                for (KhuyenMai km : importedKhuyenMai) {
+                    if (khuyenMaiBUS.kiemTraTenKhuyenMaiTonTai(km.getTenKhuyenMai())) {
+                        duplicateCount++;
+                        continue;
+                    }
+                    KhuyenMai result = khuyenMaiBUS.themKhuyenMai(km);
+                    if (result != null) {
+                        successCount++;
+                    }
+                }
+                
+                String message = String.format(
+                    "Import Excel hoàn tất!\n- Thành công: %d khuyến mãi\n- Bỏ qua: %d khuyến mãi do trùng tên",
+                    successCount, duplicateCount
+                );
+                JOptionPane.showMessageDialog(
+                        this,
+                        message,
+                        "Thông báo",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+                loadKhuyenMaiData();
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Lỗi khi import Excel: " + e.getMessage(),
+                        "Lỗi",
+                        JOptionPane.ERROR_MESSAGE
+                );
+                e.printStackTrace();
+            }
+        }
     }
 }

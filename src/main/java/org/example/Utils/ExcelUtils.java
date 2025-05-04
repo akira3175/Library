@@ -1,22 +1,21 @@
 package org.example.Utils;
 
 import java.io.File;
-import org.example.DTO.SanPhamDTO;
-
-import javax.swing.*;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
 import java.util.List;
+import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.example.DTO.SanPhamDTO;
 
 public class ExcelUtils {
     public void xuatDanhSachSanPhamRaExcel(List<SanPhamDTO> danhSachSanPham, JTable table) {
-        // Create a new workbook
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Danh sách sản phẩm");
 
-        // Create header row
         Row headerRow = sheet.createRow(0);
         String[] columns = {"Mã sản phẩm", "Loại sản phẩm", "Tên sản phẩm", "Ảnh sản phẩm URL", 
                            "Số lượng", "Giá vốn", "Giá lời", "Trạng thái"};
@@ -25,7 +24,6 @@ public class ExcelUtils {
             cell.setCellValue(columns[i]);
         }
 
-        // Populate data rows
         int rowNum = 1;
         for (SanPhamDTO sanPham : danhSachSanPham) {
             Row row = sheet.createRow(rowNum++);
@@ -39,26 +37,22 @@ public class ExcelUtils {
             row.createCell(7).setCellValue(sanPham.getTrangThai() ? "Hoạt động" : "Không hoạt động");
         }
 
-        // Auto-size columns
         for (int i = 0; i < columns.length; i++) {
             sheet.autoSizeColumn(i);
         }
 
-        // Initialize JFileChooser
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Lưu tệp Excel");
         fileChooser.setFileFilter(new FileNameExtensionFilter("Excel Files (*.xlsx)", "xlsx"));
         fileChooser.setSelectedFile(new File("DanhSachSanPham.xlsx"));
 
-        // Set a safe initial directory (user's home directory)
         try {
             fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
         } catch (Exception e) {
             System.err.println("Lỗi khi thiết lập thư mục mặc định: " + e.getMessage());
-            fileChooser.setCurrentDirectory(null); // Fallback to default
+            fileChooser.setCurrentDirectory(null);
         }
 
-        // Show save dialog and handle response
         int userSelection = fileChooser.showSaveDialog(null);
         if (userSelection == JFileChooser.APPROVE_OPTION) {
             File fileToSave = fileChooser.getSelectedFile();
@@ -67,7 +61,6 @@ public class ExcelUtils {
                 filePath += ".xlsx";
             }
 
-            // Save the workbook to the selected file
             try (FileOutputStream fileOut = new FileOutputStream(filePath)) {
                 workbook.write(fileOut);
                 JOptionPane.showMessageDialog(null, "Xuất tệp Excel thành công!", 
@@ -84,5 +77,74 @@ public class ExcelUtils {
                 }
             }
         }
+    }
+
+    public List<SanPhamDTO> nhapDanhSachSanPhamTuExcel(File file) throws Exception {
+        List<SanPhamDTO> danhSachSanPham = new ArrayList<>();
+        try (FileInputStream fis = new FileInputStream(file); Workbook workbook = new XSSFWorkbook(fis)) {
+            Sheet sheet = workbook.getSheetAt(0);
+            if (sheet == null) {
+                throw new IllegalArgumentException("File Excel không có sheet nào.");
+            }
+            boolean skipHeader = true;
+
+            for (Row row : sheet) {
+                if (skipHeader) {
+                    skipHeader = false;
+                    continue;
+                }
+
+                if (row == null || row.getCell(0) == null) {
+                    System.err.println("Dòng " + (row.getRowNum() + 1) + " trống, bỏ qua.");
+                    continue;
+                }
+
+                SanPhamDTO sanPham = new SanPhamDTO();
+                try {
+                    Cell maSanPhamCell = row.getCell(0);
+                    if (maSanPhamCell == null || maSanPhamCell.getCellType() != CellType.NUMERIC) {
+                        throw new IllegalArgumentException("Mã sản phẩm không hợp lệ tại dòng " + (row.getRowNum() + 1));
+                    }
+                    sanPham.setMaSanPham((int) maSanPhamCell.getNumericCellValue());
+
+                    Cell tenLoaiCell = row.getCell(1);
+                    sanPham.setTenLoaiSanPham(tenLoaiCell != null ? tenLoaiCell.getStringCellValue() : "");
+
+                    Cell tenSanPhamCell = row.getCell(2);
+                    sanPham.setTenSanPham(tenSanPhamCell != null ? tenSanPhamCell.getStringCellValue() : "");
+
+                    Cell anhSanPhamCell = row.getCell(3);
+                    sanPham.setAnhSanPhamURL(anhSanPhamCell != null ? anhSanPhamCell.getStringCellValue() : "");
+
+                    Cell soLuongCell = row.getCell(4);
+                    if (soLuongCell == null || soLuongCell.getCellType() != CellType.NUMERIC) {
+                        throw new IllegalArgumentException("Số lượng không hợp lệ tại dòng " + (row.getRowNum() + 1));
+                    }
+                    sanPham.setSoLuong((int) soLuongCell.getNumericCellValue());
+
+                    Cell giaVonCell = row.getCell(5);
+                    if (giaVonCell == null || giaVonCell.getCellType() != CellType.NUMERIC) {
+                        throw new IllegalArgumentException("Giá vốn không hợp lệ tại dòng " + (row.getRowNum() + 1));
+                    }
+                    sanPham.setGiaVon((int) giaVonCell.getNumericCellValue());
+
+                    Cell giaLoiCell = row.getCell(6);
+                    if (giaLoiCell == null || giaLoiCell.getCellType() != CellType.NUMERIC) {
+                        throw new IllegalArgumentException("Giá lời không hợp lệ tại dòng " + (row.getRowNum() + 1));
+                    }
+                    sanPham.setGiaLoi((int) giaLoiCell.getNumericCellValue());
+
+                    Cell trangThaiCell = row.getCell(7);
+                    String trangThaiStr = trangThaiCell != null ? trangThaiCell.getStringCellValue() : "";
+                    sanPham.setTrangThai(trangThaiStr.equals("Hoạt động"));
+
+                    danhSachSanPham.add(sanPham);
+                } catch (Exception e) {
+                    System.err.println("Lỗi khi đọc dòng " + (row.getRowNum() + 1) + ": " + e.getMessage());
+                    continue;
+                }
+            }
+        }
+        return danhSachSanPham;
     }
 }

@@ -270,27 +270,35 @@ public class SanPhamDAO {
     }
 
     public boolean nhapSanPham(List<SanPhamDTO> listSP) {
-        String sql = "update SanPham set SoLuong = ?, GiaVon = ? where MaSanPham = ?";
-        SanPhamDTO spCu = new SanPhamDTO();
-
-        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
-            int rowUpdated = 0;
+        String updateSql = "UPDATE SanPham SET SoLuong = ?, GiaVon = ? WHERE MaSanPham = ?";
+        String insertSql = "INSERT INTO SanPham (MaSanPham, TenLoaiSanPham, TenSanPham, AnhSanPhamURL, SoLuong, GiaVon, GiaLoi, TrangThai) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement updateStmt = conn.prepareStatement(updateSql); PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {
+            int totalAffected = 0;
             for (SanPhamDTO i : listSP) {
-                spCu = laySanPhamTheoMa(i.getMaSanPham());
-                int GiaMoi = (spCu.getGiaVon() * spCu.getSoLuong() + i.getGiaVon() * i.getSoLuong()) / (spCu.getSoLuong() + i.getSoLuong());
-
-                stmt.setInt(1, i.getSoLuong() + spCu.getSoLuong());
-                stmt.setInt(2, GiaMoi);
-                stmt.setInt(3, i.getMaSanPham());
-
-                rowUpdated = stmt.executeUpdate();
+                SanPhamDTO spCu = laySanPhamTheoMa(i.getMaSanPham());
+                if (spCu != null) {
+                    int GiaMoi = (spCu.getGiaVon() * spCu.getSoLuong() + i.getGiaVon() * i.getSoLuong()) / (spCu.getSoLuong() + i.getSoLuong());
+                    updateStmt.setInt(1, i.getSoLuong() + spCu.getSoLuong());
+                    updateStmt.setInt(2, GiaMoi);
+                    updateStmt.setInt(3, i.getMaSanPham());
+                    totalAffected += updateStmt.executeUpdate();
+                } else {
+                    insertStmt.setInt(1, i.getMaSanPham());
+                    insertStmt.setString(2, i.getTenLoaiSanPham());
+                    insertStmt.setString(3, i.getTenSanPham());
+                    insertStmt.setString(4, i.getAnhSanPhamURL());
+                    insertStmt.setInt(5, i.getSoLuong());
+                    insertStmt.setInt(6, i.getGiaVon());
+                    insertStmt.setInt(7, i.getGiaLoi());
+                    insertStmt.setBoolean(8, i.getTrangThai());
+                    totalAffected += insertStmt.executeUpdate();
+                }
             }
-            return rowUpdated > 0;
-
+            return totalAffected > 0;
         } catch (Exception e) {
             e.printStackTrace();
+            return false;
         }
-        return false;
     }
 
     public List<SanPhamDTO> layDanhSachSanPhamLocNangCao(String tenLoaiSanPham, String minGiaVon, String maxGiaVon,

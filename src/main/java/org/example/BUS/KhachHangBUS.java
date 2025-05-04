@@ -56,7 +56,15 @@ public class KhachHangBUS {
     }
 
     public boolean themKhachHang(KhachHangDTO khachHang) {
-        return khachHangDAO.themKhachHang(khachHang);
+        try {
+            return khachHangDAO.themKhachHang(khachHang);
+        } catch (RuntimeException e) {
+            throw e;
+        }
+    }
+    
+    public int layMaKhachHangTiepTheo(){
+        return khachHangDAO.layMaKhachHangTiepTheo();
     }
 
     public boolean suaKhachHang(KhachHangDTO khachHang) {

@@ -125,10 +125,23 @@ public class KhachHang_Sua_Dialog extends JDialog {
 
     private void luuKhachHang() {
         try {
-            if (hoTenField.getText().trim().isEmpty() ||
-                soDienThoaiField.getText().trim().isEmpty() ||
-                diaChiField.getText().trim().isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            StringBuilder errorMessage = new StringBuilder();
+
+            if (hoTenField.getText().trim().isEmpty()) {
+                errorMessage.append("- Vui lòng nhập họ tên!\n");
+            }
+            if (soDienThoaiField.getText().trim().isEmpty()) {
+                errorMessage.append("- Vui lòng nhập số điện thoại!\n");
+            } else if (!soDienThoaiField.getText().trim().matches("\\d{10,11}")) {
+                errorMessage.append("- Số điện thoại phải là 10 hoặc 11 chữ số!\n");
+            }
+            if (diaChiField.getText().trim().isEmpty()) {
+                errorMessage.append("- Vui lòng nhập địa chỉ!\n");
+            }
+
+            if (errorMessage.length() > 0) {
+                JOptionPane.showMessageDialog(this, "Vui lòng hoàn thành các thông tin sau:\n" + errorMessage.toString(),
+                        "Lỗi nhập liệu", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 

@@ -11,11 +11,9 @@ import java.awt.*;
 
 public class KhachHang_Them_Dialog extends JDialog {
 
-    private JTextField maKhachHangField;
     private JTextField hoTenField;
     private JTextField soDienThoaiField;
     private JTextField diaChiField;
-    private JCheckBox trangThaiCheckBox;
     private KhachHangBUS khachHangBUS;
     private JTable tbKhachHang;
 
@@ -42,11 +40,9 @@ public class KhachHang_Them_Dialog extends JDialog {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(5, 5, 5, 5);
 
-        addFormField(formPanel, "Mã khách hàng:", taoMaKhachHangField(), gbc, 0);
-        addFormField(formPanel, "Họ tên:", taoHoTenField(), gbc, 1);
-        addFormField(formPanel, "Số điện thoại:", taoSoDienThoaiField(), gbc, 2);
-        addFormField(formPanel, "Địa chỉ:", taoDiaChiField(), gbc, 3);
-        addFormField(formPanel, "Trạng thái:", taoTrangThaiCheckBox(), gbc, 4);
+        addFormField(formPanel, "Họ tên:", taoHoTenField(), gbc, 0);
+        addFormField(formPanel, "Số điện thoại:", taoSoDienThoaiField(), gbc, 1);
+        addFormField(formPanel, "Địa chỉ:", taoDiaChiField(), gbc, 2);
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonPanel.setBorder(new EmptyBorder(10, 0, 0, 0));
@@ -81,12 +77,6 @@ public class KhachHang_Them_Dialog extends JDialog {
         panel.add(field, gbc);
     }
 
-    private JTextField taoMaKhachHangField() {
-        maKhachHangField = new JTextField();
-        maKhachHangField.setFont(AppConstants.NORMAL_FONT);
-        return maKhachHangField;
-    }
-
     private JTextField taoHoTenField() {
         hoTenField = new JTextField();
         hoTenField.setFont(AppConstants.NORMAL_FONT);
@@ -105,41 +95,55 @@ public class KhachHang_Them_Dialog extends JDialog {
         return diaChiField;
     }
 
-    private JCheckBox taoTrangThaiCheckBox() {
-        trangThaiCheckBox = new JCheckBox("Hoạt động");
-        trangThaiCheckBox.setFont(AppConstants.NORMAL_FONT);
-        trangThaiCheckBox.setSelected(true);
-        return trangThaiCheckBox;
-    }
-
     private void luuKhachHang() {
         try {
-            if (maKhachHangField.getText().trim().isEmpty() ||
-                hoTenField.getText().trim().isEmpty() ||
-                soDienThoaiField.getText().trim().isEmpty() ||
-                diaChiField.getText().trim().isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            StringBuilder errorMessage = new StringBuilder();
+
+            if (hoTenField.getText().trim().isEmpty()) {
+                errorMessage.append("- Vui lòng nhập họ tên!\n");
+            }
+            if (soDienThoaiField.getText().trim().isEmpty()) {
+                errorMessage.append("- Vui lòng nhập số điện thoại!\n");
+            } else if (!soDienThoaiField.getText().trim().matches("\\d{10,11}")) {
+                errorMessage.append("- Số điện thoại phải là 10 hoặc 11 chữ số!\n");
+            }
+            if (diaChiField.getText().trim().isEmpty()) {
+                errorMessage.append("- Vui lòng nhập địa chỉ!\n");
+            }
+
+            if (errorMessage.length() > 0) {
+                JOptionPane.showMessageDialog(this, "Vui lòng hoàn thành các thông tin sau:\n" + errorMessage.toString(),
+                        "Lỗi nhập liệu", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
             KhachHangDTO khachHang = new KhachHangDTO();
-            khachHang.setMaKhachHang(Integer.parseInt(maKhachHangField.getText().trim()));
+            int maKhachHang = khachHangBUS.layMaKhachHangTiepTheo();
+            if (maKhachHang == -1) {
+                JOptionPane.showMessageDialog(this, "Không thể tạo mã khách hàng mới!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            khachHang.setMaKhachHang(maKhachHang);
             khachHang.setHoTen(hoTenField.getText().trim());
             khachHang.setSoDienThoai(soDienThoaiField.getText().trim());
             khachHang.setDiaChi(diaChiField.getText().trim());
-            khachHang.setTrangThai(trangThaiCheckBox.isSelected());
-
+            khachHang.setTrangThai(true);
+            
             if (khachHangBUS.themKhachHang(khachHang)) {
                 JOptionPane.showMessageDialog(this, "Thêm khách hàng thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
                 khachHangBUS.hienThiKhachHangLenTable(tbKhachHang, "Tất cả");
+                tbKhachHang.repaint();
                 dispose();
             } else {
                 JOptionPane.showMessageDialog(this, "Thêm khách hàng thất bại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Mã khách hàng phải là số nguyên!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Có lỗi xảy ra: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+        } catch (RuntimeException e) {
+            String errorMsg = e.getMessage();
+            if (errorMsg.contains("Số điện thoại đã tồn tại")) {
+                JOptionPane.showMessageDialog(this, "Số điện thoại đã được sử dụng!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "Có lỗi xảy ra: " + errorMsg, "Lỗi", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 }

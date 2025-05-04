@@ -2,6 +2,7 @@ package org.example.BUS;
 
 import org.example.DAO.NguoiDungDAO;
 import org.example.DTO.NguoiDung;
+import org.example.DTO.VaiTro;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,9 +13,11 @@ public class NguoiDungBUS {
     private static NguoiDung nguoiDungHienTai;
     private static final Logger logger = LoggerFactory.getLogger(NguoiDungBUS.class);
     private static NguoiDungDAO nguoiDungDAO;
+    private VaiTroBUS vaiTroBUS;
 
     public NguoiDungBUS() {
         this.nguoiDungDAO = new NguoiDungDAO();
+        this.vaiTroBUS = new VaiTroBUS();
     }
 
     public static NguoiDung xuLyDangNhap(String tenDangNhap, String matKhau) {
@@ -69,29 +72,35 @@ public class NguoiDungBUS {
     public NguoiDung themNguoiDung(NguoiDung nguoiDung) {
         nguoiDung.setMatKhau(gereratePassword());
 
-        return nguoiDungDAO.themNguoiDung(nguoiDung)
-                .orElseThrow(() -> new RuntimeException("Thêm người dùng thất bại!"));
+        return nguoiDungDAO.themNguoiDung(nguoiDung);
     }
 
     public NguoiDung suaNguoiDung(NguoiDung nguoiDung) {
-        return nguoiDungDAO.suaNguoiDung(nguoiDung)
-                .orElseThrow(() -> new RuntimeException("Sửa người dùng thất bại!"));
+        return nguoiDungDAO.suaNguoiDung(nguoiDung);
     }
 
     public NguoiDung thoiViecHoacKichHoatLaiNguoiDung(NguoiDung nguoiDung) {
+        VaiTro vaiTro = vaiTroBUS.layVaiTroTheoID(nguoiDung.getMaVaiTro());
+
+        if (vaiTro.getTenVaiTro().equals("Quản trị viên")) {
+            logger.warn("Không thể kích hoạt/tạm dừng tài khoản Quản trị viên!");
+            return null;
+        }
+
         nguoiDung.setConHoatDong(!nguoiDung.isConHoatDong());
-        return nguoiDungDAO.suaNguoiDung(nguoiDung)
-                .orElseThrow(
-                        () -> new RuntimeException("Cập nhật trạng thái thất bại!")
-                );
+        return nguoiDungDAO.suaNguoiDung(nguoiDung);
     }
 
     public NguoiDung resetMatKhau(NguoiDung nguoiDung) {
+        VaiTro vaiTro = vaiTroBUS.layVaiTroTheoID(nguoiDung.getMaVaiTro());
+
+        if (vaiTro.getTenVaiTro().equals("Quản trị viên")) {
+            logger.warn("Không thể reset mật khẩu cho tài khoản Quản trị viên!");
+            return null;
+        }
+        
         nguoiDung.setMatKhau(gereratePassword());
-        return nguoiDungDAO.suaNguoiDung(nguoiDung)
-                .orElseThrow(
-                        () -> new RuntimeException("Reset mật khẩu thất bại!")
-                );
+        return nguoiDungDAO.suaNguoiDung(nguoiDung);
     }
 
     private String gereratePassword() {

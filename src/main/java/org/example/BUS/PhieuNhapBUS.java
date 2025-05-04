@@ -5,39 +5,35 @@
 package org.example.BUS;
 
 import java.util.List;
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableModel;
+import org.example.DAO.ChiTietPhieuNhapDAO;
 import org.example.DAO.PhieuNhapDAO;
-import org.example.DTO.PhieuNhap;
+import org.example.DTO.PhieuNhapDTO;
+import org.example.DTO.SanPhamDTO;
 
 /**
  *
  * @author MTeumb
  */
 public class PhieuNhapBUS {
-    private PhieuNhapDAO phieunhap;
-    
-    public PhieuNhapBUS() {
-        this.phieunhap = new PhieuNhapDAO();
+
+    private PhieuNhapDAO pnDAO = new PhieuNhapDAO();
+    private ChiTietPhieuNhapBUS ctpnBUS = new ChiTietPhieuNhapBUS();
+
+    public List<PhieuNhapDTO> layTatCaPhieuNhap() {
+        return pnDAO.layTatCaPhieuNhap();
     }
-    
-    public void hienThiPhieuNhapLenTable(JTable table) {
-        List<PhieuNhap> listpn = phieunhap.layTatCaPhieuNhap();
 
-        DefaultTableModel model = (DefaultTableModel) table.getModel();
-
-        model.setRowCount(0);
-
-        for (PhieuNhap phieunhap : listpn) {
-            Object[] row = new Object[]{
-                phieunhap.getMaPhieuNhap(),
-                phieunhap.getMaNguoiDung(),
-                phieunhap.getMaNhaCungCap(),
-                phieunhap.getThoiGianLap(),
-                phieunhap.getTrangThai() == 1 ? "Đã Thanh Toán" : "Chưa thanh toán",};
-            model.addRow(row);
+    public String themPhieuNhap(PhieuNhapDTO pnDTO, List<SanPhamDTO> listSP) {
+        if (listSP == null || listSP.isEmpty()) {
+            return "Vui Lòng Chọn Sản Phẩm!";
         }
-
-        table.setModel(model);
+        
+        if (pnDAO.themPhieuNhap(pnDTO)) {
+            ctpnBUS.themChiTietPhieuNhap(listSP);
+                
+            
+            return "Tạo Phiếu Nhập Thành Công!";
+        }
+        return "Tạo Phiếu Nhập Không Thành Công!";
     }
 }

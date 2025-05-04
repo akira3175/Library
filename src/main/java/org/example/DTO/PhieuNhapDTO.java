@@ -3,14 +3,32 @@ package org.example.DTO;
 import java.util.Date;
 
 
-public class PhieuNhap {
+public class PhieuNhapDTO {
     private int maPhieuNhap;
     private int maNguoiDung;
     private int maNhaCungCap;
     private Date thoiGianLap;
     private int trangThai;
+    private String tenNhaCungCap;
+    private String hoTenNguoiDung;
 
-    public PhieuNhap(int maPhieuNhap, int maNguoiDung, int maNhaCungCap,
+    public String getTenNhaCungCap() {
+        return tenNhaCungCap;
+    }
+
+    public void setTenNhaCungCap(String tenNhaCungCap) {
+        this.tenNhaCungCap = tenNhaCungCap;
+    }
+
+    public String getHoTenNguoiDung() {
+        return hoTenNguoiDung;
+    }
+
+    public void setHoTenNguoiDung(String hoTenNguoiDung) {
+        this.hoTenNguoiDung = hoTenNguoiDung;
+    }
+
+    public PhieuNhapDTO(int maPhieuNhap, int maNguoiDung, int maNhaCungCap,
     Date thoiGianLap, int trangThai) {
         this.maPhieuNhap = maPhieuNhap;
         this.maNguoiDung = maNguoiDung;
@@ -19,7 +37,7 @@ public class PhieuNhap {
         this.trangThai = trangThai;
     }
     
-    public PhieuNhap(){};
+    public PhieuNhapDTO(){};
 
 
     // Getters

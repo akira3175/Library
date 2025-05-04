@@ -269,6 +269,30 @@ public class SanPhamDAO {
         }
     }
 
+    public boolean nhapSanPham(List<SanPhamDTO> listSP) {
+        String sql = "update SanPham set SoLuong = ?, GiaVon = ? where MaSanPham = ?";
+        SanPhamDTO spCu = new SanPhamDTO();
+
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            int rowUpdated = 0;
+            for (SanPhamDTO i : listSP) {
+                spCu = laySanPhamTheoMa(i.getMaSanPham());
+                int GiaMoi = (spCu.getGiaVon() * spCu.getSoLuong() + i.getGiaVon() * i.getSoLuong()) / (spCu.getSoLuong() + i.getSoLuong());
+
+                stmt.setInt(1, i.getSoLuong() + spCu.getSoLuong());
+                stmt.setInt(2, GiaMoi);
+                stmt.setInt(3, i.getMaSanPham());
+
+                rowUpdated = stmt.executeUpdate();
+            }
+            return rowUpdated > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public List<SanPhamDTO> layDanhSachSanPhamLocNangCao(String tenLoaiSanPham, String minGiaVon, String maxGiaVon,
             String minGiaLoi, String maxGiaLoi, String minSoLuong, String maxSoLuong, String trangThai) {
         List<SanPhamDTO> danhSachSanPham = new ArrayList<>();
@@ -334,8 +358,8 @@ public class SanPhamDAO {
                     sanPham.setTrangThai(rs.getBoolean("TrangThai"));
                     sanPham.setsanphamcol(rs.getString("sanphamcol"));
                     sanPham.setSoLuong(rs.getInt("SoLuong"));
-                    sanPham.setGiaVon(rs.getDouble("GiaVon"));
-                    sanPham.setGiaLoi(rs.getDouble("GiaLoi"));
+                    sanPham.setGiaVon(rs.getInt("GiaVon"));
+                    sanPham.setGiaLoi(rs.getInt("GiaLoi"));
                     danhSachSanPham.add(sanPham);
                 }
             }

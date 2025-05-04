@@ -91,11 +91,7 @@ public class NhapHang extends javax.swing.JDialog {
     }
 
     public boolean kiemTraSoLuong(String input) {
-        if (Pattern.matches("^[1-9]\\d*$", input)) {
-            return true;
-        } else {
-            return false;
-        }
+        return Pattern.matches("^[1-9]\\d*$", input);
     }
 
     public boolean kiemTraSanPham(int MaSanPham, int soLuong) {
@@ -128,6 +124,8 @@ public class NhapHang extends javax.swing.JDialog {
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         jTable1.getTableHeader().setReorderingAllowed(false);
+        jLabel6 = new javax.swing.JLabel();
+        jTextField3 = new javax.swing.JTextField();
         jPanel2 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jButton2 = new javax.swing.JButton();
@@ -178,7 +176,7 @@ public class NhapHang extends javax.swing.JDialog {
                 {null, null, null, null}
             },
             new String [] {
-                "Mã Sản Phẩm", "Tên Sản Phẩm", "Tồn Kho", "Đơn Giá"
+                "Mã Sản Phẩm", "Tên Sản Phẩm", "Tồn Kho", "Giá Vốn"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -190,6 +188,20 @@ public class NhapHang extends javax.swing.JDialog {
             }
         });
         jScrollPane1.setViewportView(jTable1);
+        if (jTable1.getColumnModel().getColumnCount() > 0) {
+            jTable1.getColumnModel().getColumn(0).setResizable(false);
+            jTable1.getColumnModel().getColumn(1).setResizable(false);
+            jTable1.getColumnModel().getColumn(2).setResizable(false);
+            jTable1.getColumnModel().getColumn(3).setResizable(false);
+        }
+
+        jLabel6.setText("Giá Nhập");
+
+        jTextField3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField3ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -199,7 +211,7 @@ public class NhapHang extends javax.swing.JDialog {
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jTextField2)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 488, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 455, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel4)
                         .addGap(0, 0, Short.MAX_VALUE))
@@ -208,7 +220,11 @@ public class NhapHang extends javax.swing.JDialog {
                         .addComponent(jLabel1)
                         .addGap(18, 18, 18)
                         .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel6)
+                        .addGap(18, 18, 18)
+                        .addComponent(jTextField3)
+                        .addGap(18, 18, 18)
                         .addComponent(jButton1)))
                 .addContainerGap())
         );
@@ -225,7 +241,9 @@ public class NhapHang extends javax.swing.JDialog {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1))
+                    .addComponent(jButton1)
+                    .addComponent(jLabel6)
+                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(165, 165, 165))
         );
 
@@ -292,7 +310,7 @@ public class NhapHang extends javax.swing.JDialog {
                         .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButton2))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 489, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 522, Short.MAX_VALUE)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jButton3)
@@ -349,19 +367,33 @@ public class NhapHang extends javax.swing.JDialog {
         if (selectedRow == -1) {
             return;
         }
-        String soLuong = jTextField1.getText();
-        if (kiemTraSoLuong(soLuong)) {
-            if (!kiemTraSanPham(Integer.parseInt(jTable1.getValueAt(selectedRow, 0).toString()), Integer.parseInt(soLuong))) {
-                SanPhamDTO i = new SanPhamDTO();
-                i.setMaSanPham(Integer.parseInt(jTable1.getValueAt(selectedRow, 0).toString()));
-                i.setTenSanPham(jTable1.getValueAt(selectedRow, 1).toString());
-                i.setGiaVon(Integer.parseInt(jTable1.getValueAt(selectedRow, 3).toString()));
-                i.setSoLuong(Integer.parseInt(soLuong));
+        SanPhamDTO chon = new SanPhamDTO();
+        chon.setMaSanPham(Integer.parseInt(jTable1.getValueAt(selectedRow, 0).toString()));
+        chon.setTenSanPham(jTable1.getValueAt(selectedRow, 1).toString());
 
-                spDuocChonList.add(i);
-                loadSanPhamDuocChon();
+        String soLuong = jTextField1.getText();
+        String donGia = jTextField3.getText();
+
+        if (kiemTraSoLuong(soLuong)) {
+            if (kiemTraSoLuong(donGia)) {
+                    int giaNhap = Integer.parseInt(donGia);
+                    int sl = Integer.parseInt(soLuong);
+                    
+                if (!kiemTraSanPham(chon.getMaSanPham(), sl)) {
+                    SanPhamDTO i = new SanPhamDTO();
+                    
+                    i.setMaSanPham(chon.getMaSanPham());
+                    i.setTenSanPham(chon.getTenSanPham());
+                    i.setGiaVon(giaNhap);
+                    i.setSoLuong(sl);
+
+                    spDuocChonList.add(i);
+                    loadSanPhamDuocChon();
+                } else {
+                    loadSanPhamDuocChon();
+                }
             } else {
-                loadSanPhamDuocChon();
+                JOptionPane.showMessageDialog(this, "Đơn Giá Không Hợp Lệ");
             }
         } else {
             JOptionPane.showMessageDialog(this, "Số Lượng Không Hợp Lệ");
@@ -382,16 +414,20 @@ public class NhapHang extends javax.swing.JDialog {
         // TODO add your handling code here:
         PhieuNhapDTO pnDTO = new PhieuNhapDTO();
         PhieuNhapBUS pnBUS = new PhieuNhapBUS();
-        
+
         NhaCungCapDTO nccChon = (NhaCungCapDTO) jComboBox1.getSelectedItem();
         NguoiDung ndHienTai = NguoiDungBUS.getNguoiDungHienTai();
-        
+
         pnDTO.setMaNguoiDung(ndHienTai.getMaNguoiDung());
         pnDTO.setMaNhaCungCap(nccChon.getMaNhaCungCap());
-        
+
         String thongBao = pnBUS.themPhieuNhap(pnDTO, spDuocChonList);
         JOptionPane.showMessageDialog(this, thongBao);
     }//GEN-LAST:event_jButton2MouseClicked
+
+    private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField3ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -453,6 +489,7 @@ public class NhapHang extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
@@ -462,5 +499,6 @@ public class NhapHang extends javax.swing.JDialog {
     private javax.swing.JTable jTable2;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
+    private javax.swing.JTextField jTextField3;
     // End of variables declaration//GEN-END:variables
 }

@@ -1,5 +1,7 @@
 package org.example.GUI.Panels.ThongKe;
 
+import org.example.BUS.SanPhamBUS;
+import org.example.DTO.SanPhamDTO;
 import org.example.GUI.Components.StatisticCard;
 import org.example.GUI.Constants.AppConstants;
 import org.jfree.chart.ChartFactory;
@@ -10,21 +12,32 @@ import org.jfree.data.category.DefaultCategoryDataset;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Comparator;
+import java.util.List;
 
 public class ThongKePanel extends JPanel {
+    private final SanPhamBUS sanPhamBUS;
+    private JPanel statsPanel;
+    private JPanel chartsPanel;
+
     public ThongKePanel() {
+        sanPhamBUS = new SanPhamBUS();
         setLayout(new BorderLayout(20, 20));
         setBackground(AppConstants.BACKGROUND_COLOR);
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
+        initializePanel();
+    }
+
+    private void initializePanel() {
         // Header
         JPanel headerPanel = createHeaderPanel();
 
         // Statistics Cards
-        JPanel statsPanel = createStatsPanel();
+        statsPanel = createStatsPanel();
 
         // Charts
-        JPanel chartsPanel = createChartsPanel();
+        chartsPanel = createChartsPanel();
 
         // Main content
         JPanel mainContent = new JPanel(new BorderLayout(20, 20));
@@ -34,6 +47,18 @@ public class ThongKePanel extends JPanel {
 
         add(headerPanel, BorderLayout.NORTH);
         add(mainContent, BorderLayout.CENTER);
+    }
+
+    public void refreshData() {
+        // Remove existing stats and charts panels
+        removeAll();
+
+        // Reinitialize the panel
+        initializePanel();
+
+        // Revalidate and repaint to update the UI
+        revalidate();
+        repaint();
     }
 
     private JPanel createHeaderPanel() {
@@ -52,7 +77,13 @@ public class ThongKePanel extends JPanel {
         JPanel statsPanel = new JPanel(new GridLayout(1, 4, 20, 0));
         statsPanel.setOpaque(false);
 
-        statsPanel.add(new StatisticCard("Tổng sản phẩm", "1,234", "+12.5%", true));
+        // Tổng sản phẩm (tổng SoLuong của tất cả sản phẩm)
+        int totalQuantity = sanPhamBUS.layDanhSachTatCaSanPham().stream()
+                .mapToInt(SanPhamDTO::getSoLuong)
+                .sum();
+        statsPanel.add(new StatisticCard("Tổng sản phẩm", String.format("%,d", totalQuantity), "+12.5%", true));
+
+        // Giữ nguyên các thẻ giả lập
         statsPanel.add(new StatisticCard("Khách hàng", "856", "+5.2%", true));
         statsPanel.add(new StatisticCard("Nhân viên", "145", "-2.3%", false));
         statsPanel.add(new StatisticCard("Doanh thu tháng", "23 000 000", "+1.5%", true));
@@ -64,19 +95,19 @@ public class ThongKePanel extends JPanel {
         JPanel chartsPanel = new JPanel(new GridLayout(1, 2, 20, 0));
         chartsPanel.setOpaque(false);
 
-        // Biểu đồ thống kê mượn sách
+        // Biểu đồ thống kê mượn sách (giữ nguyên dữ liệu giả lập)
         JFreeChart borrowChart = createBorrowChart();
         ChartPanel borrowChartPanel = new ChartPanel(borrowChart);
         borrowChartPanel.setPreferredSize(new Dimension(500, AppConstants.CHART_HEIGHT));
 
-        // Biểu đồ thống kê theo thể loại
+        // Biểu đồ thống kê theo sản phẩm (dữ liệu thực tế từ SanPhamBUS)
         JFreeChart categoryChart = createCategoryChart();
         ChartPanel categoryChartPanel = new ChartPanel(categoryChart);
         categoryChartPanel.setPreferredSize(new Dimension(500, AppConstants.CHART_HEIGHT));
 
         // Wrap charts in white panels
         JPanel borrowPanel = wrapChartInPanel(borrowChartPanel, "Thống kê sản phẩm bán");
-        JPanel categoryPanel = wrapChartInPanel(categoryChartPanel, "Thống kê theo loại");
+        JPanel categoryPanel = wrapChartInPanel(categoryChartPanel, "Thống kê theo sản phẩm");
 
         chartsPanel.add(borrowPanel);
         chartsPanel.add(categoryPanel);
@@ -128,15 +159,19 @@ public class ThongKePanel extends JPanel {
 
     private JFreeChart createCategoryChart() {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        dataset.addValue(120, "Số lượng", "Nước có ga");
-        dataset.addValue(80, "Số lượng", "Nước trà");
-        dataset.addValue(60, "Số lượng", "Cà phê");
-        dataset.addValue(40, "Số lượng", "Nước có cồn");
-        dataset.addValue(30, "Số lượng", "Sữa");
+
+        // Lấy danh sách sản phẩm và sắp xếp theo số lượng tăng dần
+        List<SanPhamDTO> products = sanPhamBUS.layDanhSachTatCaSanPham();
+        products.stream()
+                .sorted(Comparator.comparingInt(SanPhamDTO::getSoLuong))
+                .forEach(sp -> {
+                    String label = sp.getTenSanPham() != null ? sp.getTenSanPham() : "SP" + sp.getMaSanPham();
+                    dataset.addValue(sp.getSoLuong(), "Số lượng", label);
+                });
 
         JFreeChart chart = ChartFactory.createBarChart(
                 null,
-                "Loại sản phẩm",
+                "Sản phẩm",
                 "Số lượng",
                 dataset,
                 PlotOrientation.VERTICAL,

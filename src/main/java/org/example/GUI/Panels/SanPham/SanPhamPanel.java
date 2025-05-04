@@ -9,6 +9,8 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 public class SanPhamPanel extends JPanel {
 
@@ -28,6 +30,7 @@ public class SanPhamPanel extends JPanel {
         danhSachPanel = createDanhSachPanel();
         add(danhSachPanel, BorderLayout.CENTER);
         XuatSanPhamTable();
+        System.out.println("SanPhamPanel instance created: " + this);
     }
 
     private JPanel createHeaderPanel() {
@@ -49,11 +52,26 @@ public class SanPhamPanel extends JPanel {
         searchField.putClientProperty("JTextField.placeholderText", "Tìm kiếm sản phẩm...");
         searchField.setPreferredSize(new Dimension(200, 35));
         searchField.setFont(AppConstants.NORMAL_FONT);
+        searchField.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                timKiem();
+            }
 
-        StyledButton searchButton = new StyledButton("Tìm", AppConstants.BLUE, 100, 35);
-        searchButton.addActionListener(e -> {
-            String tuKhoa = searchField.getText().trim();
-            sanPhamBUS.HienThiSanPhamTimKiem(tbSanPham, tuKhoa);
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                timKiem();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                timKiem();
+            }
+
+            private void timKiem() {
+                String tuKhoa = searchField.getText().trim();
+                sanPhamBUS.HienThiSanPhamTimKiem(tbSanPham, tuKhoa);
+            }
         });
 
         StyledButton addButton = new StyledButton("Thêm sản phẩm", AppConstants.PRIMARY_COLOR, 130, 35);
@@ -64,7 +82,6 @@ public class SanPhamPanel extends JPanel {
         });
 
         topRowPanel.add(searchField);
-        topRowPanel.add(searchButton);
         topRowPanel.add(addButton);
 
         JPanel bottomRowPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
@@ -74,6 +91,7 @@ public class SanPhamPanel extends JPanel {
         statusFilterComboBox = new JComboBox<>(filterOptions);
         statusFilterComboBox.setPreferredSize(new Dimension(150, 35));
         statusFilterComboBox.setFont(AppConstants.NORMAL_FONT);
+        statusFilterComboBox.setSelectedItem("Tất cả"); // Đặt bộ lọc mặc định
         statusFilterComboBox.addActionListener(e -> XuatSanPhamTable());
 
         StyledButton filterButton = new StyledButton("Lọc nâng cao", new Color(100, 149, 237), 130, 35);
@@ -155,9 +173,24 @@ public class SanPhamPanel extends JPanel {
         return contentPanel;
     }
 
-    private void XuatSanPhamTable() {
+    public void XuatSanPhamTable() {
+        System.out.println("XuatSanPhamTable() called with filter: " + statusFilterComboBox.getSelectedItem());
         String selectedFilter = (String) statusFilterComboBox.getSelectedItem();
         sanPhamBUS.hienThiSanPhamLenTable(tbSanPham, selectedFilter);
+        tbSanPham.revalidate();
+        tbSanPham.repaint();
+        System.out.println("Table rows after XuatSanPhamTable: " + tbSanPham.getRowCount());
+    }
+
+    public void XuatTatCaSanPhamTable() {
+        System.out.println("XuatTatCaSanPhamTable() called");
+        DefaultTableModel model = (DefaultTableModel) tbSanPham.getModel();
+        model.setRowCount(0);
+        sanPhamBUS.hienThiSanPhamLenTable(tbSanPham);
+        tbSanPham.revalidate();
+        tbSanPham.repaint();
+        danhSachPanel.revalidate();
+        danhSachPanel.repaint();
     }
 
     private void SuaSanPham() {
@@ -221,7 +254,7 @@ public class SanPhamPanel extends JPanel {
                 }
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this,
-                        "Lỗi hệ thống khi xóa sản phẩm: " + e.getMessage(),
+                        "Lỗi hệ thống khai xóa sản phẩm: " + e.getMessage(),
                         "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
         }

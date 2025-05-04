@@ -173,6 +173,8 @@ public class SanPham_Them_Dialog extends JDialog {
     private JTextField taoGiaVonField() {
         giaVonField = new JTextField();
         giaVonField.setFont(AppConstants.NORMAL_FONT);
+        giaVonField.setText("0");
+        giaVonField.setEnabled(false);
         return giaVonField;
     }
 
@@ -366,7 +368,7 @@ public class SanPham_Them_Dialog extends JDialog {
             // Lưu ảnh vào thư mục tài nguyên và lấy đường dẫn tương đối
             String relativePath = luuAnhVaoThuMucTaiNguyen(new File(duongDanAnh), maSanPham);
             if (relativePath == null) {
-                return; // Lỗi đã được hiển thị trong luuAnhVaoThuMucTaiNguyen
+                return;
             }
             sanPham.setAnhSanPhamURL(relativePath);
 
@@ -379,7 +381,7 @@ public class SanPham_Them_Dialog extends JDialog {
             if (sanPhamBUS.themSanPham(sanPham)) {
                 JOptionPane.showMessageDialog(this, "Thêm sản phẩm thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
                 sanPhamBUS.hienThiSanPhamLenTable(tbSanPham); // Làm mới bảng
-                tbSanPham.repaint(); // Đảm bảo bảng được vẽ lại
+                tbSanPham.repaint();
                 dispose();
             } else {
                 JOptionPane.showMessageDialog(this, "Thêm sản phẩm thất bại!", "Lỗi", JOptionPane.ERROR_MESSAGE);

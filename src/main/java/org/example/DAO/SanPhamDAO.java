@@ -205,7 +205,29 @@ public class SanPhamDAO {
         }
         return danhSach;
     }
-
+    public boolean them(SanPhamDTO sanPham){
+        String sql = "insert into sanpham(MaSanPham, MaLoaiSanPham, AnhSanPhamURL, TenSanPham, "
+                + "NhaSanXuat, SoLuong, GiaVon, GiaLoi, TrangThai) "
+                + "values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        try(Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)){
+            stmt.setInt(1,sanPham.getMaSanPham());
+            stmt.setInt(2,sanPham.getMaLoaiSanPham());
+            stmt.setString(3, sanPham.getAnhSanPhamURL());
+            stmt.setString (4, sanPham.getTenSanPham());
+            stmt.setString(5, sanPham.getNhaSanXuat());
+            stmt.setInt(6, sanPham.getSoLuong());
+            stmt.setInt(7, sanPham.getGiaVon());
+            stmt.setInt(8, sanPham.getGiaLoi());
+            stmt.setBoolean(9,true);
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected>0;
+            
+        }
+        catch(SQLException  e){
+            return false;
+        }
+    }
+    
     public boolean themSanPham(SanPhamDTO sanPham) {
         String sql = "INSERT INTO sanpham (MaSanPham, MaLoaiSanPham, AnhSanPhamURL, TenSanPham, "
                 + "NhaSanXuat, SoLuong, GiaVon, GiaLoi, TrangThai) "

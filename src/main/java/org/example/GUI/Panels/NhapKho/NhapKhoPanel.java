@@ -35,15 +35,11 @@ public class NhapKhoPanel extends JPanel {
     private PhieuNhapBUS pnBUS = new PhieuNhapBUS();
     private ChiTietPhieuNhapBUS ctpnBUS;
 
-    // UI Components
     private JTable jTable1;
     private JTextField searchField;
     private StyledButton importButton;
     private JLabel titleLabel;
 
-    /**
-     * Creates new form NhapKhoPanel
-     */
     public NhapKhoPanel() {
         initComponents();
         ctpnBUS = new ChiTietPhieuNhapBUS();
@@ -109,11 +105,9 @@ public class NhapKhoPanel extends JPanel {
         setBackground(AppConstants.BACKGROUND_COLOR);
         setBorder(new EmptyBorder(20, 20, 20, 20));
 
-        // Create header panel
         JPanel headerPanel = createHeaderPanel();
         add(headerPanel, BorderLayout.NORTH);
 
-        // Create content panel
         JPanel contentPanel = createContentPanel();
         add(contentPanel, BorderLayout.CENTER);
     }
@@ -122,16 +116,13 @@ public class NhapKhoPanel extends JPanel {
         JPanel headerPanel = new JPanel(new BorderLayout(20, 0));
         headerPanel.setOpaque(false);
 
-        // Title
         titleLabel = new JLabel("Quản lý nhập kho");
         titleLabel.setFont(AppConstants.HEADER_FONT);
         titleLabel.setForeground(AppConstants.TEXT_COLOR);
 
-        // Search and action panel
         JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         actionPanel.setOpaque(false);
 
-        // Search field with label
         JLabel searchLabel = new JLabel("Tìm kiếm:");
         searchLabel.setFont(AppConstants.NORMAL_FONT);
 
@@ -144,7 +135,6 @@ public class NhapKhoPanel extends JPanel {
             }
         });
 
-        // Import button
         importButton = new StyledButton("Nhập hàng", AppConstants.PRIMARY_COLOR, 120, 35);
         importButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -170,7 +160,6 @@ public class NhapKhoPanel extends JPanel {
                 new EmptyBorder(15, 15, 15, 15)
         ));
 
-        // Create table
         String[] columns = {"Mã phiếu nhập", "Người nhập", "Nhà cung cấp", "Thời gian lập", "Trạng thái"};
         DefaultTableModel model = new DefaultTableModel(columns, 0) {
             @Override
@@ -187,7 +176,6 @@ public class NhapKhoPanel extends JPanel {
         jTable1.setSelectionForeground(new Color(17, 24, 39));
         jTable1.setFont(new Font(AppConstants.NORMAL_FONT.getFamily(), Font.PLAIN, 13));
 
-        // Style the table header
         JTableHeader header = jTable1.getTableHeader();
         header.setFont(new Font(AppConstants.NORMAL_FONT.getFamily(), Font.BOLD, 13));
         header.setBackground(new Color(243, 244, 246));
@@ -196,20 +184,17 @@ public class NhapKhoPanel extends JPanel {
         header.setPreferredSize(new Dimension(header.getWidth(), 40));
         header.setReorderingAllowed(false);
 
-        // Center align the ID and status columns
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
         jTable1.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
         jTable1.getColumnModel().getColumn(4).setCellRenderer(centerRenderer);
 
-        // Set column widths
         jTable1.getColumnModel().getColumn(0).setPreferredWidth(100);
         jTable1.getColumnModel().getColumn(1).setPreferredWidth(150);
         jTable1.getColumnModel().getColumn(2).setPreferredWidth(200);
         jTable1.getColumnModel().getColumn(3).setPreferredWidth(150);
         jTable1.getColumnModel().getColumn(4).setPreferredWidth(120);
 
-        // Add double-click listener
         jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jTable1MouseClicked(evt);

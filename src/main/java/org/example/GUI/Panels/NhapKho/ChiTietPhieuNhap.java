@@ -26,9 +26,6 @@ public class ChiTietPhieuNhap extends javax.swing.JDialog {
     private JTable jTable1;
     private JScrollPane jScrollPane1;
 
-    /**
-     * Creates new form ChiTietPhieuNhap
-     */
     public ChiTietPhieuNhap(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
@@ -43,13 +40,10 @@ public class ChiTietPhieuNhap extends javax.swing.JDialog {
         setTitle("Chi tiết phiếu nhập");
         setSize(new Dimension(700, 500));
         setLocationRelativeTo(null);
-
-        // Main panel
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
         mainPanel.setBackground(Color.WHITE);
 
-        // Header
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setOpaque(false);
         headerPanel.setBorder(new EmptyBorder(0, 0, 15, 0));
@@ -58,7 +52,6 @@ public class ChiTietPhieuNhap extends javax.swing.JDialog {
         titleLabel.setFont(new Font(AppConstants.HEADER_FONT.getFamily(), Font.BOLD, 18));
         headerPanel.add(titleLabel, BorderLayout.WEST);
 
-        // Table panel
         JPanel tablePanel = new JPanel(new BorderLayout());
         tablePanel.setBackground(Color.WHITE);
         tablePanel.setBorder(new CompoundBorder(
@@ -66,7 +59,6 @@ public class ChiTietPhieuNhap extends javax.swing.JDialog {
                 new EmptyBorder(15, 15, 15, 15)
         ));
 
-        // Create table
         String[] columns = {"Tên sản phẩm", "Đơn giá", "Số lượng", "Thành tiền"};
         DefaultTableModel model = new DefaultTableModel(columns, 0) {
             @Override
@@ -83,7 +75,6 @@ public class ChiTietPhieuNhap extends javax.swing.JDialog {
         jTable1.setSelectionForeground(new Color(17, 24, 39));
         jTable1.setFont(new Font(AppConstants.NORMAL_FONT.getFamily(), Font.PLAIN, 13));
 
-        // Style the table header
         JTableHeader header = jTable1.getTableHeader();
         header.setFont(new Font(AppConstants.NORMAL_FONT.getFamily(), Font.BOLD, 13));
         header.setBackground(new Color(243, 244, 246));
@@ -92,14 +83,12 @@ public class ChiTietPhieuNhap extends javax.swing.JDialog {
         header.setPreferredSize(new Dimension(header.getWidth(), 40));
         header.setReorderingAllowed(false);
 
-        // Center align numeric columns
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
         jTable1.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
         jTable1.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
         jTable1.getColumnModel().getColumn(3).setCellRenderer(centerRenderer);
 
-        // Set column widths
         jTable1.getColumnModel().getColumn(0).setPreferredWidth(250);
         jTable1.getColumnModel().getColumn(1).setPreferredWidth(120);
         jTable1.getColumnModel().getColumn(2).setPreferredWidth(80);
@@ -111,7 +100,6 @@ public class ChiTietPhieuNhap extends javax.swing.JDialog {
 
         tablePanel.add(jScrollPane1, BorderLayout.CENTER);
 
-        // Add components to main panel
         mainPanel.add(headerPanel, BorderLayout.NORTH);
         mainPanel.add(tablePanel, BorderLayout.CENTER);
 

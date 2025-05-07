@@ -36,7 +36,6 @@ public class NhaCungCap extends javax.swing.JDialog {
 
     private NhaCungCapBUS nccBUS = new NhaCungCapBUS();
 
-    // UI Components
     private JTextField tenNhaCungCapField;
     private JTextField diaChiField;
     private JTextField soDienThoaiField;
@@ -47,9 +46,7 @@ public class NhaCungCap extends javax.swing.JDialog {
     private StyledButton editButton;
     private StyledButton deleteButton;
 
-    /**
-     * Creates new form NhaCungCap
-     */
+    
     public NhaCungCap(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
@@ -103,21 +100,16 @@ public class NhaCungCap extends javax.swing.JDialog {
         setSize(new Dimension(900, 600));
         setLocationRelativeTo(null);
 
-        // Main panel
         JPanel mainPanel = new JPanel(new BorderLayout(0, 15));
         mainPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
         mainPanel.setBackground(Color.WHITE);
 
-        // Form panel
         JPanel formPanel = createFormPanel();
 
-        // Table panel
         JPanel tablePanel = createTablePanel();
 
-        // Search and action panel
         JPanel actionPanel = createActionPanel();
 
-        // Add components to main panel
         mainPanel.add(formPanel, BorderLayout.NORTH);
         mainPanel.add(tablePanel, BorderLayout.CENTER);
         mainPanel.add(actionPanel, BorderLayout.SOUTH);
@@ -141,7 +133,6 @@ public class NhaCungCap extends javax.swing.JDialog {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(8, 10, 8, 10);
 
-        // Tên nhà cung cấp
         JLabel tenLabel = new JLabel("Tên nhà cung cấp:");
         tenLabel.setFont(AppConstants.NORMAL_FONT);
         gbc.gridx = 0;
@@ -157,7 +148,6 @@ public class NhaCungCap extends javax.swing.JDialog {
         gbc.weightx = 0.35;
         panel.add(tenNhaCungCapField, gbc);
 
-        // Địa chỉ
         JLabel diaChiLabel = new JLabel("Địa chỉ:");
         diaChiLabel.setFont(AppConstants.NORMAL_FONT);
         gbc.gridx = 2;
@@ -173,7 +163,6 @@ public class NhaCungCap extends javax.swing.JDialog {
         gbc.weightx = 0.35;
         panel.add(diaChiField, gbc);
 
-        // Số điện thoại
         JLabel sdtLabel = new JLabel("Số điện thoại:");
         sdtLabel.setFont(AppConstants.NORMAL_FONT);
         gbc.gridx = 0;
@@ -189,7 +178,6 @@ public class NhaCungCap extends javax.swing.JDialog {
         gbc.weightx = 0.35;
         panel.add(soDienThoaiField, gbc);
 
-        // Fax
         JLabel faxLabel = new JLabel("Fax:");
         faxLabel.setFont(AppConstants.NORMAL_FONT);
         gbc.gridx = 2;
@@ -220,7 +208,6 @@ public class NhaCungCap extends javax.swing.JDialog {
                 new Color(107, 114, 128)
         ));
 
-        // Create table
         String[] columns = {"Mã NCC", "Tên nhà cung cấp", "Địa chỉ", "Số điện thoại", "Fax"};
         DefaultTableModel model = new DefaultTableModel(columns, 0) {
             @Override
@@ -237,7 +224,6 @@ public class NhaCungCap extends javax.swing.JDialog {
         supplierTable.setSelectionForeground(new Color(17, 24, 39));
         supplierTable.setFont(new Font(AppConstants.NORMAL_FONT.getFamily(), Font.PLAIN, 13));
 
-        // Style the table header
         JTableHeader header = supplierTable.getTableHeader();
         header.setFont(new Font(AppConstants.NORMAL_FONT.getFamily(), Font.BOLD, 13));
         header.setBackground(new Color(243, 244, 246));
@@ -246,19 +232,16 @@ public class NhaCungCap extends javax.swing.JDialog {
         header.setPreferredSize(new Dimension(header.getWidth(), 40));
         header.setReorderingAllowed(false);
 
-        // Center align ID column
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
         supplierTable.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
 
-        // Set column widths
         supplierTable.getColumnModel().getColumn(0).setPreferredWidth(60);
         supplierTable.getColumnModel().getColumn(1).setPreferredWidth(200);
         supplierTable.getColumnModel().getColumn(2).setPreferredWidth(250);
         supplierTable.getColumnModel().getColumn(3).setPreferredWidth(120);
         supplierTable.getColumnModel().getColumn(4).setPreferredWidth(120);
 
-        // Add selection listener
         supplierTable.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 tableRowSelected();
@@ -278,7 +261,6 @@ public class NhaCungCap extends javax.swing.JDialog {
         JPanel panel = new JPanel(new BorderLayout(10, 0));
         panel.setOpaque(false);
 
-        // Search panel
         JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         searchPanel.setOpaque(false);
 
@@ -298,7 +280,6 @@ public class NhaCungCap extends javax.swing.JDialog {
         searchPanel.add(searchLabel);
         searchPanel.add(searchField);
 
-        // Button panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         buttonPanel.setOpaque(false);
 
@@ -361,7 +342,6 @@ public class NhaCungCap extends javax.swing.JDialog {
     private void addButtonMouseClicked(java.awt.event.MouseEvent evt) {
         NhaCungCapDTO nccDTO = new NhaCungCapDTO();
 
-        // Validate input
         if (tenNhaCungCapField.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Vui lòng nhập tên nhà cung cấp", "Lỗi", JOptionPane.ERROR_MESSAGE);
             tenNhaCungCapField.requestFocus();
@@ -376,7 +356,6 @@ public class NhaCungCap extends javax.swing.JDialog {
         String message = nccBUS.themNhaCungCap(nccDTO);
         JOptionPane.showMessageDialog(this, message, "Thông báo", JOptionPane.INFORMATION_MESSAGE);
 
-        // Clear fields after adding
         clearFields();
         loadNhaCungCap();
     }
@@ -384,7 +363,6 @@ public class NhaCungCap extends javax.swing.JDialog {
     private void editButtonActionPerformed(java.awt.event.ActionEvent evt) {
         int selectedRow = supplierTable.getSelectedRow();
         if (selectedRow != -1) {
-            // Validate input
             if (tenNhaCungCapField.getText().trim().isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Vui lòng nhập tên nhà cung cấp", "Lỗi", JOptionPane.ERROR_MESSAGE);
                 tenNhaCungCapField.requestFocus();
@@ -407,7 +385,6 @@ public class NhaCungCap extends javax.swing.JDialog {
             String message = nccBUS.suaNhaCungCap(ncc);
             JOptionPane.showMessageDialog(this, message, "Thông báo", JOptionPane.INFORMATION_MESSAGE);
 
-            // Clear fields after editing
             clearFields();
             loadNhaCungCap();
         } else {
@@ -433,7 +410,6 @@ public class NhaCungCap extends javax.swing.JDialog {
                 String message = nccBUS.xoaNhaCungCap(maNCC);
                 JOptionPane.showMessageDialog(this, message, "Thông báo", JOptionPane.INFORMATION_MESSAGE);
 
-                // Clear fields after deleting
                 clearFields();
                 loadNhaCungCap();
             }
@@ -477,7 +453,6 @@ public class NhaCungCap extends javax.swing.JDialog {
         }
         //</editor-fold>
 
-        /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 NhaCungCap dialog = new NhaCungCap(new javax.swing.JFrame(), true);
@@ -491,8 +466,7 @@ public class NhaCungCap extends javax.swing.JDialog {
             }
         });
     }
-
-    // Variables declaration - do not modify//GEN-BEGIN:variables
+                 
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;

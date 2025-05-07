@@ -46,7 +46,6 @@ public class NhapHang extends javax.swing.JDialog {
     public List<SanPhamDTO> spDuocChonList = new ArrayList<>();
     SanPhamBUS spBUS = new SanPhamBUS();
 
-    // UI Components
     private JSplitPane jSplitPane2;
     private JPanel jPanel1, jPanel2;
     private javax.swing.JTable jTable1, jTable2;
@@ -55,9 +54,6 @@ public class NhapHang extends javax.swing.JDialog {
     private JLabel jLabel1, jLabel2, jLabel3, jLabel4, jLabel5, jLabel6;
     private StyledButton addButton, importButton, addSupplierButton, deleteButton;
 
-    /**
-     * Creates new form NhapHang
-     */
     public NhapHang(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
@@ -161,18 +157,15 @@ public class NhapHang extends javax.swing.JDialog {
         setLocationRelativeTo(null);
         setResizable(false);
 
-        // Main split pane
         jSplitPane2 = new JSplitPane();
         jSplitPane2.setDividerLocation(500);
         jSplitPane2.setResizeWeight(0.5);
         jSplitPane2.setDividerSize(5);
         jSplitPane2.setBorder(null);
 
-        // Left panel - Product selection
         jPanel1 = createLeftPanel();
         jSplitPane2.setLeftComponent(jPanel1);
 
-        // Right panel - Selected products and checkout
         jPanel2 = createRightPanel();
         jSplitPane2.setRightComponent(jPanel2);
 
@@ -185,7 +178,6 @@ public class NhapHang extends javax.swing.JDialog {
         panel.setBorder(new EmptyBorder(15, 15, 15, 15));
         panel.setBackground(Color.WHITE);
 
-        // Header panel with search
         JPanel headerPanel = new JPanel(new BorderLayout(10, 0));
         headerPanel.setOpaque(false);
 
@@ -212,7 +204,6 @@ public class NhapHang extends javax.swing.JDialog {
         headerPanel.add(titleLabel, BorderLayout.WEST);
         headerPanel.add(searchPanel, BorderLayout.EAST);
 
-        // Table panel
         String[] columns = {"Mã SP", "Tên sản phẩm", "Tồn kho", "Giá vốn"};
         DefaultTableModel model = new DefaultTableModel(columns, 0) {
             @Override
@@ -229,7 +220,6 @@ public class NhapHang extends javax.swing.JDialog {
         jTable1.setSelectionForeground(new Color(17, 24, 39));
         jTable1.setFont(new Font(AppConstants.NORMAL_FONT.getFamily(), Font.PLAIN, 13));
 
-        // Style the table header
         JTableHeader header = jTable1.getTableHeader();
         header.setFont(new Font(AppConstants.NORMAL_FONT.getFamily(), Font.BOLD, 13));
         header.setBackground(new Color(243, 244, 246));
@@ -238,14 +228,12 @@ public class NhapHang extends javax.swing.JDialog {
         header.setPreferredSize(new Dimension(header.getWidth(), 40));
         header.setReorderingAllowed(false);
 
-        // Center align numeric columns
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
         jTable1.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
         jTable1.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
         jTable1.getColumnModel().getColumn(3).setCellRenderer(centerRenderer);
 
-        // Set column widths
         jTable1.getColumnModel().getColumn(0).setPreferredWidth(60);
         jTable1.getColumnModel().getColumn(1).setPreferredWidth(200);
         jTable1.getColumnModel().getColumn(2).setPreferredWidth(80);
@@ -255,7 +243,6 @@ public class NhapHang extends javax.swing.JDialog {
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollPane.getViewport().setBackground(Color.WHITE);
 
-        // Footer panel with add controls
         JPanel footerPanel = new JPanel(new BorderLayout(10, 0));
         footerPanel.setOpaque(false);
         footerPanel.setBorder(new EmptyBorder(10, 0, 0, 0));
@@ -292,7 +279,6 @@ public class NhapHang extends javax.swing.JDialog {
         footerPanel.add(inputPanel, BorderLayout.CENTER);
         footerPanel.add(addButton, BorderLayout.EAST);
 
-        // Add all components to the panel
         panel.add(headerPanel, BorderLayout.NORTH);
         panel.add(scrollPane, BorderLayout.CENTER);
         panel.add(footerPanel, BorderLayout.SOUTH);
@@ -305,7 +291,6 @@ public class NhapHang extends javax.swing.JDialog {
         panel.setBorder(new EmptyBorder(15, 15, 15, 15));
         panel.setBackground(Color.WHITE);
 
-        // Header panel with supplier selection
         JPanel headerPanel = new JPanel(new BorderLayout(10, 0));
         headerPanel.setOpaque(false);
 
@@ -340,8 +325,7 @@ public class NhapHang extends javax.swing.JDialog {
 
         headerPanel.add(titleLabel, BorderLayout.WEST);
         headerPanel.add(supplierPanel, BorderLayout.EAST);
-
-        // Table panel
+        
         String[] columns = {"Mã SP", "Tên sản phẩm", "Giá nhập", "Số lượng"};
         DefaultTableModel model = new DefaultTableModel(columns, 0) {
             @Override
@@ -358,7 +342,6 @@ public class NhapHang extends javax.swing.JDialog {
         jTable2.setSelectionForeground(new Color(17, 24, 39));
         jTable2.setFont(new Font(AppConstants.NORMAL_FONT.getFamily(), Font.PLAIN, 13));
 
-        // Style the table header
         JTableHeader header = jTable2.getTableHeader();
         header.setFont(new Font(AppConstants.NORMAL_FONT.getFamily(), Font.BOLD, 13));
         header.setBackground(new Color(243, 244, 246));
@@ -367,14 +350,12 @@ public class NhapHang extends javax.swing.JDialog {
         header.setPreferredSize(new Dimension(header.getWidth(), 40));
         header.setReorderingAllowed(false);
 
-        // Center align numeric columns
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
         jTable2.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
         jTable2.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
         jTable2.getColumnModel().getColumn(3).setCellRenderer(centerRenderer);
 
-        // Set column widths
         jTable2.getColumnModel().getColumn(0).setPreferredWidth(60);
         jTable2.getColumnModel().getColumn(1).setPreferredWidth(200);
         jTable2.getColumnModel().getColumn(2).setPreferredWidth(100);
@@ -384,7 +365,6 @@ public class NhapHang extends javax.swing.JDialog {
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollPane.getViewport().setBackground(Color.WHITE);
 
-        // Footer panel with total and checkout
         JPanel footerPanel = new JPanel(new BorderLayout(10, 0));
         footerPanel.setOpaque(false);
         footerPanel.setBorder(new EmptyBorder(10, 0, 0, 0));
@@ -425,7 +405,6 @@ public class NhapHang extends javax.swing.JDialog {
         footerPanel.add(totalPanel, BorderLayout.WEST);
         footerPanel.add(actionPanel, BorderLayout.EAST);
 
-        // Add all components to the panel
         panel.add(headerPanel, BorderLayout.NORTH);
         panel.add(scrollPane, BorderLayout.CENTER);
         panel.add(footerPanel, BorderLayout.SOUTH);
@@ -434,7 +413,6 @@ public class NhapHang extends javax.swing.JDialog {
     }
 
     private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {
-        // Add product to cart
         int selectedRow = jTable1.getSelectedRow();
         if (selectedRow == -1) {
             return;
@@ -473,7 +451,6 @@ public class NhapHang extends javax.swing.JDialog {
     }
 
     private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {
-        // Process import
         if (spDuocChonList.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Vui lòng chọn ít nhất một sản phẩm để nhập", "Thông báo", JOptionPane.WARNING_MESSAGE);
             return;
@@ -501,17 +478,14 @@ public class NhapHang extends javax.swing.JDialog {
     }
 
     private void jButton3MouseClicked(java.awt.event.MouseEvent evt) {
-        // Add new supplier
         NhaCungCap dialog = new NhaCungCap(null, true);
         dialog.setVisible(true);
 
-        // Refresh supplier list
         jComboBox1.removeAllItems();
         loadNhaCungCap();
     }
 
     private void jTextField2KeyReleased(java.awt.event.KeyEvent evt) {
-        // Search products
         String timKiem = jTextField2.getText();
 
         if (timKiem.isEmpty()) {
@@ -522,7 +496,6 @@ public class NhapHang extends javax.swing.JDialog {
     }
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {
-        // Delete selected product from cart
         int selectedRow = jTable2.getSelectedRow();
         if (selectedRow != -1) {
             int maSP = (int) jTable2.getValueAt(selectedRow, 0);

@@ -35,6 +35,7 @@ public class MainFrame extends JFrame {
     private NguoiDung nguoiDungHienTai;
     private QuyenBUS quyenBUS;
     private VaiTroBUS vaiTroBUS;
+    private BanHangPanel banhang;
     private SanPhamPanel sanPham;
     private ThongKePanel thongKePanel; // Added to store ThongKePanel instance
 
@@ -49,8 +50,10 @@ public class MainFrame extends JFrame {
         nguoiDungHienTai = NguoiDungBUS.getNguoiDungHienTai();
         quyenBUS = new QuyenBUS();
         vaiTroBUS = new VaiTroBUS();
+        banhang = new BanHangPanel(); // Initialize BanHangPanel
         sanPham = new SanPhamPanel();
         thongKePanel = new ThongKePanel(); // Initialize ThongKePanel
+        System.out.println("MainFrame using BanHangPanel instance: " + banhang);
         System.out.println("MainFrame using SanPhamPanel instance: " + sanPham);
 
         initializeHeader();
@@ -326,7 +329,7 @@ public class MainFrame extends JFrame {
         contentPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
 
         // Add panels
-        contentPanel.add(new BanHangPanel(), "sell");
+        contentPanel.add(banhang, "sell"); // Use the banhang instance
         contentPanel.add(sanPham, "products"); // Use the sanPham instance
         contentPanel.add(new KhuyenMaiPanel(), "promotions");
         contentPanel.add(new KhachHangPanel(), "consumers");
@@ -360,6 +363,8 @@ public class MainFrame extends JFrame {
                     updateActiveButton(key);
                     if ("products".equals(key)) {
                         sanPham.XuatSanPhamTable();
+                    } else if ("sell".equals(key)) {
+                        banhang.loadProductTable();
                     } else if ("statistics".equals(key)) {
                         thongKePanel.refreshData(); 
                     }

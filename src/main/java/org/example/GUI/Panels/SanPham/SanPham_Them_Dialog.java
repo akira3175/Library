@@ -188,7 +188,6 @@ public class SanPham_Them_Dialog extends JDialog {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
-        // Thêm bộ lọc file để chỉ cho phép ảnh
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
                 "Image files (*.jpg, *.jpeg, *.png)", "jpg", "jpeg", "png");
         fileChooser.setFileFilter(filter);
@@ -197,10 +196,8 @@ public class SanPham_Them_Dialog extends JDialog {
         if (result == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
 
-            // Kiểm tra file tồn tại và hợp lệ
             if (selectedFile != null && selectedFile.exists() && selectedFile.isFile()) {
                 try {
-                    // Kiểm tra định dạng file
                     String fileName = selectedFile.getName().toLowerCase();
                     if (!fileName.endsWith(".jpg") && !fileName.endsWith(".jpeg") && !fileName.endsWith(".png")) {
                         JOptionPane.showMessageDialog(this,
@@ -212,7 +209,6 @@ public class SanPham_Them_Dialog extends JDialog {
                     duongDanAnh = selectedFile.getAbsolutePath();
                     ImageIcon originalIcon = new ImageIcon(duongDanAnh);
 
-                    // Kiểm tra nếu ImageIcon không tải được ảnh
                     if (originalIcon.getImage() == null) {
                         JOptionPane.showMessageDialog(this,
                                 "Không thể tải ảnh. File có thể bị hỏng!",
@@ -280,24 +276,19 @@ public class SanPham_Them_Dialog extends JDialog {
 
     private String luuAnhVaoThuMucTaiNguyen(File selectedFile, int maSanPham) {
         try {
-            // Đường dẫn thư mục tài nguyên trong dự án
             String resourceDir = "src/main/resources/images/Sanpham_img";
             Path targetDir = Paths.get(resourceDir);
 
-            // Tạo thư mục nếu chưa tồn tại
             if (!Files.exists(targetDir)) {
                 Files.createDirectories(targetDir);
             }
 
-            // Tạo tên file duy nhất dựa trên mã sản phẩm và timestamp
             String fileExtension = selectedFile.getName().substring(selectedFile.getName().lastIndexOf("."));
             String newFileName = "sp_" + maSanPham + "_" + System.currentTimeMillis() + fileExtension;
             Path targetPath = targetDir.resolve(newFileName);
 
-            // Sao chép file vào thư mục tài nguyên
             Files.copy(selectedFile.toPath(), targetPath);
 
-            // Trả về đường dẫn tương đối để lưu vào cơ sở dữ liệu
             return "/images/Sanpham_img/" + newFileName;
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this, "Lỗi khi lưu ảnh: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);

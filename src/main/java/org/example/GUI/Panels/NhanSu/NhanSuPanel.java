@@ -206,14 +206,8 @@ public class NhanSuPanel extends JPanel {
         dialog.setVisible(true);
 
         if (dialog.isConfirmed()) {
-            model.setValueAt(dialog.getHoTen(), row, 2);
-            model.setValueAt(dialog.getEmail(), row, 3);
-            model.setValueAt(dialog.getSoDienThoai(), row, 4);
-            model.setValueAt(dialog.isActive(), row, 5);
-
-            if (dialog.getNewPassword() != null) {
-                System.out.println("New password for " + nguoiDung.getTenDangNhap() + ": " + dialog.getNewPassword());
-            }
+            // Refresh the entire table to ensure all data is up to date
+            loadDataNhanSuTable(null);
         }
     }
 }

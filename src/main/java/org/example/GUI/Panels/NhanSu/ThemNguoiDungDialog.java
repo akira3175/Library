@@ -277,7 +277,7 @@ public class ThemNguoiDungDialog extends JDialog {
         // Show success message with username and password
         JOptionPane.showMessageDialog(
                 this,
-                "Thêm thành công!\nTên đăng nhập: " + tenDangNhapField.getText() + "\nMật khẩu: " + generatedPassword,
+                "Thêm thành công!\nTên đăng nhập: " + tenDangNhapField.getText() + "\nMật khẩu: " + nguoiDung.getMatKhau(),
                 "Thành công",
                 JOptionPane.INFORMATION_MESSAGE
         );

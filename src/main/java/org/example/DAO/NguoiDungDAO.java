@@ -184,7 +184,7 @@ public class NguoiDungDAO {
                 try (ResultSet rs = pstmt.getGeneratedKeys()) {
                     if (rs.next()) {
                         int generatedId = rs.getInt(1);
-                        nguoiDung.setMaNguoiDung(generatedId); // Cập nhật lại đối tượng
+                        nguoiDung.setMaNguoiDung(generatedId);
                         logger.info("Thêm người dùng thành công với ID: {}", generatedId);
                         return nguoiDung;
                     }

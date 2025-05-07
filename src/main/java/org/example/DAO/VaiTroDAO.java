@@ -155,8 +155,7 @@ public class VaiTroDAO {
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            ResultSet rs = pstmt.executeQuery();
+             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
                 VaiTro vttk = new VaiTro();

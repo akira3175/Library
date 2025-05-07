@@ -56,6 +56,14 @@ public class ChiTietNguoiDungDialog extends JDialog {
         gioiTinhComboBox.setSelectedItem(nguoiDung.getGioiTinh());
         diaChiArea.setText(nguoiDung.getDiaChi());
         ngayVaoLamField.setText(sdf.format(nguoiDung.getNgayVaoLam()));
+        for (int i = 0; i < vaiTroJComboBox.getItemCount(); i++) {
+            VaiTro item = (VaiTro) vaiTroJComboBox.getItemAt(i);
+            if (item.getMaVaiTro() == nguoiDung.getMaVaiTro()) {
+                vaiTroJComboBox.setSelectedItem(item);
+                break;
+            }
+        }
+        
 
         pack();
         setLocationRelativeTo(owner);

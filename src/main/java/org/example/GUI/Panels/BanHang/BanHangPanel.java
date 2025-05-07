@@ -6,7 +6,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -67,6 +66,7 @@ public class BanHangPanel extends JPanel {
     private List<KhachHangDTO> selectedCustomers;
     private JLabel customerLabel;
     private JPanel imagePanel;
+    private JLabel promoStatusLabel;
 
     public BanHangPanel() {
         setLayout(new BorderLayout(20, 20));
@@ -93,7 +93,6 @@ public class BanHangPanel extends JPanel {
         banHangTabPanel.setBackground(AppConstants.BACKGROUND_COLOR);
         banHangTabPanel.setBorder(BorderFactory.createEmptyBorder());
 
-        // Create a split pane for better organization
         JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
         splitPane.setDividerLocation(350);
         splitPane.setDividerSize(5);
@@ -212,7 +211,10 @@ public class BanHangPanel extends JPanel {
         searchButton.addActionListener(e -> searchProducts());
 
         StyledButton refreshButton = new StyledButton("Làm mới", new Color(107, 114, 128), 100, 35);
-        refreshButton.addActionListener(e -> loadProductTable());
+        refreshButton.addActionListener(e -> {
+            loadProductTable();
+            searchField.setText(""); // Clear the search field
+        });
 
         searchPanel.add(searchLabel);
         searchPanel.add(searchField);
@@ -428,7 +430,7 @@ public class BanHangPanel extends JPanel {
 
         customerLabel = new JLabel("Chưa chọn khách hàng");
         customerLabel.setFont(AppConstants.NORMAL_FONT);
-        customerLabel.setPreferredSize(new Dimension(200, 30));
+        customerLabel.setPreferredSize(new Dimension(150, 30));
 
         JLabel promoLabel = new JLabel("Khuyến mãi:");
         promoLabel.setFont(AppConstants.NORMAL_FONT);
@@ -437,10 +439,16 @@ public class BanHangPanel extends JPanel {
         promotionComboBox.setPreferredSize(new Dimension(200, 30));
         promotionComboBox.addActionListener(e -> updateTotal());
 
+        // Promotion status label
+        promoStatusLabel = new JLabel("");
+        promoStatusLabel.setFont(new Font(AppConstants.NORMAL_FONT.getFamily(), Font.ITALIC, 12));
+        promoStatusLabel.setForeground(new Color(107, 114, 128));
+
         customerPanel.add(selectCustomerButton);
         customerPanel.add(customerLabel);
         customerPanel.add(promoLabel);
         customerPanel.add(promotionComboBox);
+        customerPanel.add(promoStatusLabel);
 
         // Checkout panel
         JPanel checkoutPanel = new JPanel(new BorderLayout());
@@ -650,6 +658,7 @@ public class BanHangPanel extends JPanel {
     private void addProductToCart(int row) {
         DefaultTableModel model = (DefaultTableModel) productTable.getModel();
         int maSanPham = Integer.parseInt(model.getValueAt(row, 0).toString());
+        String tenSanPham = model.getValueAt(row, 2).toString();
         String input = JOptionPane.showInputDialog(this, "Nhập số lượng:", "1");
         if (input == null) {
             return;
@@ -658,9 +667,36 @@ public class BanHangPanel extends JPanel {
         try {
             int soLuong = Integer.parseInt(input);
             if (soLuong <= 0) {
-                JOptionPane.showMessageDialog(this, "Số lượng phải lớn hơn 0!");
+                JOptionPane.showMessageDialog(this, "Số lượng phải lớn hơn 0!", "Lỗi", JOptionPane.ERROR_MESSAGE);
                 return;
             }
+
+            // Check available stock
+            SanPhamDTO sanPham = sanPhamBUS.laySanPhamTheoMa(maSanPham);
+            if (sanPham == null) {
+                JOptionPane.showMessageDialog(this, "Không tìm thấy sản phẩm!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Calculate current quantity in cart for this product
+            int currentCartQuantity = 0;
+            for (GioHang item : banHangBUS.getCart()) {
+                if (item.getSanPham().getMaSanPham() == maSanPham) {
+                    currentCartQuantity += item.getSoLuong();
+                }
+            }
+
+            // Check if total quantity (cart + requested) exceeds stock
+            if (currentCartQuantity + soLuong > sanPham.getSoLuong()) {
+                JOptionPane.showMessageDialog(this, 
+                    String.format("Số lượng của '%s' không đủ! (Tồn kho: %d, Đã trong giỏ: %d, Yêu cầu thêm: %d)", 
+                        tenSanPham, sanPham.getSoLuong(), currentCartQuantity, soLuong), 
+                    "Lỗi", JOptionPane.ERROR_MESSAGE);
+                logger.warn("Không thể thêm sản phẩm {}: Tổng số lượng (giỏ: {} + yêu cầu: {}) vượt quá tồn kho ({}).", 
+                    maSanPham, currentCartQuantity, soLuong, sanPham.getSoLuong());
+                return;
+            }
+
             banHangBUS.addToCart(maSanPham, soLuong);
             updateCartTable();
             updateTotal();
@@ -668,10 +704,10 @@ public class BanHangPanel extends JPanel {
             loadProductTable();
         } catch (NumberFormatException e) {
             logger.warn("Số lượng không hợp lệ: {}", input);
-            JOptionPane.showMessageDialog(this, "Số lượng không hợp lệ!");
+            JOptionPane.showMessageDialog(this, "Số lượng không hợp lệ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
         } catch (RuntimeException e) {
             logger.error("Lỗi khi thêm sản phẩm vào giỏ hàng: {}", e.getMessage(), e);
-            JOptionPane.showMessageDialog(this, e.getMessage());
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -686,7 +722,7 @@ public class BanHangPanel extends JPanel {
                     item.getSanPham().getTenSanPham(),
                     item.getSoLuong(),
                     String.format("%,d", (int) item.getSanPham().getGiaLoi() + item.getSanPham().getGiaVon()),
-                    String.format("%,d", (int) (item.getSanPham().getGiaLoi() + item.getSanPham().getGiaVon() * item.getSoLuong())),
+                    String.format("%,d", (int) (item.getSanPham().getGiaLoi() + item.getSanPham().getGiaVon()) * item.getSoLuong()),
                     "Xóa"
             });
         }
@@ -779,8 +815,30 @@ public class BanHangPanel extends JPanel {
             total += (int) ((item.getSanPham().getGiaLoi() + item.getSanPham().getGiaVon()) * item.getSoLuong());
         }
         KhuyenMai selectedPromo = (KhuyenMai) promotionComboBox.getSelectedItem();
-        int discount = (selectedPromo != null && selectedPromo.getMaKhuyenMai() > 0 && total >= selectedPromo.getDieuKienHoaDon()) ? selectedPromo.getSoTienKhuyenMai() : 0;
+        int discount = 0;
+        String promoStatus = "";
+
+        if (selectedPromo != null && selectedPromo.getMaKhuyenMai() > 0) {
+            if (total >= selectedPromo.getDieuKienHoaDon()) {
+                discount = selectedPromo.getSoTienKhuyenMai();
+                promoStatus = "Khuyến mãi được áp dụng";
+                promoStatusLabel.setForeground(new Color(34, 139, 34)); // Green for success
+            } else {
+                promoStatus = String.format("Cần hóa đơn tối thiểu %,d VNĐ để áp dụng khuyến mãi", selectedPromo.getDieuKienHoaDon());
+                promoStatusLabel.setForeground(new Color(220, 38, 38)); // Red for error
+                // Show notification only once per invalid selection
+                JOptionPane.showMessageDialog(this, 
+                    String.format("Không thể áp dụng khuyến mãi '%s': Tổng hóa đơn (%,d VNĐ) chưa đạt yêu cầu tối thiểu (%,d VNĐ).", 
+                        selectedPromo.getTenKhuyenMai(), total, selectedPromo.getDieuKienHoaDon()), 
+                    "Thông báo", JOptionPane.WARNING_MESSAGE);
+            }
+        } else {
+            promoStatus = "Không áp dụng khuyến mãi";
+            promoStatusLabel.setForeground(new Color(107, 114, 128)); // Gray for neutral
+        }
+
         totalLabel.setText(String.format("Tổng tiền: %,d VNĐ", total - discount));
+        promoStatusLabel.setText(promoStatus);
     }
 
     private void checkout() {
@@ -819,14 +877,18 @@ public class BanHangPanel extends JPanel {
     }
 
     public void resetCartUI() {
+        customerLabel.setText("Chưa chọn khách hàng");
         banHangBUS.resetCart();
         updateCartTable();
         updateTotal();
         selectedCustomers.clear();
         customerLabel.setText("");
+        loadProductTable();
+        loadPromotions();
         imagePanel.removeAll();
         imagePanel.revalidate();
         imagePanel.repaint();
+        promoStatusLabel.setText("");
         logger.info("Giỏ hàng UI đã được reset.");
     }
 

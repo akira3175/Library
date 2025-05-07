@@ -3,7 +3,9 @@ package org.example.GUI.Panels.ThongKe;
 import org.example.BUS.NguoiDungBUS;
 import org.example.BUS.SanPhamBUS;
 import org.example.BUS.KhachHangBUS;
+import org.example.BUS.BanHangBUS;
 import org.example.DTO.SanPhamDTO;
+import org.example.DTO.HoaDon;
 import org.example.GUI.Components.StatisticCard;
 import org.example.GUI.Constants.AppConstants;
 import org.jfree.chart.ChartFactory;
@@ -14,13 +16,16 @@ import org.jfree.data.category.DefaultCategoryDataset;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Comparator;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ThongKePanel extends JPanel {
     private final SanPhamBUS sanPhamBUS;
     private final KhachHangBUS khachHangBUS;
     private final NguoiDungBUS nguoiDungBUS;
+    private final BanHangBUS banHangBUS;
     private JPanel statsPanel;
     private JPanel chartsPanel;
 
@@ -28,6 +33,7 @@ public class ThongKePanel extends JPanel {
         sanPhamBUS = new SanPhamBUS();
         khachHangBUS = new KhachHangBUS();
         nguoiDungBUS = new NguoiDungBUS();
+        banHangBUS = new BanHangBUS();
         setLayout(new BorderLayout(20, 20));
         setBackground(AppConstants.BACKGROUND_COLOR);
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
@@ -93,32 +99,53 @@ public class ThongKePanel extends JPanel {
         int totalCustomers = khachHangBUS.layDanhSachTatCaKhachHang().size();
         statsPanel.add(new StatisticCard("Khách hàng", String.format("%,d", totalCustomers), "+5.2%", true));
 
-        // Giữ nguyên các thẻ giả lập
+        // Tổng nhân viên
         statsPanel.add(new StatisticCard("Nhân viên", String.format("%,d", nguoiDungBUS.soLuongNguoiDungConHoatDong()), "-2.3%", false));
-        statsPanel.add(new StatisticCard("Doanh thu tháng", "23 000 000", "+1.5%", true));
+
+        // Doanh thu tháng
+        long monthlyRevenue = calculateMonthlyRevenue();
+        statsPanel.add(new StatisticCard("Doanh thu tháng", String.format("%,d", monthlyRevenue), "+1.5%", true));
 
         return statsPanel;
+    }
+
+    private long calculateMonthlyRevenue() {
+        List<HoaDon> invoices = banHangBUS.getAllHoaDon();
+        Calendar cal = Calendar.getInstance();
+        int currentMonth = cal.get(Calendar.MONTH);
+        int currentYear = cal.get(Calendar.YEAR);
+
+        return invoices.stream()
+                .filter(hd -> {
+                    Calendar invoiceCal = Calendar.getInstance();
+                    invoiceCal.setTime(hd.getNgayLap());
+                    return invoiceCal.get(Calendar.MONTH) == currentMonth &&
+                           invoiceCal.get(Calendar.YEAR) == currentYear &&
+                           hd.isTrangThai(); // Only include active invoices
+                })
+                .mapToLong(HoaDon::getThanhTien)
+                .sum();
     }
 
     private JPanel createChartsPanel() {
         JPanel chartsPanel = new JPanel(new GridLayout(1, 2, 20, 0));
         chartsPanel.setOpaque(false);
 
-        // Biểu đồ thống kê mượn sách (giữ nguyên dữ liệu giả lập)
-        JFreeChart borrowChart = createBorrowChart();
-        ChartPanel borrowChartPanel = new ChartPanel(borrowChart);
-        borrowChartPanel.setPreferredSize(new Dimension(500, AppConstants.CHART_HEIGHT));
+        // Biểu đồ doanh thu sản phẩm bán theo ngày
+        JFreeChart dailyRevenueChart = createDailyRevenueChart();
+        ChartPanel dailyRevenueChartPanel = new ChartPanel(dailyRevenueChart);
+        dailyRevenueChartPanel.setPreferredSize(new Dimension(500, AppConstants.CHART_HEIGHT));
 
-        // Biểu đồ thống kê theo sản phẩm (dữ liệu thực tế từ SanPhamBUS)
+        // Biểu đồ thống kê theo sản phẩm
         JFreeChart categoryChart = createCategoryChart();
         ChartPanel categoryChartPanel = new ChartPanel(categoryChart);
         categoryChartPanel.setPreferredSize(new Dimension(500, AppConstants.CHART_HEIGHT));
 
         // Wrap charts in white panels
-        JPanel borrowPanel = wrapChartInPanel(borrowChartPanel, "Thống kê sản phẩm bán");
+        JPanel dailyRevenuePanel = wrapChartInPanel(dailyRevenueChartPanel, "Doanh thu sản phẩm bán theo ngày");
         JPanel categoryPanel = wrapChartInPanel(categoryChartPanel, "Thống kê theo sản phẩm");
 
-        chartsPanel.add(borrowPanel);
+        chartsPanel.add(dailyRevenuePanel);
         chartsPanel.add(categoryPanel);
 
         return chartsPanel;
@@ -142,19 +169,44 @@ public class ThongKePanel extends JPanel {
         return wrapper;
     }
 
-    private JFreeChart createBorrowChart() {
+    private JFreeChart createDailyRevenueChart() {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        dataset.addValue(200, "Bán", "T1");
-        dataset.addValue(150, "Bán", "T2");
-        dataset.addValue(180, "Bán", "T3");
-        dataset.addValue(270, "Bán", "T4");
-        dataset.addValue(230, "Bán", "T5");
-        dataset.addValue(180, "Bán", "T6");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM");
 
-        JFreeChart chart = ChartFactory.createLineChart(
+        // Get invoices and group by date for the last 7 days
+        List<HoaDon> invoices = banHangBUS.getAllHoaDon();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+        cal.add(Calendar.DAY_OF_MONTH, -6); // Start from 7 days ago
+        Date startDate = cal.getTime();
+
+        // Create a map of date to revenue
+        Map<String, Long> dailyRevenue = new TreeMap<>();
+        for (int i = 0; i < 7; i++) {
+            cal.setTime(startDate);
+            cal.add(Calendar.DAY_OF_MONTH, i);
+            String dateKey = sdf.format(cal.getTime());
+            dailyRevenue.put(dateKey, 0L);
+        }
+
+        for (HoaDon hd : invoices) {
+            if (!hd.isTrangThai()) continue; // Skip inactive invoices
+            Date invoiceDate = hd.getNgayLap();
+            if (invoiceDate.after(startDate) || invoiceDate.equals(startDate)) {
+                String dateKey = sdf.format(invoiceDate);
+                dailyRevenue.merge(dateKey, (long) hd.getThanhTien(), Long::sum);
+            }
+        }
+
+        // Add data to dataset
+        dailyRevenue.forEach((date, revenue) -> {
+            dataset.addValue(revenue, "Doanh thu", date);
+        });
+
+        JFreeChart chart = ChartFactory.createBarChart(
                 null,
-                "Tháng",
-                "Số lượng",
+                "Ngày",
+                "Doanh thu (VNĐ)",
                 dataset,
                 PlotOrientation.VERTICAL,
                 false,

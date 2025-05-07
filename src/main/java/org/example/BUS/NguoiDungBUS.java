@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.ArrayList;
 
 public class NguoiDungBUS {
     private static NguoiDung nguoiDungHienTai;
@@ -57,6 +57,23 @@ public class NguoiDungBUS {
         }
 
         return nguoiDungList;
+    }
+
+    public List<NguoiDung> timKiemNguoiDung(String keyword) {
+        List<NguoiDung> nguoiDungList = nguoiDungDAO.layDanhSachTatCaNguoiDung();
+        List<NguoiDung> nguoiDungListTimKiem = new ArrayList<>();
+
+        if (nguoiDungList == null || nguoiDungList.isEmpty()) {
+            logger.warn("Danh sách người dùng trống!");
+        }
+        
+        for (NguoiDung nguoiDung : nguoiDungList) {
+            if (nguoiDung.getHoTen().toLowerCase().contains(keyword.toLowerCase())) {
+                nguoiDungListTimKiem.add(nguoiDung);
+            }
+        }
+        
+        return nguoiDungListTimKiem;
     }
 
     public NguoiDung layNguoiDungTheoID(int maNguoiDung) {

@@ -95,6 +95,23 @@ public class VaiTroBUS {
         return vaiTroList;
     }
 
+    public List<VaiTro> timKiemVaiTro(String keyword) {
+        List<VaiTro> vaiTroList = danhSachVaitroKemSoLuongNguoiDung();
+        List<VaiTro> vaiTroListTimKiem = new ArrayList<>();
+
+        if (vaiTroList == null || vaiTroList.isEmpty()) {
+            logger.warn("Danh sách vai trò trống!");
+        }
+
+        for (VaiTro vaiTro : vaiTroList) {
+            if (vaiTro.getTenVaiTro().toLowerCase().contains(keyword.toLowerCase())) {
+                vaiTroListTimKiem.add(vaiTro);
+            }
+        }
+
+        return vaiTroListTimKiem;
+    }
+
     public List<Quyen> layDanhSachQuyenTheoVaiTro(int maVaiTro) {
         return quyenDAO.layDanhSachQuyenTheoVaiTro(maVaiTro);
     }   

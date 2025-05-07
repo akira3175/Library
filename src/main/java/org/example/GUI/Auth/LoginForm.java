@@ -77,15 +77,6 @@ public class LoginForm extends JFrame {
         loginButton = createStyledButton("Đăng Nhập", AppConstants.TEXT_COLOR);
         loginButton.setPreferredSize(new Dimension(300, 50));
 
-        JPanel registerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        registerPanel.setOpaque(false);
-        JLabel noAccountLabel = new JLabel("Chưa có tài khoản? ");
-        registerLabel = new JLabel("Đăng ký");
-        registerLabel.setForeground(AppConstants.PRIMARY_COLOR);
-        registerLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        registerPanel.add(noAccountLabel);
-        registerPanel.add(registerLabel);
-
         //formPanel.add(Box.createVerticalStrut(50));
         formPanel.add(titleLabel);
         formPanel.add(Box.createVerticalStrut(70)); // Increased from 50 to 70
@@ -94,8 +85,6 @@ public class LoginForm extends JFrame {
         formPanel.add(passwordPanel);
         formPanel.add(Box.createVerticalStrut(30));
         formPanel.add(loginButton);
-        formPanel.add(Box.createVerticalStrut(15));
-        formPanel.add(registerPanel);
 
         mainPanel.add(topPanel, BorderLayout.NORTH);
         mainPanel.add(formPanel, BorderLayout.CENTER);
@@ -196,21 +185,6 @@ public class LoginForm extends JFrame {
 
         getRootPane().setDefaultButton(loginButton);
 
-        registerLabel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                JOptionPane.showMessageDialog(LoginForm.this, "Chuyển đến trang đăng ký");
-                // Thêm code để mở form đăng ký ở đây
-            }
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                registerLabel.setText("<html><u>Đăng ký</u></html>");
-            }
-            @Override
-            public void mouseExited(MouseEvent e) {
-                registerLabel.setText("Đăng ký");
-            }
-        });
 
         exitLabel.addMouseListener(new MouseAdapter() {
             @Override

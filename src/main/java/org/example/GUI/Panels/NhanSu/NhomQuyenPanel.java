@@ -28,19 +28,15 @@ public class NhomQuyenPanel extends JPanel {
         setBackground(AppConstants.BACKGROUND_COLOR);
         vaiTroBUS = new VaiTroBUS();
 
-        // Create main content panel with padding
         JPanel contentPanel = new JPanel(new BorderLayout(20, 20));
         contentPanel.setBackground(AppConstants.BACKGROUND_COLOR);
         contentPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
 
-        // Add header panel
         contentPanel.add(createHeaderPanel(), BorderLayout.NORTH);
 
-        // Create main panel with the list of permission groups
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setOpaque(false);
 
-        // Create panel for the list of permission groups
         JPanel listPanel = createNhomQuyenListPanel();
 
         mainPanel.add(listPanel, BorderLayout.CENTER);
@@ -48,8 +44,7 @@ public class NhomQuyenPanel extends JPanel {
         contentPanel.add(mainPanel, BorderLayout.CENTER);
         add(contentPanel, BorderLayout.CENTER);
 
-        // Initialize with sample data
-        loadSampleData();
+        loadSampleData(null);
     }
 
     private JPanel createHeaderPanel() {
@@ -66,6 +61,14 @@ public class NhomQuyenPanel extends JPanel {
         searchField = new JTextField(20);
         searchField.putClientProperty("JTextField.placeholderText", "Tìm kiếm vai trò...");
         searchField.setPreferredSize(new Dimension(200, 35));
+        searchField.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String keyword = searchField.getText();
+                List<VaiTro> danhSachVaiTro = vaiTroBUS.timKiemVaiTro(keyword);
+                loadSampleData(danhSachVaiTro);
+            }
+        });
 
         StyledButton refreshButton = new StyledButton("Làm mới", new Color(107, 114, 128), 120, 35);
         StyledButton addButton = new StyledButton("Thêm vai trò", AppConstants.PRIMARY_COLOR, 150, 35);
@@ -95,7 +98,6 @@ public class NhomQuyenPanel extends JPanel {
                 new EmptyBorder(15, 15, 15, 15)
         ));
 
-        // Header
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(new Color(249, 250, 251));
         headerPanel.setBorder(new EmptyBorder(15, 20, 15, 20));
@@ -123,7 +125,6 @@ public class NhomQuyenPanel extends JPanel {
         vaiTroTable.setSelectionForeground(new Color(17, 24, 39));
         vaiTroTable.setFont(new Font(AppConstants.NORMAL_FONT.getFamily(), Font.PLAIN, 13));
 
-        // Style the table header
         JTableHeader header = vaiTroTable.getTableHeader();
         header.setFont(new Font(AppConstants.NORMAL_FONT.getFamily(), Font.BOLD, 13));
         header.setBackground(new Color(243, 244, 246));
@@ -131,19 +132,16 @@ public class NhomQuyenPanel extends JPanel {
         header.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(229, 231, 235)));
         header.setPreferredSize(new Dimension(header.getWidth(), 40));
 
-        // Center align the first and third columns
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
         vaiTroTable.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
         vaiTroTable.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
 
-        // Set column widths
         vaiTroTable.getColumnModel().getColumn(0).setPreferredWidth(80);
         vaiTroTable.getColumnModel().getColumn(1).setPreferredWidth(200);
         vaiTroTable.getColumnModel().getColumn(2).setPreferredWidth(100);
         vaiTroTable.getColumnModel().getColumn(3).setPreferredWidth(300);
 
-        // Add double-click listener to open group details
         vaiTroTable.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -160,7 +158,6 @@ public class NhomQuyenPanel extends JPanel {
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollPane.getViewport().setBackground(Color.WHITE);
 
-        // Action panel at the bottom
         JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         actionPanel.setBackground(new Color(249, 250, 251));
         actionPanel.setBorder(new EmptyBorder(10, 20, 10, 20));
@@ -243,10 +240,12 @@ public class NhomQuyenPanel extends JPanel {
         return panel;
     }
 
-    private void loadSampleData() {
-        // Sample data for permission groups
+    private void loadSampleData(List<VaiTro> danhSachVaiTro) {
+        if (danhSachVaiTro == null) {
+            danhSachVaiTro = vaiTroBUS.danhSachVaitroKemSoLuongNguoiDung();
+        }
         DefaultTableModel nhomQuyenModel = (DefaultTableModel) vaiTroTable.getModel();
-        List<VaiTro> danhSachVaiTro = vaiTroBUS.danhSachVaitroKemSoLuongNguoiDung();
+        nhomQuyenModel.setRowCount(0);
 
         for(VaiTro vaiTro: danhSachVaiTro) {
             nhomQuyenModel.addRow(new Object[]{vaiTro.getMaVaiTro(), vaiTro.getTenVaiTro(), vaiTro.getSoLuongNguoiDung(), vaiTro.getMoTa()});
@@ -271,11 +270,8 @@ public class NhomQuyenPanel extends JPanel {
         dialog.setVisible(true);
 
         if (dialog.isConfirmed()) {
-            // Update the table with the new data
             model.setValueAt(dialog.getTenNhomQuyen(), row, 1);
             model.setValueAt(dialog.getMoTa(), row, 3);
-
-            // In a real application, you would update the database through the BUS layer
         }
     }
 
@@ -291,22 +287,13 @@ public class NhomQuyenPanel extends JPanel {
         dialog.setVisible(true);
 
         if (dialog.isConfirmed()) {
-            // Add the new group to the table
             DefaultTableModel model = (DefaultTableModel) vaiTroTable.getModel();
             model.addRow(new Object[]{
                     dialog.getMaNhomQuyen(),
                     dialog.getTenNhomQuyen(),
-                    0, // New groups have 0 users
+                    0,
                     dialog.getMoTa()
             });
-
-            // In a real application, you would add to the database through the BUS layer
         }
-    }
-
-    private String generateNextGroupId() {
-        // In a real application, this would query the database for the last ID
-        // and generate the next one. For this example, we'll use a placeholder.
-        return "R" + String.format("%03d", vaiTroTable.getRowCount() + 1);
     }
 }

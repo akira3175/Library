@@ -19,7 +19,7 @@ import java.util.List;
 
 public class NhanSuPanel extends JPanel {
     private JTable table;
-    private JTextField searchField;
+    private JTextField searchField2;
     private NguoiDungBUS nguoiDungBUS;
     private JTabbedPane tabbedPane;
     private JPanel danhSachPanel;
@@ -54,7 +54,7 @@ public class NhanSuPanel extends JPanel {
         // Add tabbed pane to main panel
         add(tabbedPane, BorderLayout.CENTER);
 
-        loadDataNhanSuTable();
+        loadDataNhanSuTable(null);
     }
 
     private JPanel createHeaderPanel() {
@@ -68,9 +68,17 @@ public class NhanSuPanel extends JPanel {
         JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         actionPanel.setOpaque(false);
 
-        searchField = new JTextField(20);
-        searchField.putClientProperty("JTextField.placeholderText", "Tìm kiếm người dùng...");
-        searchField.setPreferredSize(new Dimension(200, 35));
+        searchField2 = new JTextField(20);
+        searchField2.putClientProperty("JTextField.placeholderText", "Tìm kiếm người dùng...");
+        searchField2.setPreferredSize(new Dimension(200, 35));
+        searchField2.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String keyword = searchField2.getText();
+                List<NguoiDung> danhSachNguoiDung = nguoiDungBUS.timKiemNguoiDung(keyword);
+                loadDataNhanSuTable(danhSachNguoiDung);
+            }
+        });
 
         StyledButton addButton = new StyledButton("Thêm người dùng", AppConstants.PRIMARY_COLOR, 150, 35);
         addButton.addActionListener(new ActionListener() {
@@ -80,7 +88,7 @@ public class NhanSuPanel extends JPanel {
             }
         });
 
-        actionPanel.add(searchField);
+        actionPanel.add(searchField2);
         actionPanel.add(addButton);
 
         headerPanel.add(titleLabel, BorderLayout.WEST);
@@ -146,8 +154,10 @@ public class NhanSuPanel extends JPanel {
         }
     }
 
-    private void loadDataNhanSuTable() {
-        List<NguoiDung> danhSachNguoiDung = nguoiDungBUS.danhSachNguoiDung();
+    private void loadDataNhanSuTable(List<NguoiDung> danhSachNguoiDung) {
+        if (danhSachNguoiDung == null) {
+            danhSachNguoiDung = nguoiDungBUS.danhSachNguoiDung();
+        }
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         model.setRowCount(0);
 

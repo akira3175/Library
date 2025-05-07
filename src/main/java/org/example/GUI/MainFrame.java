@@ -329,13 +329,13 @@ public class MainFrame extends JFrame {
         contentPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
 
         // Add panels
-        contentPanel.add(banhang, "sell"); // Use the banhang instance
-        contentPanel.add(sanPham, "products"); // Use the sanPham instance
+        contentPanel.add(banhang, "sell");
+        contentPanel.add(sanPham, "products");
         contentPanel.add(new KhuyenMaiPanel(), "promotions");
         contentPanel.add(new KhachHangPanel(), "consumers");
         contentPanel.add(new NhanSuPanel(), "users");
         contentPanel.add(new NhapKhoPanel(), "import");
-        contentPanel.add(thongKePanel, "statistics"); // Use the thongKePanel instance
+        contentPanel.add(thongKePanel, "statistics");
 
         setupActionListeners();
     }
